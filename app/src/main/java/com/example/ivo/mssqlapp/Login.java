@@ -41,8 +41,8 @@ public class Login extends Activity {
 
         try{
             Class.forName("net.sourceforge.jtds.jdbc.Driver");
-            connectionURL = "jdbc:jtds:sqlserver://127.0.0.1:1433/MyDatabase";
-            connection = DriverManager.getConnection(connectionURL, "admin", "admin123");
+            connectionURL = "jdbc:jtds:sqlserver://" + server + database + ";user=" + user + ";password=" + password + ";";
+            connection = DriverManager.getConnection(connectionURL);
         }catch(SQLException se){
             Log.e("ERROR1", se.getMessage());
         }catch(ClassNotFoundException e){
@@ -63,21 +63,18 @@ public class Login extends Activity {
         errorLbl = (TextView)findViewById(R.id.lblerror);
         editName = (EditText)findViewById(R.id.txtname);
         editPass = (EditText)findViewById(R.id.txtpassword);
-        ipaddress = "127.0.0.1";
+        ipaddress = "192.168.2.14:1433/";
         db = "MyDatabase";
-        username = "sqlacct";
-        password = "SQLserver2012";
+        username = "admin";
+        password = "admin123";
         connect = ConnectionHelper(username, password,db, ipaddress);
 
         loginBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 try{
-                    Log.e("PRVI", "asdfghjk");
                     connect = ConnectionHelper(username, password, db, ipaddress);
-                    Log.e("DRUGI", "asdfghjk");
                     statement = connect.createStatement();
-                    Log.e("TRECI", "asdfghjk");
                     ResultSet resultSet = statement.executeQuery("select * from login where userid='" + editName.getText().toString() + "' and password='" + editPass.getText().toString() + "'");
 
                     if(resultSet != null && resultSet.next()){
