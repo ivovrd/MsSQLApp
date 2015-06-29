@@ -63,7 +63,7 @@ public class Login extends Activity {
         errorLbl = (TextView)findViewById(R.id.lblerror);
         editName = (EditText)findViewById(R.id.txtname);
         editPass = (EditText)findViewById(R.id.txtpassword);
-        ipaddress = "192.168.2.14:1433/";
+        ipaddress = "192.168.2.14/";
         db = "MyDatabase";
         username = "admin";
         password = "admin123";
