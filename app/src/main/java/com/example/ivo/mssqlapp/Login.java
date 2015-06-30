@@ -5,6 +5,8 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.StrictMode;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -23,7 +25,7 @@ import java.sql.Statement;
 /**
  * Created by Ivo on 21.6.2015..
  */
-public class Login extends Activity {
+public class Login extends AppCompatActivity {
     Button loginBtn;
     TextView errorLbl;
     EditText editName, editPass;
@@ -31,6 +33,7 @@ public class Login extends Activity {
     PreparedStatement preparedStatement;
     Statement statement;
     String ipaddress, db, username, password;
+    Toolbar toolbar;
 
     @SuppressLint("NewAPI")
     private Connection ConnectionHelper(String user, String password, String database, String server){
@@ -58,6 +61,9 @@ public class Login extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login_layout);
+
+        toolbar = (Toolbar)findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
         loginBtn = (Button)findViewById(R.id.btnlogin);
         errorLbl = (TextView)findViewById(R.id.lblerror);
