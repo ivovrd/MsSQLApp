@@ -34,7 +34,7 @@ public class Login extends AppCompatActivity {
     Toolbar toolbar;
 
     @SuppressLint("NewAPI")
-    private Connection ConnectionHelper(String user, String password, String database, String server){
+    public static Connection ConnectionHelper(String user, String password, String database, String server){
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
         Connection connection = null;

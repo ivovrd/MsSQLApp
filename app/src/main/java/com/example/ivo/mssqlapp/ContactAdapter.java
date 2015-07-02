@@ -33,6 +33,8 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
         Contact contact = contacts.get(i);
         viewHolder.firstName.setText(contact.firstName);
         viewHolder.lastName.setText(contact.lastName);
+        viewHolder.eMail.setText(contact.eMail);
+        viewHolder.phoneNum.setText(contact.phoneNumber);
     }
 
     @Override
@@ -41,12 +43,14 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder{
-        public TextView firstName, lastName;
+        public TextView firstName, lastName, eMail, phoneNum;
 
         public ViewHolder(View itemView) {
             super(itemView);
             firstName = (TextView)itemView.findViewById(R.id.contactFirstName);
             lastName = (TextView)itemView.findViewById(R.id.contactLastName);
+            eMail = (TextView)itemView.findViewById(R.id.contactEmail);
+            phoneNum = (TextView)itemView.findViewById(R.id.contactPhoneNum);
         }
     }
 }

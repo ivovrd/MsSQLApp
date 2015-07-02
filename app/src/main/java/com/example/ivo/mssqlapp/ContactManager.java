@@ -22,17 +22,21 @@ public class ContactManager {
     }
 
     public List<Contact> getContacts(){
-        if(contacts == null){
-            contacts = new ArrayList<Contact>();
-
-            for(int i = 0; i < firstNameArray.length; i++){
-                Contact contact = new Contact();
-                contact.firstName = firstNameArray[i];
-                contact.lastName = lastNameArray[i];
-                contacts.add(contact);
-            }
-        }
 
         return contacts;
+    }
+
+    public void setContacts(String firstName, String lastName, String eMail, String phoneNum){
+        if(contacts == null) {
+            contacts = new ArrayList<Contact>();
+        }
+
+        Contact contact = new Contact();
+        contact.firstName = firstName;
+        contact.lastName = lastName;
+        contact.eMail = eMail;
+        contact.phoneNumber = phoneNum;
+
+        contacts.add(contact);
     }
 }

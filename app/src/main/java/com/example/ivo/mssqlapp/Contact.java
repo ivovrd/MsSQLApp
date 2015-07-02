@@ -6,4 +6,6 @@ package com.example.ivo.mssqlapp;
 public class Contact {
     public String firstName;
     public String lastName;
+    public String eMail;
+    public String phoneNumber;
 }
