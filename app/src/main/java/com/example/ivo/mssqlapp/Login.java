@@ -67,7 +67,7 @@ public class Login extends AppCompatActivity {
         errorLbl = (TextView)findViewById(R.id.lblerror);
         editName = (EditText)findViewById(R.id.txtname);
         editPass = (EditText)findViewById(R.id.txtpassword);
-        ipaddress = "192.168.2.14/";
+        ipaddress = "109.60.27.88/";
         db = "MyDatabase";
         username = "admin";
         password = "admin123";
