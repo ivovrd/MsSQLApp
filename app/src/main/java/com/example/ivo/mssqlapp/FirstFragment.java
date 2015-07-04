@@ -32,7 +32,7 @@ public class FirstFragment extends Fragment{
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
 
-        ipaddress = "109.60.27.88/";
+        ipaddress = "192.168.2.14/";
         db = "MyDatabase";
         username = "admin";
         password = "admin123";
@@ -40,7 +40,7 @@ public class FirstFragment extends Fragment{
         try{
             connect = Login.ConnectionHelper(username, password, db, ipaddress);
             statement = connect.createStatement();
-            ResultSet result = statement.executeQuery("select top 100 FirstName, LastName, Email, PhoneNum from Contacts");
+            ResultSet result = statement.executeQuery("select top 10 FirstName, LastName, Email, PhoneNum from Contacts");
 
             while(result.next()){
                 ContactManager.getInstance().setContacts(result.getString("FirstName"), result.getString("LastName"), result.getString("Email"), result.getString("PhoneNum"));
@@ -55,8 +55,11 @@ public class FirstFragment extends Fragment{
         View view = inflater.inflate(R.layout.first_fragment, container, false);
 
         mRecyclerView = (RecyclerView)view.findViewById(R.id.recyclerList);
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext()));
+        LinearLayoutManager mLayoutManager = new LinearLayoutManager(getActivity().getApplicationContext());
+        mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
+
+
 
         mRecyclerView.setAdapter(new ContactAdapter(ContactManager.getInstance().getContacts(), R.layout.recycler_item, getActivity().getApplicationContext()));
         return view;
