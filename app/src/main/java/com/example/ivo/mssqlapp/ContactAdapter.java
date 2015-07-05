@@ -1,40 +1,92 @@
 package com.example.ivo.mssqlapp;
 
-import android.content.Context;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.NumberPicker;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import java.util.List;
 
 /**
- * Created by ADMIN on 1.7.2015..
+ * Created by Ivo on 1.7.2015..
  */
-public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHolder> {
+public class ContactAdapter extends RecyclerView.Adapter {
     private List<Contact> contacts;
-    private int rowLayout;
-    private Context mContext;
+    private final int VIEW_ITEM = 1;
+    private final int VIEW_PROG = 0;
 
-    public ContactAdapter(List<Contact> contacts, int rowLayout, Context context){
+    private int lastVisibleItem, totalItemCount;
+    private boolean loading;
+    private OnLoadMoreListener onLoadMoreListener;
+
+    public ContactAdapter(List<Contact> contacts, RecyclerView recyclerView){
         this.contacts = contacts;
-        this.rowLayout = rowLayout;
-        this.mContext = context;
+
+        if(recyclerView.getLayoutManager() instanceof LinearLayoutManager){
+            final LinearLayoutManager linearLayoutManager = (LinearLayoutManager)recyclerView.getLayoutManager();
+
+            recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+                private boolean userScrolled;
+
+                @Override
+                public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                    super.onScrolled(recyclerView, dx, dy);
+
+                    totalItemCount = linearLayoutManager.getItemCount();
+                    lastVisibleItem = linearLayoutManager.findLastVisibleItemPosition();
+                    if (userScrolled && !loading && totalItemCount <= (lastVisibleItem + 1)) {
+                        Log.i("KRAJ", String.valueOf(totalItemCount) + " " + String.valueOf(lastVisibleItem));
+                        if (onLoadMoreListener != null) {
+                            onLoadMoreListener.onLoadMore();
+                        }
+                        loading = true;
+                    }
+                }
+
+                @Override
+                public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                    super.onScrollStateChanged(recyclerView, newState);
+
+                    if(newState == NumberPicker.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL){
+                        userScrolled = true;
+                    }
+                }
+            });
+        }
     }
 
     @Override
-    public ContactAdapter.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
-        return new ViewHolder(LayoutInflater.from(viewGroup.getContext()).inflate(rowLayout, viewGroup, false));
+    public int getItemViewType(int position){
+        return contacts.get(position) != null ? VIEW_ITEM : VIEW_PROG;
     }
 
     @Override
-    public void onBindViewHolder(ContactAdapter.ViewHolder viewHolder, int i) {
-        Contact contact = contacts.get(i);
-        viewHolder.firstName.setText(contact.firstName);
-        viewHolder.lastName.setText(contact.lastName);
-        viewHolder.eMail.setText(contact.eMail);
-        viewHolder.phoneNum.setText(contact.phoneNumber);
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
+        RecyclerView.ViewHolder holder;
+        if(viewType == VIEW_ITEM){
+            holder = new ContactViewHolder(LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.recycler_item, viewGroup, false));
+        }else{
+            holder = new ProgressViewHolder(LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.progressbar_item, viewGroup, false));
+        }
+        return holder;
+    }
+
+    @Override
+    public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int i) {
+        if(viewHolder instanceof ContactViewHolder) {
+            Contact contact = contacts.get(i);
+            ((ContactViewHolder) viewHolder).firstName.setText(contact.firstName);
+            ((ContactViewHolder) viewHolder).lastName.setText(contact.lastName);
+            ((ContactViewHolder) viewHolder).eMail.setText(contact.eMail);
+            ((ContactViewHolder) viewHolder).phoneNum.setText(contact.phoneNumber);
+        }else{
+            ((ProgressViewHolder)viewHolder).progressBar.setIndeterminate(true);
+        }
     }
 
     @Override
@@ -42,15 +94,32 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
         return contacts == null ? 0 : contacts.size();
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder{
+    public void setLoaded() {
+        loading = false;
+    }
+
+    public void setOnLoadMoreListener(OnLoadMoreListener onLoadMoreListener){
+        this.onLoadMoreListener = onLoadMoreListener;
+    }
+
+    public static class ContactViewHolder extends RecyclerView.ViewHolder{
         public TextView firstName, lastName, eMail, phoneNum;
 
-        public ViewHolder(View itemView) {
+        public ContactViewHolder(View itemView) {
             super(itemView);
             firstName = (TextView)itemView.findViewById(R.id.contactFirstName);
             lastName = (TextView)itemView.findViewById(R.id.contactLastName);
             eMail = (TextView)itemView.findViewById(R.id.contactEmail);
             phoneNum = (TextView)itemView.findViewById(R.id.contactPhoneNum);
+        }
+    }
+
+    public static class ProgressViewHolder extends RecyclerView.ViewHolder{
+        public ProgressBar progressBar;
+
+        public ProgressViewHolder(View itemView) {
+            super(itemView);
+            progressBar = (ProgressBar)itemView.findViewById(R.id.progressBar);
         }
     }
 }

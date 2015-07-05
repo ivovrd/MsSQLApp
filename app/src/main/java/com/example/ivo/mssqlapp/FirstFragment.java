@@ -1,13 +1,11 @@
 package com.example.ivo.mssqlapp;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.view.InflateException;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +15,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
+import android.os.Handler;
 
 /**
  * Created by Ivo on 1.7.2015..
@@ -27,6 +26,8 @@ public class FirstFragment extends Fragment{
     String ipaddress, db, username, password;
     Connection connect;
     Statement statement;
+    ContactAdapter mAdapter;
+    private List<Contact> contacts;
 
     @Override
     public void onCreate(Bundle savedInstanceState){
@@ -55,13 +56,25 @@ public class FirstFragment extends Fragment{
         View view = inflater.inflate(R.layout.first_fragment, container, false);
 
         mRecyclerView = (RecyclerView)view.findViewById(R.id.recyclerList);
+        mRecyclerView.setHasFixedSize(true);
         LinearLayoutManager mLayoutManager = new LinearLayoutManager(getActivity().getApplicationContext());
         mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
+        mAdapter = new ContactAdapter(ContactManager.getInstance().getContacts(), mRecyclerView);
+        mRecyclerView.setAdapter(mAdapter);
 
+        mAdapter.setOnLoadMoreListener(new OnLoadMoreListener() {
+            @Override
+            public void onLoadMore() {
+                contacts = ContactManager.getInstance().getContacts();
+                contacts.add(null);
+                mAdapter.notifyItemInserted(contacts.size() - 1);
 
+                AsyncDbConnection asyncDbConnection = new AsyncDbConnection(username, password, db, ipaddress, mAdapter, contacts);
+                asyncDbConnection.execute();
+            }
+        });
 
-        mRecyclerView.setAdapter(new ContactAdapter(ContactManager.getInstance().getContacts(), R.layout.recycler_item, getActivity().getApplicationContext()));
         return view;
     }
 }

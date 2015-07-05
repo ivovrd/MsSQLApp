@@ -1,9 +1,11 @@
 package com.example.ivo.mssqlapp;
 
+import java.io.Serializable;
+
 /**
- * Created by ADMIN on 1.7.2015..
+ * Created by Ivo on 1.7.2015..
  */
-public class Contact {
+public class Contact implements Serializable{
     public String firstName;
     public String lastName;
     public String eMail;

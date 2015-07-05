@@ -4,12 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by ADMIN on 1.7.2015..
+ * Created by Ivo on 1.7.2015..
  */
 public class ContactManager {
-    private static String[] firstNameArray = {"John", "Peter", "Harold", "Jeremy", "Christian"};
-    private static String[] lastNameArray = {"Doe", "Robertson", "Finch", "Clarkson", "Walker"};
-
     private static ContactManager mInstance;
     private List<Contact> contacts;
 
@@ -28,7 +25,7 @@ public class ContactManager {
 
     public void setContacts(String firstName, String lastName, String eMail, String phoneNum){
         if(contacts == null) {
-            contacts = new ArrayList<Contact>();
+            contacts = new ArrayList<>();
         }
 
         Contact contact = new Contact();
