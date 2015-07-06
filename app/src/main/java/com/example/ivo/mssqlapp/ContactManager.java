@@ -19,7 +19,6 @@ public class ContactManager {
     }
 
     public List<Contact> getContacts(){
-
         return contacts;
     }
 
