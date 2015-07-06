@@ -40,7 +40,6 @@ public class ContactAdapter extends RecyclerView.Adapter {
                     totalItemCount = linearLayoutManager.getItemCount();
                     lastVisibleItem = linearLayoutManager.findLastVisibleItemPosition();
                     if (userScrolled && !loading && totalItemCount <= (lastVisibleItem + 1)) {
-                        Log.i("KRAJ", String.valueOf(totalItemCount) + " " + String.valueOf(lastVisibleItem));
                         if (onLoadMoreListener != null) {
                             onLoadMoreListener.onLoadMore();
                         }

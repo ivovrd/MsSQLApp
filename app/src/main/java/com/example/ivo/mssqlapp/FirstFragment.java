@@ -9,13 +9,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
-import android.os.Handler;
 
 /**
  * Created by Ivo on 1.7.2015..
@@ -23,23 +21,17 @@ import android.os.Handler;
 public class FirstFragment extends Fragment{
 
     private RecyclerView mRecyclerView;
-    String ipaddress, db, username, password;
-    Connection connect;
-    Statement statement;
-    ContactAdapter mAdapter;
+    private Connection connect;
+    private Statement statement;
+    private ContactAdapter mAdapter;
     private List<Contact> contacts;
 
     @Override
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
 
-        ipaddress = "192.168.2.14/";
-        db = "MyDatabase";
-        username = "admin";
-        password = "admin123";
-
         try{
-            connect = Login.ConnectionHelper(username, password, db, ipaddress);
+            connect = DatabaseConnection.Connect();
             statement = connect.createStatement();
             ResultSet result = statement.executeQuery("select top 10 FirstName, LastName, Email, PhoneNum from Contacts");
 
@@ -70,7 +62,7 @@ public class FirstFragment extends Fragment{
                 contacts.add(null);
                 mAdapter.notifyItemInserted(contacts.size() - 1);
 
-                AsyncDbConnection asyncDbConnection = new AsyncDbConnection(username, password, db, ipaddress, mAdapter, contacts);
+                AsyncDbConnection asyncDbConnection = new AsyncDbConnection(mAdapter, contacts);
                 asyncDbConnection.execute();
             }
         });

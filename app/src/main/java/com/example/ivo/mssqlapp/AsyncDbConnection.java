@@ -15,16 +15,11 @@ import java.util.List;
 public class AsyncDbConnection extends AsyncTask<Void, Void, ResultSet> {
     Connection connect;
     Statement statement;
-    private String username, password, db, ipaddress;
     ContactAdapter mAdapter;
     private List<Contact> contacts;
     int start, end;
 
-    public AsyncDbConnection(String username, String password, String db, String ipaddress, ContactAdapter adapter, List<Contact> contacts){
-        this.username = username;
-        this.password = password;
-        this.db = db;
-        this.ipaddress = ipaddress;
+    public AsyncDbConnection(ContactAdapter adapter, List<Contact> contacts){
         this.mAdapter = adapter;
         this.contacts = contacts;
     }
@@ -42,9 +37,8 @@ public class AsyncDbConnection extends AsyncTask<Void, Void, ResultSet> {
         ResultSet result = null;
 
         try{
-            connect = Login.ConnectionHelper(username, password, db, ipaddress);
+            connect = DatabaseConnection.Connect();
             statement = connect.createStatement();
-            Log.i("AAAAA", String.valueOf(start));
             result = statement.executeQuery("select FirstName, LastName, Email, PhoneNum from Contacts where ID between " + String.valueOf(start) + " and " + String.valueOf(end));
         }catch(SQLException e){
             Log.e("SQL error", e.getMessage());
