@@ -1,37 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent" android:layout_height="match_parent">
+    android:layout_width="match_parent" android:layout_height="88dp"
+    android:padding="0dp" android:layout_margin="0dp">
     <TextView
         android:id="@+id/contactFirstName"
         android:gravity="start"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="25sp"
-        android:layout_margin="10dp"
+        android:textSize="16sp"
+        android:paddingLeft="16dp"
+        android:paddingTop="11dp"
         android:textColor="@android:color/primary_text_light"
-        />
+        android:fontFamily="sans-serif"/>
 
     <TextView
         android:id="@+id/contactLastName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_toRightOf="@+id/contactFirstName"
-        android:textSize="25sp"
-        android:layout_marginTop="10dp"
-        android:layout_marginBottom="10dp"
-        android:layout_marginLeft="0dp"
-        android:textColor="@android:color/primary_text_light" />
+        android:textSize="16sp"
+        android:paddingTop="11dp"
+        android:paddingLeft="5dp"
+        android:textColor="@android:color/primary_text_light"
+        android:fontFamily="sans-serif"/>
 
     <TextView
         android:id="@+id/contactEmail"
         android:gravity="start"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="20sp"
-        android:layout_marginTop="5dp"
-        android:layout_marginBottom="5dp"
-        android:layout_marginLeft="10dp"
-        android:textColor="@android:color/primary_text_light"
+        android:textSize="14sp"
+        android:paddingLeft="16dp"
+        android:textColor="@android:color/secondary_text_light"
+        android:fontFamily="sans-serif"
         android:layout_below="@+id/contactLastName"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
@@ -41,11 +42,11 @@
         android:gravity="start"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="20sp"
-        android:layout_marginTop="5dp"
-        android:layout_marginBottom="5dp"
-        android:layout_marginLeft="10dp"
-        android:textColor="@android:color/primary_text_light"
+        android:textSize="14sp"
+        android:paddingLeft="16dp"
+        android:paddingBottom="16dp"
+        android:textColor="@android:color/secondary_text_light"
+        android:fontFamily="sans-serif"
         android:layout_below="@+id/contactEmail"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
