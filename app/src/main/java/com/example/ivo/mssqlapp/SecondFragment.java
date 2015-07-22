@@ -32,10 +32,10 @@ public class SecondFragment extends Fragment {
         try{
             connect = DatabaseConnection.Connect();
             statement = connect.createStatement();
-            ResultSet result = statement.executeQuery("select top 10 FirstName, LastName, Email, PhoneNum from Contacts");
+            ResultSet result = statement.executeQuery("select top 10 Sifra, Naziv, Opis from Sifrarnici.Artikl");
 
             while(result.next()){
-                ContactManager.getInstance().setContacts(result.getString("FirstName"), result.getString("LastName"), result.getString("Email"), result.getString("PhoneNum"));
+                ContactManager.getInstance().setContacts(result.getString("Sifra"), result.getString("Naziv"), result.getString("Opis"));
             }
         }catch(SQLException e){
             Log.e("SQL error", e.getMessage());

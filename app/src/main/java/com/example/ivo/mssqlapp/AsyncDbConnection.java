@@ -39,7 +39,7 @@ public class AsyncDbConnection extends AsyncTask<Void, Void, ResultSet> {
         try{
             connect = DatabaseConnection.Connect();
             statement = connect.createStatement();
-            result = statement.executeQuery("select FirstName, LastName, Email, PhoneNum from Contacts where ID between " + String.valueOf(start) + " and " + String.valueOf(end));
+            result = statement.executeQuery("select Sifra, Naziv, Opis from Sifrarnici.Artikl where ID between " + String.valueOf(start) + " and " + String.valueOf(end));
         }catch(SQLException e){
             Log.e("SQL error", e.getMessage());
         }
@@ -58,7 +58,7 @@ public class AsyncDbConnection extends AsyncTask<Void, Void, ResultSet> {
 
         try {
             while(result.next()){
-                ContactManager.getInstance().setContacts(result.getString("FirstName"), result.getString("LastName"), result.getString("Email"), result.getString("PhoneNum"));
+                ContactManager.getInstance().setContacts(result.getString("Sifra"), result.getString("Naziv"), result.getString("Opis"));
                 mAdapter.notifyDataSetChanged();
             }
         } catch (SQLException e) {

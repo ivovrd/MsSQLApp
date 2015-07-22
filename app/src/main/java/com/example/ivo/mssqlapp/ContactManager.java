@@ -22,7 +22,7 @@ public class ContactManager {
         return contacts;
     }
 
-    public void setContacts(String firstName, String lastName, String eMail, String phoneNum){
+    public void setContacts(String firstName, String lastName, String eMail){
         if(contacts == null) {
             contacts = new ArrayList<>();
         }
@@ -31,7 +31,6 @@ public class ContactManager {
         contact.firstName = firstName;
         contact.lastName = lastName;
         contact.eMail = eMail;
-        contact.phoneNumber = phoneNum;
 
         contacts.add(contact);
     }

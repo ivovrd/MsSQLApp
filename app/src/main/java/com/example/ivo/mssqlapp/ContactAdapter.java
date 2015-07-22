@@ -81,8 +81,7 @@ public class ContactAdapter extends RecyclerView.Adapter {
             Contact contact = contacts.get(i);
             ((ContactViewHolder) viewHolder).firstName.setText(contact.firstName);
             ((ContactViewHolder) viewHolder).lastName.setText(contact.lastName);
-            ((ContactViewHolder) viewHolder).eMail.setText(contact.eMail);
-            ((ContactViewHolder) viewHolder).phoneNum.setText(contact.phoneNumber);
+            //((ContactViewHolder) viewHolder).eMail.setText(contact.eMail);
         }else{
             ((ProgressViewHolder)viewHolder).progressBar.setIndeterminate(true);
         }
@@ -102,14 +101,14 @@ public class ContactAdapter extends RecyclerView.Adapter {
     }
 
     public static class ContactViewHolder extends RecyclerView.ViewHolder{
-        public TextView firstName, lastName, eMail, phoneNum;
+        public TextView firstName, lastName, eMail;
 
         public ContactViewHolder(View itemView) {
             super(itemView);
             firstName = (TextView)itemView.findViewById(R.id.contactFirstName);
             lastName = (TextView)itemView.findViewById(R.id.contactLastName);
-            eMail = (TextView)itemView.findViewById(R.id.contactEmail);
-            phoneNum = (TextView)itemView.findViewById(R.id.contactPhoneNum);
+            //eMail = (TextView)itemView.findViewById(R.id.contactEmail);
+            //phoneNum = (TextView)itemView.findViewById(R.id.contactPhoneNum);
         }
     }
 
