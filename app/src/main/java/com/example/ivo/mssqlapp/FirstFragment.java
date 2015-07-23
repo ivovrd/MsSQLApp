@@ -1,6 +1,7 @@
 package com.example.ivo.mssqlapp;
 
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
@@ -64,6 +65,13 @@ public class FirstFragment extends Fragment{
 
                 AsyncDbConnection asyncDbConnection = new AsyncDbConnection(mAdapter, contacts);
                 asyncDbConnection.execute();
+            }
+        });
+
+        mAdapter.setOnRecyclerViewClickListener(new RecyclerViewClickListener() {
+            @Override
+            public void recyclerViewItemClicked(View view, int position) {
+                Snackbar.make(view, "Item number" + (position + 1) + "clicked", Snackbar.LENGTH_SHORT).show();
             }
         });
 

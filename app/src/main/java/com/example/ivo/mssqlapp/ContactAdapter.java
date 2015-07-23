@@ -23,6 +23,7 @@ public class ContactAdapter extends RecyclerView.Adapter {
     private int lastVisibleItem, totalItemCount;
     private boolean loading;
     private OnLoadMoreListener onLoadMoreListener;
+    private static RecyclerViewClickListener recyclerViewClickListener;
 
     public ContactAdapter(List<Contact> contacts, RecyclerView recyclerView){
         this.contacts = contacts;
@@ -81,7 +82,6 @@ public class ContactAdapter extends RecyclerView.Adapter {
             Contact contact = contacts.get(i);
             ((ContactViewHolder) viewHolder).firstName.setText(contact.firstName);
             ((ContactViewHolder) viewHolder).lastName.setText(contact.lastName);
-            //((ContactViewHolder) viewHolder).eMail.setText(contact.eMail);
         }else{
             ((ProgressViewHolder)viewHolder).progressBar.setIndeterminate(true);
         }
@@ -100,15 +100,23 @@ public class ContactAdapter extends RecyclerView.Adapter {
         this.onLoadMoreListener = onLoadMoreListener;
     }
 
-    public static class ContactViewHolder extends RecyclerView.ViewHolder{
-        public TextView firstName, lastName, eMail;
+    public void setOnRecyclerViewClickListener(RecyclerViewClickListener recyclerViewClickListener){
+        this.recyclerViewClickListener = recyclerViewClickListener;
+    }
+
+    public static class ContactViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+        public TextView firstName, lastName;
 
         public ContactViewHolder(View itemView) {
             super(itemView);
             firstName = (TextView)itemView.findViewById(R.id.contactFirstName);
             lastName = (TextView)itemView.findViewById(R.id.contactLastName);
-            //eMail = (TextView)itemView.findViewById(R.id.contactEmail);
-            //phoneNum = (TextView)itemView.findViewById(R.id.contactPhoneNum);
+            itemView.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View v) {
+            recyclerViewClickListener.recyclerViewItemClicked(v, this.getLayoutPosition());
         }
     }
 
