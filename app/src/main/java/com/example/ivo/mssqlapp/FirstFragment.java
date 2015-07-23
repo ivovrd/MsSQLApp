@@ -71,7 +71,12 @@ public class FirstFragment extends Fragment{
         mAdapter.setOnRecyclerViewClickListener(new RecyclerViewClickListener() {
             @Override
             public void recyclerViewItemClicked(View view, int position) {
-                Snackbar.make(view, "Item number" + (position + 1) + "clicked", Snackbar.LENGTH_SHORT).show();
+                Snackbar.make(view, "Item number " + (position + 1) + " clicked!", Snackbar.LENGTH_LONG).setAction("CLOSE", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+
+                    }
+                }).show();
             }
         });
 
