@@ -11,7 +11,7 @@ import java.sql.SQLException;
  * Created by Ivo on 6.7.2015..
  */
 public class DatabaseConnection {
-    private static String ipaddress = "192.168.2.14";
+    private static String ipaddress = "109.60.31.201";
     private static String database = "Baza01";
     private static String username = "admin";
     private static String password = "admin123";
