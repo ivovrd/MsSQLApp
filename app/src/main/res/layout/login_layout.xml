@@ -15,7 +15,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_marginTop="10dp"
-        android:text="MsSQL Login"
+        android:text="Pivis login"
         android:textSize="25sp" />
 
     <EditText

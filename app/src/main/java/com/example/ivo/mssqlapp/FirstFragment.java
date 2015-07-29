@@ -62,9 +62,7 @@ public class FirstFragment extends Fragment{
                 contacts = ContactManager.getInstance().getContacts();
                 contacts.add(null);
                 mAdapter.notifyItemInserted(contacts.size() - 1);
-
-                AsyncDbConnection asyncDbConnection = new AsyncDbConnection(mAdapter, contacts);
-                asyncDbConnection.execute();
+                new AsyncDbConnection(mAdapter, contacts).execute();
             }
         });
 

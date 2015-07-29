@@ -46,7 +46,7 @@ public class Login extends AppCompatActivity {
                 try{
                     connect = DatabaseConnection.Connect();
                     statement = connect.createStatement();
-                    ResultSet resultSet = statement.executeQuery("select * from login where userid='" + editName.getText().toString() + "' and password='" + editPass.getText().toString() + "'");
+                    ResultSet resultSet = statement.executeQuery("select * from Korisnik where KorisnickoIme='" + editName.getText().toString() + "' and Lozinka='" + editPass.getText().toString() + "'");
 
                     if(resultSet != null && resultSet.next()){
                         Intent intent = new Intent(Login.this, MainActivity.class);

@@ -38,7 +38,6 @@ public class MainActivity extends AppCompatActivity {
 
         //Set the menu icon instead of the launcher icon
         ActionBar actionBar = getSupportActionBar();
-        //actionBar.setHomeAsUpIndicator(R.drawable.ic_menu_white_24dp);
         if(actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
