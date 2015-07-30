@@ -25,6 +25,7 @@ public class Login extends AppCompatActivity {
     Connection connect;
     Statement statement;
     Toolbar toolbar;
+    SessionManager session;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,7 +39,8 @@ public class Login extends AppCompatActivity {
         errorLbl = (TextView)findViewById(R.id.lblerror);
         editName = (EditText)findViewById(R.id.txtname);
         editPass = (EditText)findViewById(R.id.txtpassword);
-        connect = DatabaseConnection.Connect();
+
+        session = new SessionManager(getApplicationContext());
 
         loginBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -49,8 +51,10 @@ public class Login extends AppCompatActivity {
                     ResultSet resultSet = statement.executeQuery("select * from Korisnik where KorisnickoIme='" + editName.getText().toString() + "' and Lozinka='" + editPass.getText().toString() + "'");
 
                     if(resultSet != null && resultSet.next()){
+                        session.loginUser(editName.getText().toString());
                         Intent intent = new Intent(Login.this, MainActivity.class);
                         startActivity(intent);
+                        finish();
                     }else{
                         errorLbl.setText("Sorry, wrong credidentials!");
                     }

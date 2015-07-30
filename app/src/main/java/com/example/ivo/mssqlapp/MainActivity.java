@@ -23,6 +23,7 @@ public class MainActivity extends AppCompatActivity {
     private NavigationView navigationView;
     private FragmentManager fragmentManager;
     private ActionBarDrawerToggle drawerToggle;
+    SessionManager session;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,6 +32,9 @@ public class MainActivity extends AppCompatActivity {
 
         toolbar = (Toolbar)findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        session = new SessionManager(getApplicationContext());
+        session.checkLogin();
 
         mDrawer = (DrawerLayout)findViewById(R.id.drawer_layout);
         drawerToggle = setupDrawerToggle();
