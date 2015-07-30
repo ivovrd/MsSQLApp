@@ -51,7 +51,7 @@ public class Login extends AppCompatActivity {
                     ResultSet resultSet = statement.executeQuery("select * from Korisnik where KorisnickoIme='" + editName.getText().toString() + "' and Lozinka='" + editPass.getText().toString() + "'");
 
                     if(resultSet != null && resultSet.next()){
-                        session.loginUser(editName.getText().toString());
+                        session.loginUser(resultSet.getString("KorisnickoIme"), resultSet.getString("Ime"), resultSet.getString("Prezime"));
                         Intent intent = new Intent(Login.this, MainActivity.class);
                         startActivity(intent);
                         finish();
@@ -80,7 +80,7 @@ public class Login extends AppCompatActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_logout) {
             return true;
         }
 
