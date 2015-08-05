@@ -26,7 +26,6 @@ public class AsyncDbConnection extends AsyncTask<Void, Void, ResultSet> {
 
     @Override
     protected void onPreExecute() {
-
         start = contacts.size();
         end = start + 9;
         super.onPreExecute();
