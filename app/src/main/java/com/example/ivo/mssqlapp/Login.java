@@ -25,8 +25,6 @@ public class Login extends AppCompatActivity {
     Button loginBtn;
     TextView errorLbl;
     EditText editName, editPass;
-    //Connection connect;
-    //Statement statement;
     Toolbar toolbar;
     SessionManager session;
 
