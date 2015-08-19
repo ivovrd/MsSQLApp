@@ -1,14 +1,17 @@
 package com.example.ivo.mssqlapp;
 
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -22,9 +25,8 @@ public class Login extends AppCompatActivity {
     Button loginBtn;
     TextView errorLbl;
     EditText editName, editPass;
-    Connection connect;
-    Statement statement;
     Toolbar toolbar;
+    SessionManager session;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,25 +40,15 @@ public class Login extends AppCompatActivity {
         errorLbl = (TextView)findViewById(R.id.lblerror);
         editName = (EditText)findViewById(R.id.txtname);
         editPass = (EditText)findViewById(R.id.txtpassword);
-        connect = DatabaseConnection.Connect();
+
+        session = new SessionManager(getApplicationContext());
 
         loginBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                try{
-                    connect = DatabaseConnection.Connect();
-                    statement = connect.createStatement();
-                    ResultSet resultSet = statement.executeQuery("select * from Korisnik where KorisnickoIme='" + editName.getText().toString() + "' and Lozinka='" + editPass.getText().toString() + "'");
-
-                    if(resultSet != null && resultSet.next()){
-                        Intent intent = new Intent(Login.this, MainActivity.class);
-                        startActivity(intent);
-                    }else{
-                        errorLbl.setText("Sorry, wrong credidentials!");
-                    }
-                }catch(SQLException e){
-                    errorLbl.setText(e.getMessage());
-                }
+                String name = editName.getText().toString();
+                String pass = editPass.getText().toString();
+                new AsyncLogin(name, pass).execute();
             }
         });
     }
@@ -76,10 +68,66 @@ public class Login extends AppCompatActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_logout) {
             return true;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public class AsyncLogin extends AsyncTask<Void, Void, ResultSet>{
+        Connection connect;
+        Statement statement;
+        String name, pass;
+        LinearLayout linProgBar = (LinearLayout)findViewById(R.id.linProgBar);
+
+        public AsyncLogin(String name, String pass){
+            this.name = name;
+            this.pass = pass;
+        }
+
+        @Override
+        protected ResultSet doInBackground(Void... params) {
+            ResultSet result = null;
+
+            try{
+                connect = DatabaseConnection.Connect();
+                statement = connect.createStatement();
+                result = statement.executeQuery("select * from Korisnik where KorisnickoIme='" + name + "' and Lozinka='" + pass + "'");
+            }catch(SQLException e){
+                Log.e("SQL error", e.getMessage());
+            }
+
+            if(result != null) {
+                return result;
+            }else{
+                return null;
+            }
+        }
+
+        @Override
+        protected void onPreExecute() {
+            linProgBar.setVisibility(View.VISIBLE);
+            super.onPreExecute();
+        }
+
+        @Override
+        protected void onPostExecute(ResultSet resultSet) {
+            linProgBar.setVisibility(View.GONE);
+            try {
+                if (resultSet != null && resultSet.next()) {
+                    session.loginUser(resultSet.getString("KorisnickoIme"), resultSet.getString("Ime"), resultSet.getString("Prezime"));
+                    Intent intent = new Intent(Login.this, MainActivity.class);
+                    startActivity(intent);
+                    finish();
+                } else {
+                    errorLbl.setText("Sorry, wrong credidentials!");
+                }
+            }catch (SQLException e){
+                Log.e("SQL error", e.getMessage());
+            }
+
+            super.onPostExecute(resultSet);
+        }
     }
 }

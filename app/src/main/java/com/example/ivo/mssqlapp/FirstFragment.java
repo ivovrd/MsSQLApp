@@ -31,6 +31,7 @@ public class FirstFragment extends Fragment{
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
 
+
         try{
             connect = DatabaseConnection.Connect();
             statement = connect.createStatement();
