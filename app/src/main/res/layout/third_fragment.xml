@@ -45,13 +45,17 @@
                 android:layout_weight="1"
                 android:layout_height="wrap_content"
                 android:inputType="date"
-                android:id="@+id/editText" />
+                android:id="@+id/editDateFrom"
+                android:focusable="false"
+                android:clickable="true" />
 
             <EditText
                 android:layout_weight="1"
                 android:layout_height="wrap_content"
                 android:inputType="date"
-                android:id="@+id/editText2" />
+                android:id="@+id/editDateTo"
+                android:focusable="false"
+                android:clickable="true" />
         </TableRow>
         <TableRow>
             <TextView
@@ -122,8 +126,7 @@
             android:id="@+id/button"
             android:layout_alignParentTop="true"
             android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true"
-            android:onClick="showDatePickerDialog" />
+            android:layout_alignParentEnd="true" />
     </RelativeLayout>
 
 </LinearLayout>

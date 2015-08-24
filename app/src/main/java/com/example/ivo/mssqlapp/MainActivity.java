@@ -153,9 +153,4 @@ public class MainActivity extends AppCompatActivity {
     private ActionBarDrawerToggle setupDrawerToggle(){
         return new ActionBarDrawerToggle(this, mDrawer, R.string.drawer_open, R.string.drawer_close);
     }
-
-    public void showDatePickerDialog(View v){
-        DialogFragment newFragment = new ThirdFragment.DatePickerFragment();
-        newFragment.show(getFragmentManager(), "datePicker");
-    }
 }
