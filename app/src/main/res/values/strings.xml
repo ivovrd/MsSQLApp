@@ -5,4 +5,13 @@
     <string name="action_logout">Logout</string>
     <string name="drawer_open">Open navigation drawer</string>
     <string name="drawer_close">Close navigation drawer</string>
+    <string name="ovlastenik">Ovlaštenik</string>
+    <string name="year">Godina</string>
+    <string name="date_from">Datum od</string>
+    <string name="date_to">Datum do</string>
+    <string name="days">Trajanje dana</string>
+    <string name="work_days">Trajanje radnih dana</string>
+    <string name="napomena">Napomena</string>
+    <string name="memo">Memo</string>
+    <string name="finalize">Zaključi</string>
 </resources>

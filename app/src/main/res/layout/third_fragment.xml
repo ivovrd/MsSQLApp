@@ -3,4 +3,127 @@
     android:layout_width="match_parent" android:layout_height="match_parent"
     android:orientation="vertical" >
 
+    <TableLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal">
+
+        <TableRow>
+            <TextView
+                android:text="@string/ovlastenik"
+                android:layout_weight="2"/>
+            <TextView
+                android:text="@string/year"
+                android:layout_weight="1"/>
+        </TableRow>
+        <TableRow>
+            <Spinner
+
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:id="@+id/spinner" />
+
+            <EditText
+
+                android:layout_height="wrap_content"
+                android:inputType="number"
+                android:id="@+id/editYear"
+                android:layout_weight="1" />
+
+        </TableRow>
+        <TableRow>
+            <TextView
+                android:text="@string/date_from"
+                android:layout_weight="1"/>
+            <TextView
+                android:text="@string/date_to"
+                android:layout_weight="1"/>
+        </TableRow>
+        <TableRow>
+
+            <EditText
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:inputType="date"
+                android:id="@+id/editText" />
+
+            <EditText
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:inputType="date"
+                android:id="@+id/editText2" />
+        </TableRow>
+        <TableRow>
+            <TextView
+                android:text="@string/days"
+                android:layout_weight="1"/>
+            <TextView
+                android:text="@string/work_days"
+                android:layout_weight="1"/>
+        </TableRow>
+        <TableRow>
+
+            <EditText
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:inputType="number"
+                android:id="@+id/editText3" />
+
+            <EditText
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:inputType="number"
+                android:id="@+id/editText4" />
+        </TableRow>
+    </TableLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/napomena"/>
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="textMultiLine"
+        android:ems="10"
+        android:id="@+id/editText5" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/memo"/>
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="textMultiLine"
+        android:ems="10"
+        android:id="@+id/editText6" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <Switch
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Zaključi "
+            android:id="@+id/switch1"
+            android:layout_centerVertical="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Spremi"
+            android:id="@+id/button"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:onClick="showDatePickerDialog" />
+    </RelativeLayout>
+
 </LinearLayout>

@@ -1,5 +1,6 @@
 package com.example.ivo.mssqlapp;
 
+import android.app.DialogFragment;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
@@ -12,6 +13,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.TextView;
 
 import java.util.HashMap;
@@ -150,5 +152,10 @@ public class MainActivity extends AppCompatActivity {
 
     private ActionBarDrawerToggle setupDrawerToggle(){
         return new ActionBarDrawerToggle(this, mDrawer, R.string.drawer_open, R.string.drawer_close);
+    }
+
+    public void showDatePickerDialog(View v){
+        DialogFragment newFragment = new ThirdFragment.DatePickerFragment();
+        newFragment.show(getFragmentManager(), "datePicker");
     }
 }
