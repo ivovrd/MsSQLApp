@@ -3,12 +3,19 @@ package com.example.ivo.mssqlapp;
 import android.app.DatePickerDialog;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ListAdapter;
 
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
@@ -20,6 +27,26 @@ public class ThirdFragment extends Fragment implements View.OnClickListener{
     private EditText dateFrom, dateTo;
     private DatePickerDialog dateFromPickerDialog, dateToPickerDialog;
     private SimpleDateFormat dateFormat;
+    private Connection connect;
+    private Statement statement;
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        try{
+            connect = DatabaseConnection.Connect();
+            statement = connect.createStatement();
+            ResultSet resultSet = statement.executeQuery("select Id, Naziv from Sifrarnici.Partner");
+            while (resultSet.next()){
+                OvlastenikManager.getInstance().setOvlastenici(resultSet.getInt("Id"), resultSet.getString("Naziv"));
+            }
+        }catch (SQLException e){
+            Log.e("SQL error", e.getMessage());
+        }
+
+
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {

@@ -9,5 +9,4 @@ public class Contact implements Serializable{
     public String firstName;
     public String lastName;
     public String eMail;
-    public String phoneNumber;
 }
