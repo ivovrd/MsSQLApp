@@ -11,12 +11,14 @@ import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ListAdapter;
+import android.widget.Spinner;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Locale;
 
@@ -29,18 +31,22 @@ public class ThirdFragment extends Fragment implements View.OnClickListener{
     private SimpleDateFormat dateFormat;
     private Connection connect;
     private Statement statement;
+    private Spinner spinner;
+    private ArrayList<String> ovlastenici;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        ovlastenici = new ArrayList<>();
         try{
             connect = DatabaseConnection.Connect();
             statement = connect.createStatement();
             ResultSet resultSet = statement.executeQuery("select Id, Naziv from Sifrarnici.Partner");
             while (resultSet.next()){
-                OvlastenikManager.getInstance().setOvlastenici(resultSet.getInt("Id"), resultSet.getString("Naziv"));
+                ovlastenici.add(resultSet.getString("Naziv"));
             }
+
         }catch (SQLException e){
             Log.e("SQL error", e.getMessage());
         }
@@ -51,6 +57,12 @@ public class ThirdFragment extends Fragment implements View.OnClickListener{
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view =  inflater.inflate(R.layout.third_fragment, container, false);
+
+        spinner = (Spinner)view.findViewById(R.id.spinner);
+        ArrayAdapter adapter = new ArrayAdapter(getActivity(), android.R.layout.simple_spinner_dropdown_item, ovlastenici);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(adapter);
+
         dateFormat = new SimpleDateFormat("dd.MM.yyyy", Locale.ENGLISH);
         dateFrom = (EditText)view.findViewById(R.id.editDateFrom);
         dateTo = (EditText)view.findViewById(R.id.editDateTo);
