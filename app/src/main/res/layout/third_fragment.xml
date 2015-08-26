@@ -71,13 +71,13 @@
                 android:layout_weight="1"
                 android:layout_height="wrap_content"
                 android:inputType="number"
-                android:id="@+id/editText3" />
+                android:id="@+id/daysCount" />
 
             <EditText
                 android:layout_weight="1"
                 android:layout_height="wrap_content"
                 android:inputType="number"
-                android:id="@+id/editText4" />
+                android:id="@+id/workDaysCount" />
         </TableRow>
     </TableLayout>
 
