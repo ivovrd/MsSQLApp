@@ -10,10 +10,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ListAdapter;
 import android.widget.Spinner;
+import android.widget.Switch;
+import android.widget.Toast;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -28,16 +31,18 @@ import java.util.Locale;
  * Created by Ivo on 1.7.2015..
  */
 public class ThirdFragment extends Fragment implements View.OnClickListener{
-    private EditText dateFrom, dateTo;
+    private EditText year, dateFrom, dateTo, daysCount, workDaysCount, remark, memo;
     private DatePickerDialog dateFromPickerDialog, dateToPickerDialog;
     private SimpleDateFormat dateFormat;
     private Connection connect;
     private Statement statement;
     private Spinner spinner;
-    private EditText daysCount, workDaysCount;
+    private Switch switchLock;
+    private Button buttonSave;
     private ArrayList<Ovlastenik> ovlastenici;
     private int ovlastenikPickedIndex;
     private long from, to, diff = 0;
+    private boolean yearSet = false, dateFromSet = false, dateToSet = false, workDaysSet = false;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -64,11 +69,16 @@ public class ThirdFragment extends Fragment implements View.OnClickListener{
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         final View view =  inflater.inflate(R.layout.third_fragment, container, false);
         spinner = (Spinner)view.findViewById(R.id.spinner);
+        year = (EditText)view.findViewById(R.id.editYear);
         dateFormat = new SimpleDateFormat("dd.MM.yyyy", Locale.ENGLISH);
         dateFrom = (EditText)view.findViewById(R.id.editDateFrom);
         dateTo = (EditText)view.findViewById(R.id.editDateTo);
         daysCount = (EditText)view.findViewById(R.id.daysCount);
         workDaysCount = (EditText)view.findViewById(R.id.workDaysCount);
+        remark = (EditText)view.findViewById(R.id.editRemark);
+        memo = (EditText)view.findViewById(R.id.editMemo);
+        switchLock = (Switch)view.findViewById(R.id.switchLock);
+        buttonSave = (Button)view.findViewById(R.id.buttonSave);
 
         fillSpinner();
         setDateFields();
@@ -86,15 +96,41 @@ public class ThirdFragment extends Fragment implements View.OnClickListener{
             }
         });
 
+        year.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!hasFocus && year.getText().toString().trim().length() == 4) {
+                    yearSet = true;
+                }
+            }
+        });
+
         workDaysCount.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
                 if(!hasFocus){
                     int daysWork = Integer.valueOf(workDaysCount.getText().toString());
                     int days = (int)diff;
-                    if(days - daysWork < 0){
-                        Snackbar.make(view, "Višak radnih dana!!!", Snackbar.LENGTH_LONG).show();
+                    if(days - daysWork >= 0){
+                        workDaysSet = true;
                     }
+                }
+            }
+        });
+
+        buttonSave.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(!yearSet){
+                    Snackbar.make(view, "Nije unesena godina!", Snackbar.LENGTH_LONG).show();
+                } else if (!dateFromSet){
+                    Snackbar.make(view, "Nije unesen datum početka godišnjeg!", Snackbar.LENGTH_LONG).show();
+                } else if (!dateToSet){
+                    Snackbar.make(view, "Nije unesen datum završetka godišnjeg!", Snackbar.LENGTH_LONG).show();
+                } else if (!workDaysSet){
+                    Snackbar.make(view, "Nije unesen broj radnih dana!", Snackbar.LENGTH_LONG).show();
+                } else{
+
                 }
             }
         });
@@ -120,6 +156,7 @@ public class ThirdFragment extends Fragment implements View.OnClickListener{
                 Calendar newDate = Calendar.getInstance();
                 newDate.set(year, monthOfYear, dayOfMonth);
                 dateFrom.setText(dateFormat.format(newDate.getTime()));
+                dateFromSet = true;
                 from = newDate.getTimeInMillis();
                 diff = (to - from)/(24*60*60*1000);
                 if(diff >= 0)
@@ -133,6 +170,7 @@ public class ThirdFragment extends Fragment implements View.OnClickListener{
                 Calendar newDate = Calendar.getInstance();
                 newDate.set(year, monthOfYear, dayOfMonth);
                 dateTo.setText(dateFormat.format(newDate.getTime()));
+                dateToSet = true;
                 to = newDate.getTimeInMillis();
                 diff = (to - from)/(24*60*60*1000);
                 if(diff >= 0)
