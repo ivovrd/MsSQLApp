@@ -93,7 +93,7 @@ public class Login extends AppCompatActivity {
             try{
                 connect = DatabaseConnection.Connect();
                 statement = connect.createStatement();
-                result = statement.executeQuery("SELECT Sifrarnici.Partner.Id, Korisnik.KorisnickoIme, Korisnik.Ime, Korisnik.Prezime FROM Korisnik INNER JOIN Sifrarnici.Partner ON Korisnik.OIB=Sifrarnici.Partner.OIB where Korisnik.KorisnickoIme='" + name + "' and Korisnik.Lozinka='" + pass + "'");
+                result = statement.executeQuery("SELECT Sifrarnici.Partner.Id, Korisnik.Id, Korisnik.KorisnickoIme, Korisnik.Ime, Korisnik.Prezime FROM Korisnik INNER JOIN Sifrarnici.Partner ON Korisnik.OIB=Sifrarnici.Partner.OIB where Korisnik.KorisnickoIme='" + name + "' and Korisnik.Lozinka='" + pass + "'");
             }catch(SQLException e){
                 Log.e("SQL error", e.getMessage());
             }
@@ -116,7 +116,7 @@ public class Login extends AppCompatActivity {
             linProgBar.setVisibility(View.GONE);
             try {
                 if (resultSet != null && resultSet.next()) {
-                    session.loginUser(resultSet.getString("KorisnickoIme"), resultSet.getString("Ime"), resultSet.getString("Prezime"), Integer.toString(resultSet.getInt("Id")));
+                    session.loginUser(resultSet.getString("KorisnickoIme"), resultSet.getString("Ime"), resultSet.getString("Prezime"), Integer.toString(resultSet.getInt("Id")), Integer.toString(resultSet.getInt(2)));
                     Intent intent = new Intent(Login.this, MainActivity.class);
                     startActivity(intent);
                     finish();

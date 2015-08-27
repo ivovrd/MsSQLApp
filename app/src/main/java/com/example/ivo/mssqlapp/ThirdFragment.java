@@ -43,7 +43,7 @@ public class ThirdFragment extends Fragment implements View.OnClickListener{
     private ArrayList<Ovlastenik> ovlastenici;
     private int ovlastenikPickedIndex, isLocked;
     private long from, to, diff = 0;
-    private boolean yearSet = false, dateFromSet = false, dateToSet = false, workDaysSet = false;
+    private boolean yearSet = false, dateFromSet = false, dateToSet = false;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -106,30 +106,21 @@ public class ThirdFragment extends Fragment implements View.OnClickListener{
             }
         });
 
-        workDaysCount.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if(!hasFocus){
-                    int daysWork = Integer.valueOf(workDaysCount.getText().toString());
-                    int days = (int)diff;
-                    if(days - daysWork >= 0){
-                        workDaysSet = true;
-                    }
-                }
-            }
-        });
-
         buttonSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                int daysWork = Integer.valueOf(workDaysCount.getText().toString());
+                int days = (int)diff;
+
+
                 if (!yearSet) {
-                    makeWarningSnackbar(view, "Nije unesena godina!");
+                    makeWarningSnackbar(view, "Nije unesena točna godina!");
                 } else if (!dateFromSet) {
                     makeWarningSnackbar(view, "Nije unesen datum početka godišnjeg!");
                 } else if (!dateToSet) {
                     makeWarningSnackbar(view, "Nije unesen datum završetka godišnjeg!");
-                } else if (!workDaysSet) {
-                    makeWarningSnackbar(view, "Nije unesen broj radnih dana!");
+                } else if (days - daysWork < 0) {
+                    makeWarningSnackbar(view, "Nije unesen točan broj radnih dana!");
                 } else {
 
                 }

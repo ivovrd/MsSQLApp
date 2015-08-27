@@ -41,10 +41,11 @@ public class MainActivity extends AppCompatActivity {
         String userFirstName = user.get(SessionManager.KEY_FIRST_NAME);
         String userLastName = user.get(SessionManager.KEY_LAST_NAME);
         String userPartnerId = user.get(SessionManager.KEY_PARTNER_ID);
+        String userId = user.get(SessionManager.KEY_USER_ID);
 
         mDrawer = (DrawerLayout)findViewById(R.id.drawer_layout);
         userDetails = (TextView)findViewById(R.id.userName);
-        userDetails.setText(userFirstName + " " + userLastName + "  " + userPartnerId);
+        userDetails.setText(userFirstName + " " + userLastName + "  " + userPartnerId + "   " + userId);
         drawerToggle = setupDrawerToggle();
         mDrawer.setDrawerListener(drawerToggle);
 
