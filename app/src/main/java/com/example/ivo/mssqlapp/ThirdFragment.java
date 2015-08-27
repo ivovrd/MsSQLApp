@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ListAdapter;
@@ -40,7 +41,7 @@ public class ThirdFragment extends Fragment implements View.OnClickListener{
     private Switch switchLock;
     private Button buttonSave;
     private ArrayList<Ovlastenik> ovlastenici;
-    private int ovlastenikPickedIndex;
+    private int ovlastenikPickedIndex, isLocked;
     private long from, to, diff = 0;
     private boolean yearSet = false, dateFromSet = false, dateToSet = false, workDaysSet = false;
 
@@ -121,16 +122,27 @@ public class ThirdFragment extends Fragment implements View.OnClickListener{
         buttonSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(!yearSet){
-                    Snackbar.make(view, "Nije unesena godina!", Snackbar.LENGTH_LONG).show();
-                } else if (!dateFromSet){
-                    Snackbar.make(view, "Nije unesen datum početka godišnjeg!", Snackbar.LENGTH_LONG).show();
-                } else if (!dateToSet){
-                    Snackbar.make(view, "Nije unesen datum završetka godišnjeg!", Snackbar.LENGTH_LONG).show();
-                } else if (!workDaysSet){
-                    Snackbar.make(view, "Nije unesen broj radnih dana!", Snackbar.LENGTH_LONG).show();
-                } else{
+                if (!yearSet) {
+                    makeWarningSnackbar(view, "Nije unesena godina!");
+                } else if (!dateFromSet) {
+                    makeWarningSnackbar(view, "Nije unesen datum početka godišnjeg!");
+                } else if (!dateToSet) {
+                    makeWarningSnackbar(view, "Nije unesen datum završetka godišnjeg!");
+                } else if (!workDaysSet) {
+                    makeWarningSnackbar(view, "Nije unesen broj radnih dana!");
+                } else {
 
+                }
+            }
+        });
+
+        switchLock.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(isChecked){
+                    isLocked = 1;
+                } else {
+                    isLocked = 0;
                 }
             }
         });
@@ -189,5 +201,9 @@ public class ThirdFragment extends Fragment implements View.OnClickListener{
         ArrayAdapter<String> adapter = new ArrayAdapter(getActivity(), android.R.layout.simple_spinner_dropdown_item, labels);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
+    }
+
+    private void makeWarningSnackbar(View view,String warning){
+        Snackbar.make(view, warning, Snackbar.LENGTH_LONG).show();
     }
 }

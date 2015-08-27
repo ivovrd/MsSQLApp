@@ -19,6 +19,7 @@ public class SessionManager {
     public static final String KEY_USER_NAME = "userName";
     public static final String KEY_FIRST_NAME = "name";
     public static final String KEY_LAST_NAME = "lastName";
+    public static final String KEY_PARTNER_ID = "partnerId";
 
     public SessionManager(Context context){
         this.mContext = context;
@@ -26,11 +27,12 @@ public class SessionManager {
         editor = sharedPreferences.edit();
     }
 
-    public void loginUser(String userName, String name, String lastName){
+    public void loginUser(String userName, String name, String lastName, String partnerId){
         editor.putBoolean(IS_LOGIN, true);
         editor.putString(KEY_USER_NAME, userName);
         editor.putString(KEY_FIRST_NAME, name);
         editor.putString(KEY_LAST_NAME, lastName);
+        editor.putString(KEY_PARTNER_ID, partnerId);
         editor.commit();
     }
 
@@ -39,6 +41,7 @@ public class SessionManager {
         user.put(KEY_USER_NAME, sharedPreferences.getString(KEY_USER_NAME, null));
         user.put(KEY_FIRST_NAME, sharedPreferences.getString(KEY_FIRST_NAME, null));
         user.put(KEY_LAST_NAME, sharedPreferences.getString(KEY_LAST_NAME, null));
+        user.put(KEY_PARTNER_ID, sharedPreferences.getString(KEY_PARTNER_ID, null));
         return user;
     }
 

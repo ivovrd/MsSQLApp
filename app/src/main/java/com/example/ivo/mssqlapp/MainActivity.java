@@ -1,6 +1,5 @@
 package com.example.ivo.mssqlapp;
 
-import android.app.DialogFragment;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
@@ -13,7 +12,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.TextView;
 
 import java.util.HashMap;
@@ -42,10 +40,11 @@ public class MainActivity extends AppCompatActivity {
         HashMap<String, String> user = session.getUserDetails();
         String userFirstName = user.get(SessionManager.KEY_FIRST_NAME);
         String userLastName = user.get(SessionManager.KEY_LAST_NAME);
+        String userPartnerId = user.get(SessionManager.KEY_PARTNER_ID);
 
         mDrawer = (DrawerLayout)findViewById(R.id.drawer_layout);
         userDetails = (TextView)findViewById(R.id.userName);
-        userDetails.setText(userFirstName + " " + userLastName);
+        userDetails.setText(userFirstName + " " + userLastName + "  " + userPartnerId);
         drawerToggle = setupDrawerToggle();
         mDrawer.setDrawerListener(drawerToggle);
 
