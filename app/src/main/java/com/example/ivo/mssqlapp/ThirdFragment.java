@@ -1,6 +1,7 @@
 package com.example.ivo.mssqlapp;
 
 import android.app.DatePickerDialog;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
@@ -44,6 +45,14 @@ public class ThirdFragment extends Fragment implements View.OnClickListener{
     private int ovlastenikPickedIndex, isLocked;
     private long from, to, diff = 0;
     private boolean yearSet = false, dateFromSet = false, dateToSet = false;
+    private DocumentData document;
+    private SharedPreferences sharedPreferences;
+    private int PRIVATE_MODE = 0;
+    private static final String PREF_NAME = "UserLoginData";
+    public static final String KEY_PARTNER_ID = "partnerId";
+    public static final String KEY_USER_ID = "userId";
+    private String datum = "20150820";
+    private String napomena = "", memo2 = "";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -122,7 +131,16 @@ public class ThirdFragment extends Fragment implements View.OnClickListener{
                 } else if (days - daysWork < 0) {
                     makeWarningSnackbar(view, "Nije unesen točan broj radnih dana!");
                 } else {
-
+                    sharedPreferences = getActivity().getSharedPreferences(PREF_NAME, PRIVATE_MODE);
+                    int userId = Integer.valueOf(sharedPreferences.getString(KEY_USER_ID, null));
+                    int partnerId = Integer.valueOf(sharedPreferences.getString(KEY_PARTNER_ID, null));
+                    String tempDate1 = dateFrom.getText().toString();
+                    tempDate1 = tempDate1 + ".";
+                    String tempDate2 = dateTo.getText().toString();
+                    tempDate2 = tempDate2 + ".";
+                    document = new DocumentData(103155, 103, partnerId, partnerId, userId, isLocked, Integer.valueOf(daysCount.getText().toString()), Integer.valueOf(workDaysCount.getText().toString()), datum, datum, datum, napomena, memo2);
+                    new AsyncSavingDocument(document, view).execute();
+                    Snackbar.make(view, tempDate1, Snackbar.LENGTH_LONG).show();
                 }
             }
         });
