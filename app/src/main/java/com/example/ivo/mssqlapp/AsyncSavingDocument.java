@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.View;
 
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
@@ -17,6 +18,7 @@ public class AsyncSavingDocument extends AsyncTask<Void, Void, Void> {
     Statement statement;
     DocumentData newDocument;
     View view;
+    ResultSet resultSet;
 
     public AsyncSavingDocument(DocumentData document, View view){
         this.newDocument = document;
@@ -28,7 +30,7 @@ public class AsyncSavingDocument extends AsyncTask<Void, Void, Void> {
         try{
             connect = DatabaseConnection.Connect();
             statement = connect.createStatement();
-            statement.executeQuery("insert into UpravljanjeLjudskimResursima.Dokument (Sifra, TipDokumentaSifra, ZaposlenikId, OvlastenikId, Datum, Napomena, Memo, DatumOd, DatumDo, KorisnikId, KorisnikLastId, Status, TrajanjeDana, TrajanjeRadnihDana) values (" + newDocument.Sifra + ", " + newDocument.TipDokumenta + ", " + newDocument.ZaposlenikId + ", " + newDocument.OvlastenikId + ", " + "convert(datetime, " + newDocument.Datum + ", 5)" + ", " + newDocument.Napomena + ", " + newDocument.Memo + ", " + "convert(datetime, " + newDocument.DatumOd + ", 5)" + ", " + "convert(datetime, " + newDocument.DatumDo + ", 5)" + ", " + newDocument.KorisnikId + ", " + newDocument.KorisnikId + ", " + newDocument.Status + ", " + newDocument.Dani + ", " + newDocument.RadniDani + ")");
+            statement.executeUpdate("insert into UpravljanjeLjudskimResursima.Dokument (Sifra, TipDokumentaSifra, ZaposlenikId, OvlastenikId, Datum, DatumOd, DatumDo, KorisnikId, KorisnikLastId, Status, TrajanjeDana, TrajanjeRadnihDana) values ('103159', '103', 12491, 12492, '20150829', '20150829', '20150829', 83, 83, 0, 1, 1)");
         }catch(SQLException e){
             Log.e("SQL error", e.getMessage());
         }

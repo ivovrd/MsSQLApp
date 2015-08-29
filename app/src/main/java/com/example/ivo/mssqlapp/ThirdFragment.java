@@ -20,6 +20,7 @@ import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.Toast;
 
+import java.nio.charset.Charset;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -51,8 +52,9 @@ public class ThirdFragment extends Fragment implements View.OnClickListener{
     private static final String PREF_NAME = "UserLoginData";
     public static final String KEY_PARTNER_ID = "partnerId";
     public static final String KEY_USER_ID = "userId";
-    private String datum = "20150820";
-    private String napomena = "", memo2 = "";
+    private String datum = "20150829";
+    private String napomena = "'nesto'", memo2 = "'nestooo'";
+    private byte[] memo22 = memo2.getBytes(Charset.forName("ASCII"));
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -138,7 +140,7 @@ public class ThirdFragment extends Fragment implements View.OnClickListener{
                     tempDate1 = tempDate1 + ".";
                     String tempDate2 = dateTo.getText().toString();
                     tempDate2 = tempDate2 + ".";
-                    document = new DocumentData(103155, 103, partnerId, partnerId, userId, isLocked, Integer.valueOf(daysCount.getText().toString()), Integer.valueOf(workDaysCount.getText().toString()), datum, datum, datum, napomena, memo2);
+                    document = new DocumentData("103157", "103", partnerId, partnerId, userId, isLocked, Integer.valueOf(daysCount.getText().toString()), Integer.valueOf(workDaysCount.getText().toString()), datum, datum, datum, napomena, memo22);
                     new AsyncSavingDocument(document, view).execute();
                     Snackbar.make(view, tempDate1, Snackbar.LENGTH_LONG).show();
                 }
