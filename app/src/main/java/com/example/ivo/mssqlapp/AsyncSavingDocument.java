@@ -30,7 +30,7 @@ public class AsyncSavingDocument extends AsyncTask<Void, Void, Void> {
         try{
             connect = DatabaseConnection.Connect();
             statement = connect.createStatement();
-            statement.executeUpdate("insert into UpravljanjeLjudskimResursima.Dokument (Sifra, TipDokumentaSifra, ZaposlenikId, OvlastenikId, Datum, DatumOd, DatumDo, KorisnikId, KorisnikLastId, Status, TrajanjeDana, TrajanjeRadnihDana) values ('103159', '103', 12491, 12492, '20150829', '20150829', '20150829', 83, 83, 0, 1, 1)");
+            statement.executeUpdate("insert into UpravljanjeLjudskimResursima.Dokument (Sifra, TipDokumentaSifra, ZaposlenikId, OvlastenikId, Datum, Napomena, Memo, DatumOd, DatumDo, KorisnikId, KorisnikLastId, Status, TrajanjeDana, TrajanjeRadnihDana) values (" + newDocument.Sifra + ", " + newDocument.TipDokumenta + ", " + newDocument.ZaposlenikId +  ", " + newDocument.OvlastenikId + ", CURRENT_TIMESTAMP, " + newDocument.Napomena + ", " + newDocument.Memo + ", " + newDocument.DatumOd + ", " + newDocument.DatumDo + ", " + newDocument.KorisnikId + ", " + newDocument.KorisnikId + ", " + newDocument.Status + ", " + newDocument.Dani + ", " + newDocument.RadniDani + ")");
         }catch(SQLException e){
             Log.e("SQL error", e.getMessage());
         }
@@ -47,6 +47,6 @@ public class AsyncSavingDocument extends AsyncTask<Void, Void, Void> {
     protected void onPostExecute(Void aVoid) {
         super.onPostExecute(aVoid);
 
-        //Snackbar.make(view, "Dokument spremljen", Snackbar.LENGTH_LONG).show();
+        Snackbar.make(view, "Dokument spremljen", Snackbar.LENGTH_LONG).show();
     }
 }
