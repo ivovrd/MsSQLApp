@@ -4,6 +4,8 @@ import android.os.AsyncTask;
 import android.support.design.widget.Snackbar;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
+import android.widget.Switch;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -18,11 +20,12 @@ public class AsyncSavingDocument extends AsyncTask<Void, Void, Void> {
     Statement statement;
     DocumentData newDocument;
     View view;
-    ResultSet resultSet;
+    int task;
 
-    public AsyncSavingDocument(DocumentData document, View view){
+    public AsyncSavingDocument(DocumentData document, View view, int task){
         this.newDocument = document;
         this.view = view;
+        this.task = task;
     }
 
     @Override
@@ -30,7 +33,19 @@ public class AsyncSavingDocument extends AsyncTask<Void, Void, Void> {
         try{
             connect = DatabaseConnection.Connect();
             statement = connect.createStatement();
-            statement.executeUpdate("insert into UpravljanjeLjudskimResursima.Dokument (Sifra, TipDokumentaSifra, ZaposlenikId, OvlastenikId, Datum, Napomena, Memo, DatumOd, DatumDo, KorisnikId, KorisnikLastId, Status, TrajanjeDana, TrajanjeRadnihDana) values (" + newDocument.Sifra + ", " + newDocument.TipDokumenta + ", " + newDocument.ZaposlenikId +  ", " + newDocument.OvlastenikId + ", CURRENT_TIMESTAMP, " + newDocument.Napomena + ", " + newDocument.Memo + ", " + newDocument.DatumOd + ", " + newDocument.DatumDo + ", " + newDocument.KorisnikId + ", " + newDocument.KorisnikId + ", " + newDocument.Status + ", " + newDocument.Dani + ", " + newDocument.RadniDani + ")");
+            if(task == 0){
+                String queryPartOne, queryPartTwo;
+                queryPartOne = "INSERT INTO UpravljanjeLjudskimResursima.Dokument (Sifra, TipDokumentaSifra, ZaposlenikId, OvlastenikId, Datum, Napomena, Memo, DatumOd, DatumDo, KorisnikId, KorisnikLastId, Status, TrajanjeDana, TrajanjeRadnihDana) VALUES ";
+                queryPartTwo = "(" + newDocument.Sifra + ", " + newDocument.TipDokumenta + ", " + newDocument.ZaposlenikId +  ", " + newDocument.OvlastenikId + ", CURRENT_TIMESTAMP, " + newDocument.Napomena + ", " + newDocument.Memo + ", " + newDocument.DatumOd + ", " + newDocument.DatumDo + ", " + newDocument.KorisnikId + ", " + newDocument.KorisnikId + ", " + newDocument.Status + ", " + newDocument.Dani + ", " + newDocument.RadniDani + ")";
+                statement.executeUpdate(queryPartOne + queryPartTwo);
+            } else if (task == 1){
+                String queryUpdate = "UPDATE UpravljanjeLjudskimResursima.Dokument SET OvlastenikId=" + newDocument.OvlastenikId + ", Datum=CURRENT_TIMESTAMP, Napomena=" + newDocument.Napomena + ", Memo=" + newDocument.Memo + ", DatumOd=" + newDocument.DatumOd + ", DatumDo=" + newDocument.DatumDo + ", TrajanjeDana=" + newDocument.Dani + ", TrajanjeRadnihDana=" + newDocument.RadniDani + " WHERE Sifra=" + newDocument.Sifra;
+                statement.executeUpdate(queryUpdate);
+            } else if (task == 2){
+                String queryLock = "UPDATE UpravljanjeLjudskimResursima.Dokument SET Status=" + newDocument.Status + " WHERE Sifra=" + newDocument.Sifra;
+                statement.executeUpdate(queryLock);
+            }
+
         }catch(SQLException e){
             Log.e("SQL error", e.getMessage());
         }
@@ -46,7 +61,22 @@ public class AsyncSavingDocument extends AsyncTask<Void, Void, Void> {
     @Override
     protected void onPostExecute(Void aVoid) {
         super.onPostExecute(aVoid);
+        Button saveButton = (Button)view.findViewById(R.id.buttonSave);
+        Switch lock = (Switch)view.findViewById(R.id.switchLock);
+        saveButton.setEnabled(false);
+        lock.setEnabled(true);
+        String snackBarText = "";
+        if(task == 0 || task == 1){
+            snackBarText = "Dokument spremljen!";
+        } else if (task == 2){
+            snackBarText = "Dokument zaključen!";
+        }
 
-        Snackbar.make(view, "Dokument spremljen", Snackbar.LENGTH_LONG).show();
+        Snackbar.make(view, snackBarText, Snackbar.LENGTH_LONG).setAction("OK", new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        }).show();
     }
 }

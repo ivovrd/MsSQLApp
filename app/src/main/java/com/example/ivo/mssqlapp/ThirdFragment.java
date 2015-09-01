@@ -20,6 +20,7 @@ import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.Toast;
 
+import java.lang.reflect.Array;
 import java.nio.charset.Charset;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -53,6 +54,9 @@ public class ThirdFragment extends Fragment implements View.OnClickListener{
     public static final String KEY_PARTNER_ID = "partnerId";
     public static final String KEY_USER_ID = "userId";
     private static final String TIP_DOKUMENTA = "103";
+    private static final String FIXED_PART_SIFRA = "10315";
+    private int docNum;
+    private int queryType = 0;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -72,7 +76,18 @@ public class ThirdFragment extends Fragment implements View.OnClickListener{
             Log.e("SQL error", e.getMessage());
         }
 
-
+        try{
+            connect = DatabaseConnection.Connect();
+            statement = connect.createStatement();
+            ResultSet resultSet = statement.executeQuery("SELECT Sifra FROM UpravljanjeLjudskimResursima.Dokument WHERE Id = (SELECT MAX(Id) FROM UpravljanjeLjudskimResursima.Dokument)");
+            if (resultSet != null && resultSet.next()){
+                String temp = resultSet.getString("Sifra").substring(5);
+                docNum = Integer.parseInt(temp);
+                docNum ++;
+            }
+        }catch(SQLException e){
+            Log.e("SQL error", e.getMessage());
+        }
     }
 
     @Override
@@ -87,11 +102,15 @@ public class ThirdFragment extends Fragment implements View.OnClickListener{
         workDaysCount = (EditText)view.findViewById(R.id.workDaysCount);
         remark = (EditText)view.findViewById(R.id.editRemark);
         memo = (EditText)view.findViewById(R.id.editMemo);
-        switchLock = (Switch)view.findViewById(R.id.switchLock);
         buttonSave = (Button)view.findViewById(R.id.buttonSave);
+        switchLock = (Switch)view.findViewById(R.id.switchLock);
+
+        switchLock.setEnabled(false);
+        daysCount.setEnabled(false);
 
         fillSpinner();
         setDateFields();
+
 
 
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -118,8 +137,14 @@ public class ThirdFragment extends Fragment implements View.OnClickListener{
         buttonSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                int daysWork = Integer.valueOf(workDaysCount.getText().toString());
-                int days = (int)diff;
+                int days, daysWork;
+                if (workDaysCount.getText() != null) {
+                    daysWork = Integer.valueOf(workDaysCount.getText().toString());
+                    days = (int) diff;
+                } else {
+                    days = 0;
+                    daysWork = 1;
+                }
 
 
                 if (!yearSet) {
@@ -134,29 +159,49 @@ public class ThirdFragment extends Fragment implements View.OnClickListener{
                     sharedPreferences = getActivity().getSharedPreferences(PREF_NAME, PRIVATE_MODE);
                     int userId = Integer.valueOf(sharedPreferences.getString(KEY_USER_ID, null));
                     int partnerId = Integer.valueOf(sharedPreferences.getString(KEY_PARTNER_ID, null));
-                    document = new DocumentData("1031511", TIP_DOKUMENTA, partnerId, partnerId, userId, isLocked, Integer.valueOf(daysCount.getText().toString()), Integer.valueOf(workDaysCount.getText().toString()), clearDateString(dateFrom.getText().toString()), clearDateString(dateTo.getText().toString()), addApostrophe(remark.getText().toString()), addApostrophe(memo.getText().toString()));
-                    new AsyncSavingDocument(document, view).execute();
+                    document = new DocumentData(FIXED_PART_SIFRA + String.valueOf(docNum), TIP_DOKUMENTA, partnerId, ovlastenici.get(ovlastenikPickedIndex).Id, userId, isLocked, Integer.valueOf(daysCount.getText().toString()), Integer.valueOf(workDaysCount.getText().toString()), clearDateString(dateFrom.getText().toString()), clearDateString(dateTo.getText().toString()), addApostrophe(remark.getText().toString()), addApostrophe(memo.getText().toString()));
+                    new AsyncSavingDocument(document, view, queryType).execute();
+                    queryType++;
                 }
             }
         });
+
+        final EditText[] editTexts = {year, dateFrom, dateTo, workDaysCount, remark, memo};
 
         switchLock.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if(isChecked){
                     isLocked = 1;
+                    enableDisableViews(spinner, editTexts, false);
+
+                    sharedPreferences = getActivity().getSharedPreferences(PREF_NAME, PRIVATE_MODE);
+                    int userId = Integer.valueOf(sharedPreferences.getString(KEY_USER_ID, null));
+                    int partnerId = Integer.valueOf(sharedPreferences.getString(KEY_PARTNER_ID, null));
+                    document = new DocumentData(FIXED_PART_SIFRA + String.valueOf(docNum), TIP_DOKUMENTA, partnerId, ovlastenici.get(ovlastenikPickedIndex).Id, userId, isLocked, Integer.valueOf(daysCount.getText().toString()), Integer.valueOf(workDaysCount.getText().toString()), clearDateString(dateFrom.getText().toString()), clearDateString(dateTo.getText().toString()), addApostrophe(remark.getText().toString()), addApostrophe(memo.getText().toString()));
+                    new AsyncSavingDocument(document, view, 2).execute();
                 } else {
                     isLocked = 0;
+
+                    sharedPreferences = getActivity().getSharedPreferences(PREF_NAME, PRIVATE_MODE);
+                    int userId = Integer.valueOf(sharedPreferences.getString(KEY_USER_ID, null));
+                    int partnerId = Integer.valueOf(sharedPreferences.getString(KEY_PARTNER_ID, null));
+                    document = new DocumentData(FIXED_PART_SIFRA + String.valueOf(docNum), TIP_DOKUMENTA, partnerId, ovlastenici.get(ovlastenikPickedIndex).Id, userId, isLocked, Integer.valueOf(daysCount.getText().toString()), Integer.valueOf(workDaysCount.getText().toString()), clearDateString(dateFrom.getText().toString()), clearDateString(dateTo.getText().toString()), addApostrophe(remark.getText().toString()), addApostrophe(memo.getText().toString()));
+                    new AsyncSavingDocument(document, view, 2).execute();
+
+                    enableDisableViews(spinner, editTexts, true);
+                    buttonSave.setEnabled(true);
                 }
             }
         });
+
         return view;
     }
 
     @Override
     public void onClick(View view) {
         if(view == dateFrom){
-           dateFromPickerDialog.show();
+            dateFromPickerDialog.show();
         } else if(view == dateTo){
             dateToPickerDialog.show();
         }
@@ -221,5 +266,12 @@ public class ThirdFragment extends Fragment implements View.OnClickListener{
         second = dateString.substring(3,5);
         third = dateString.substring(6,10);
         return "'" + third + second + first + "'";
+    }
+
+    private void enableDisableViews(Spinner spinner, EditText[] editTexts, boolean enabled){
+        spinner.setEnabled(enabled);
+        for(int i = 0; i < editTexts.length; i++){
+            editTexts[i].setEnabled(enabled);
+        }
     }
 }
