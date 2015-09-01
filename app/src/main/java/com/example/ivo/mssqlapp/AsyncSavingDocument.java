@@ -61,9 +61,9 @@ public class AsyncSavingDocument extends AsyncTask<Void, Void, Void> {
     @Override
     protected void onPostExecute(Void aVoid) {
         super.onPostExecute(aVoid);
-        Button saveButton = (Button)view.findViewById(R.id.buttonSave);
+        //Button saveButton = (Button)view.findViewById(R.id.buttonSave);
         Switch lock = (Switch)view.findViewById(R.id.switchLock);
-        saveButton.setEnabled(false);
+        //saveButton.setEnabled(false);
         lock.setEnabled(true);
         String snackBarText = "";
         if(task == 0 || task == 1){
