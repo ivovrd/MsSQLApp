@@ -39,7 +39,7 @@ public class AsyncSavingDocument extends AsyncTask<Void, Void, Void> {
                 queryPartTwo = "(" + newDocument.Sifra + ", " + newDocument.TipDokumenta + ", " + newDocument.ZaposlenikId +  ", " + newDocument.OvlastenikId + ", CURRENT_TIMESTAMP, " + newDocument.Napomena + ", " + newDocument.Memo + ", " + newDocument.DatumOd + ", " + newDocument.DatumDo + ", " + newDocument.KorisnikId + ", " + newDocument.KorisnikId + ", " + newDocument.Status + ", " + newDocument.Dani + ", " + newDocument.RadniDani + ")";
                 statement.executeUpdate(queryPartOne + queryPartTwo);
             } else if (task == 1){
-                String queryUpdate = "UPDATE UpravljanjeLjudskimResursima.Dokument SET OvlastenikId=" + newDocument.OvlastenikId + ", Datum=CURRENT_TIMESTAMP, Napomena=" + newDocument.Napomena + ", Memo=" + newDocument.Memo + ", DatumOd=" + newDocument.DatumOd + ", DatumDo=" + newDocument.DatumDo + ", TrajanjeDana=" + newDocument.Dani + ", TrajanjeRadnihDana=" + newDocument.RadniDani + " WHERE Sifra=" + newDocument.Sifra;
+                String queryUpdate = "UPDATE UpravljanjeLjudskimResursima.Dokument SET OvlastenikId=" + newDocument.OvlastenikId + ", Datum=CURRENT_TIMESTAMP, Napomena=" + newDocument.Napomena + ", Memo=" + newDocument.Memo + ", DatumOd=" + newDocument.DatumOd + ", DatumDo=" + newDocument.DatumDo +  ", Status=" + newDocument.Status + ", TrajanjeDana=" + newDocument.Dani + ", TrajanjeRadnihDana=" + newDocument.RadniDani + " WHERE Sifra=" + newDocument.Sifra;
                 statement.executeUpdate(queryUpdate);
             } else if (task == 2){
                 String queryLock = "UPDATE UpravljanjeLjudskimResursima.Dokument SET Status=" + newDocument.Status + " WHERE Sifra=" + newDocument.Sifra;
@@ -61,15 +61,19 @@ public class AsyncSavingDocument extends AsyncTask<Void, Void, Void> {
     @Override
     protected void onPostExecute(Void aVoid) {
         super.onPostExecute(aVoid);
-        //Button saveButton = (Button)view.findViewById(R.id.buttonSave);
+        Button saveButton = (Button)view.findViewById(R.id.buttonSave);
         Switch lock = (Switch)view.findViewById(R.id.switchLock);
-        //saveButton.setEnabled(false);
-        lock.setEnabled(true);
         String snackBarText = "";
-        if(task == 0 || task == 1){
+
+        if(task == 0){
             snackBarText = "Dokument spremljen!";
-        } else if (task == 2){
+            saveButton.setEnabled(false);
+            lock.setEnabled(true);
+        } else if (task == 1){
             snackBarText = "Dokument zaključen!";
+        }
+        else if (task == 2){
+            snackBarText = "Dokument otključan!";
         }
 
         Snackbar.make(view, snackBarText, Snackbar.LENGTH_LONG).setAction("OK", new View.OnClickListener() {

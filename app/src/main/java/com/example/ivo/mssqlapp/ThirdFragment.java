@@ -56,7 +56,9 @@ public class ThirdFragment extends Fragment implements View.OnClickListener{
     private static final String TIP_DOKUMENTA = "103";
     private static final String FIXED_PART_SIFRA = "10315";
     private int docNum;
-    private int queryType = 0;
+    private static final int TYPE_SAVE = 0;
+    private static final int TYPE_LOCK = 1;
+    private static final int TYPE_UNLOCK = 2;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -137,31 +139,12 @@ public class ThirdFragment extends Fragment implements View.OnClickListener{
         buttonSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                int days, daysWork;
-                if (workDaysCount.getText() != null) {
-                    daysWork = Integer.valueOf(workDaysCount.getText().toString());
-                    days = (int) diff;
-                } else {
-                    days = 0;
-                    daysWork = 1;
-                }
-
-
-                if (!yearSet) {
-                    makeWarningSnackbar(view, "Nije unesena točna godina!");
-                } else if (!dateFromSet) {
-                    makeWarningSnackbar(view, "Nije unesen datum početka godišnjeg!");
-                } else if (!dateToSet) {
-                    makeWarningSnackbar(view, "Nije unesen datum završetka godišnjeg!");
-                } else if (days - daysWork < 0) {
-                    makeWarningSnackbar(view, "Nije unesen točan broj radnih dana!");
-                } else {
+                 if (checkFields(view, workDaysCount, yearSet, dateFromSet, dateToSet)){
                     sharedPreferences = getActivity().getSharedPreferences(PREF_NAME, PRIVATE_MODE);
                     int userId = Integer.valueOf(sharedPreferences.getString(KEY_USER_ID, null));
                     int partnerId = Integer.valueOf(sharedPreferences.getString(KEY_PARTNER_ID, null));
                     document = new DocumentData(FIXED_PART_SIFRA + String.valueOf(docNum), TIP_DOKUMENTA, partnerId, ovlastenici.get(ovlastenikPickedIndex).Id, userId, isLocked, Integer.valueOf(daysCount.getText().toString()), Integer.valueOf(workDaysCount.getText().toString()), clearDateString(dateFrom.getText().toString()), clearDateString(dateTo.getText().toString()), addApostrophe(remark.getText().toString()), addApostrophe(memo.getText().toString()));
-                    new AsyncSavingDocument(document, view, queryType).execute();
-                    queryType++;
+                    new AsyncSavingDocument(document, view, TYPE_SAVE).execute();
                 }
             }
         });
@@ -171,7 +154,7 @@ public class ThirdFragment extends Fragment implements View.OnClickListener{
         switchLock.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if(isChecked){
+                if(isChecked && checkFields(view, workDaysCount, yearSet, dateFromSet, dateToSet)){
                     isLocked = 1;
                     enableDisableViews(spinner, editTexts, false);
 
@@ -179,7 +162,7 @@ public class ThirdFragment extends Fragment implements View.OnClickListener{
                     int userId = Integer.valueOf(sharedPreferences.getString(KEY_USER_ID, null));
                     int partnerId = Integer.valueOf(sharedPreferences.getString(KEY_PARTNER_ID, null));
                     document = new DocumentData(FIXED_PART_SIFRA + String.valueOf(docNum), TIP_DOKUMENTA, partnerId, ovlastenici.get(ovlastenikPickedIndex).Id, userId, isLocked, Integer.valueOf(daysCount.getText().toString()), Integer.valueOf(workDaysCount.getText().toString()), clearDateString(dateFrom.getText().toString()), clearDateString(dateTo.getText().toString()), addApostrophe(remark.getText().toString()), addApostrophe(memo.getText().toString()));
-                    new AsyncSavingDocument(document, view, 2).execute();
+                    new AsyncSavingDocument(document, view, TYPE_LOCK).execute();
                 } else {
                     isLocked = 0;
 
@@ -187,10 +170,9 @@ public class ThirdFragment extends Fragment implements View.OnClickListener{
                     int userId = Integer.valueOf(sharedPreferences.getString(KEY_USER_ID, null));
                     int partnerId = Integer.valueOf(sharedPreferences.getString(KEY_PARTNER_ID, null));
                     document = new DocumentData(FIXED_PART_SIFRA + String.valueOf(docNum), TIP_DOKUMENTA, partnerId, ovlastenici.get(ovlastenikPickedIndex).Id, userId, isLocked, Integer.valueOf(daysCount.getText().toString()), Integer.valueOf(workDaysCount.getText().toString()), clearDateString(dateFrom.getText().toString()), clearDateString(dateTo.getText().toString()), addApostrophe(remark.getText().toString()), addApostrophe(memo.getText().toString()));
-                    new AsyncSavingDocument(document, view, 2).execute();
+                    new AsyncSavingDocument(document, view, TYPE_UNLOCK).execute();
 
                     enableDisableViews(spinner, editTexts, true);
-                    buttonSave.setEnabled(true);
                 }
             }
         });
@@ -273,5 +255,31 @@ public class ThirdFragment extends Fragment implements View.OnClickListener{
         for(int i = 0; i < editTexts.length; i++){
             editTexts[i].setEnabled(enabled);
         }
+    }
+
+    private boolean checkFields(View view, EditText workDaysCount, boolean yearSet, boolean dateFromSet, boolean dateToSet){
+        int days, daysWork;
+        boolean result = false;
+        if (workDaysCount.getText() != null) {
+            daysWork = Integer.valueOf(workDaysCount.getText().toString());
+            days = (int) diff;
+        } else {
+            days = 0;
+            daysWork = 1;
+        }
+
+        if (!yearSet) {
+            makeWarningSnackbar(view, "Nije unesena točna godina!");
+        } else if (!dateFromSet) {
+            makeWarningSnackbar(view, "Nije unesen datum početka godišnjeg!");
+        } else if (!dateToSet) {
+            makeWarningSnackbar(view, "Nije unesen datum završetka godišnjeg!");
+        } else if (days - daysWork < 0) {
+            makeWarningSnackbar(view, "Nije unesen točan broj radnih dana!");
+        } else{
+            result = true;
+        }
+
+        return result;
     }
 }
