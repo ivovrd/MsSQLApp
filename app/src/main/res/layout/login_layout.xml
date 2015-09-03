@@ -44,9 +44,7 @@
         android:text="LOGIN"
         android:layout_gravity="center"
         android:layout_marginTop="20dp"
-        android:textStyle="bold"
-        android:background="#546E7A"
-        android:textColor="@android:color/white"/>
+        android:textStyle="bold" />
 
     <TextView
         android:id="@+id/lblerror"

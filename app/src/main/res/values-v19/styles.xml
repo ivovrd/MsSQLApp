@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
-        <item name="colorPrimary">#37474F</item>
-        <item name="colorPrimaryDark">#37474F</item>
+        <item name="colorPrimary">#F44336</item>
+        <item name="colorPrimaryDark">#F44336</item>
         <item name="android:windowTranslucentStatus">true</item>
+
     </style>
 </resources>

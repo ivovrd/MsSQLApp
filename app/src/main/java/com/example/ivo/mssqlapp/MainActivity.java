@@ -36,16 +36,14 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         session = new SessionManager(getApplicationContext());
-        session.checkLogin();
+        session.checkLogin(this);
         HashMap<String, String> user = session.getUserDetails();
         String userFirstName = user.get(SessionManager.KEY_FIRST_NAME);
         String userLastName = user.get(SessionManager.KEY_LAST_NAME);
-        String userPartnerId = user.get(SessionManager.KEY_PARTNER_ID);
-        String userId = user.get(SessionManager.KEY_USER_ID);
 
         mDrawer = (DrawerLayout)findViewById(R.id.drawer_layout);
         userDetails = (TextView)findViewById(R.id.userName);
-        userDetails.setText(userFirstName + " " + userLastName + "  " + userPartnerId + "   " + userId);
+        userDetails.setText(userFirstName + " " + userLastName);
         drawerToggle = setupDrawerToggle();
         mDrawer.setDrawerListener(drawerToggle);
 
@@ -79,7 +77,7 @@ public class MainActivity extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_logout) {
-            session.logoutUser();
+            session.logoutUser(this);
             return true;
         }
 

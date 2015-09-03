@@ -1,5 +1,6 @@
 package com.example.ivo.mssqlapp;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -48,18 +49,19 @@ public class SessionManager {
         return user;
     }
 
-    public void checkLogin(){
+    public void checkLogin(Activity mActivity){
         if(!this.isLoggedIn()){
             Intent i = new Intent(mContext, Login.class);
             //closing all activities
             i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             //add new flag to start activity
-            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             mContext.startActivity(i);
+            mActivity.finish();
         }
     }
 
-    public void logoutUser(){
+    public void logoutUser(Activity mActivity){
         editor.clear();
         editor.commit();
 
@@ -67,8 +69,9 @@ public class SessionManager {
         //closing all activities
         i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         //add new flag to start activity
-        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         mContext.startActivity(i);
+        mActivity.finish();
     }
 
     public boolean isLoggedIn(){

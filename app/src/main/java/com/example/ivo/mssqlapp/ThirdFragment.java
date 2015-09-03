@@ -68,7 +68,7 @@ public class ThirdFragment extends Fragment implements View.OnClickListener{
         try{
             connect = DatabaseConnection.Connect();
             statement = connect.createStatement();
-            ResultSet resultSet = statement.executeQuery("select Id, Naziv from Sifrarnici.Partner");
+            ResultSet resultSet = statement.executeQuery("SELECT Id, Naziv FROM Sifrarnici.Partner WHERE Vrsta & 64 != 0");
             while (resultSet.next()){
                 Ovlastenik ovlastenik = new Ovlastenik(resultSet.getInt("Id"), resultSet.getString("Naziv"));
                 ovlastenici.add(ovlastenik);
@@ -145,6 +145,9 @@ public class ThirdFragment extends Fragment implements View.OnClickListener{
                     int partnerId = Integer.valueOf(sharedPreferences.getString(KEY_PARTNER_ID, null));
                     document = new DocumentData(FIXED_PART_SIFRA + String.valueOf(docNum), TIP_DOKUMENTA, partnerId, ovlastenici.get(ovlastenikPickedIndex).Id, userId, isLocked, Integer.valueOf(daysCount.getText().toString()), Integer.valueOf(workDaysCount.getText().toString()), clearDateString(dateFrom.getText().toString()), clearDateString(dateTo.getText().toString()), addApostrophe(remark.getText().toString()), addApostrophe(memo.getText().toString()));
                     new AsyncSavingDocument(document, view, TYPE_SAVE).execute();
+                     yearSet = false;
+                     dateFromSet = false;
+                     dateToSet = false;
                 }
             }
         });
@@ -154,16 +157,25 @@ public class ThirdFragment extends Fragment implements View.OnClickListener{
         switchLock.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if(isChecked && checkFields(view, workDaysCount, yearSet, dateFromSet, dateToSet)){
+                boolean checkValue = checkFields(view, workDaysCount, yearSet, dateFromSet, dateToSet);
+
+                if(isChecked && checkValue){
                     isLocked = 1;
-                    enableDisableViews(spinner, editTexts, false);
 
                     sharedPreferences = getActivity().getSharedPreferences(PREF_NAME, PRIVATE_MODE);
                     int userId = Integer.valueOf(sharedPreferences.getString(KEY_USER_ID, null));
                     int partnerId = Integer.valueOf(sharedPreferences.getString(KEY_PARTNER_ID, null));
                     document = new DocumentData(FIXED_PART_SIFRA + String.valueOf(docNum), TIP_DOKUMENTA, partnerId, ovlastenici.get(ovlastenikPickedIndex).Id, userId, isLocked, Integer.valueOf(daysCount.getText().toString()), Integer.valueOf(workDaysCount.getText().toString()), clearDateString(dateFrom.getText().toString()), clearDateString(dateTo.getText().toString()), addApostrophe(remark.getText().toString()), addApostrophe(memo.getText().toString()));
                     new AsyncSavingDocument(document, view, TYPE_LOCK).execute();
-                } else {
+
+                    enableDisableViews(spinner, editTexts, false);
+                    yearSet = false;
+                    dateFromSet = false;
+                    dateToSet = false;
+                } else if (isChecked && !checkValue){
+                    switchLock.setChecked(false);
+                }
+                else {
                     isLocked = 0;
 
                     sharedPreferences = getActivity().getSharedPreferences(PREF_NAME, PRIVATE_MODE);
@@ -260,7 +272,7 @@ public class ThirdFragment extends Fragment implements View.OnClickListener{
     private boolean checkFields(View view, EditText workDaysCount, boolean yearSet, boolean dateFromSet, boolean dateToSet){
         int days, daysWork;
         boolean result = false;
-        if (workDaysCount.getText() != null) {
+        if (workDaysCount.getText().length() != 0) {
             daysWork = Integer.valueOf(workDaysCount.getText().toString());
             days = (int) diff;
         } else {
@@ -279,6 +291,7 @@ public class ThirdFragment extends Fragment implements View.OnClickListener{
         } else{
             result = true;
         }
+
 
         return result;
     }

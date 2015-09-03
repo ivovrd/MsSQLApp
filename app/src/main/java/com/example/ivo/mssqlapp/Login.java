@@ -1,5 +1,6 @@
 package com.example.ivo.mssqlapp;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -9,6 +10,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -46,6 +49,9 @@ public class Login extends AppCompatActivity {
         loginBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(editPass.getWindowToken(), 0);
+
                 String name = editName.getText().toString();
                 String pass = editPass.getText().toString();
                 new AsyncLogin(name, pass).execute();
@@ -121,7 +127,7 @@ public class Login extends AppCompatActivity {
                     startActivity(intent);
                     finish();
                 } else {
-                    errorLbl.setText("Sorry, wrong credidentials!");
+                    errorLbl.setText("Wrong username or password, please try again!");
                 }
             }catch (SQLException e){
                 Log.e("SQL error", e.getMessage());
