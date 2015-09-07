@@ -77,4 +77,12 @@ public class SessionManager {
     public boolean isLoggedIn(){
         return sharedPreferences.getBoolean(IS_LOGIN, false);
     }
+
+    public String getUserId(){
+        return sharedPreferences.getString(KEY_USER_ID, null);
+    }
+
+    public String getPartnerId(){
+        return sharedPreferences.getString(KEY_PARTNER_ID, null);
+    }
 }

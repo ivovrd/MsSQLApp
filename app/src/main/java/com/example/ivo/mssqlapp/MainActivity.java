@@ -12,8 +12,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.Window;
 import android.widget.TextView;
 
+import java.lang.reflect.Array;
 import java.util.HashMap;
 
 
@@ -58,6 +60,14 @@ public class MainActivity extends AppCompatActivity {
 
         navigationView = (NavigationView)findViewById(R.id.nvView);
         setupDrawerContent(navigationView);
+
+        /*getSupportFragmentManager().addOnBackStackChangedListener(new FragmentManager.OnBackStackChangedListener() {
+            @Override
+            public void onBackStackChanged() {
+                Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.flContent);
+                setTitle(getTitle());
+            }
+        });*/
     }
 
     @Override
@@ -118,6 +128,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void selectDrawerItem(MenuItem menuItem){
         Fragment fragment = null;
+        final String fragmentTag = "";
 
         Class fragmentClass;
         switch (menuItem.getItemId()){
@@ -141,7 +152,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         fragmentManager = getSupportFragmentManager();
-        fragmentManager.beginTransaction().replace(R.id.flContent, fragment).commit();
+        fragmentManager.beginTransaction().replace(R.id.flContent, fragment, fragmentTag).addToBackStack(fragmentTag).commit();
 
         menuItem.setChecked(true);
         setTitle(menuItem.getTitle());

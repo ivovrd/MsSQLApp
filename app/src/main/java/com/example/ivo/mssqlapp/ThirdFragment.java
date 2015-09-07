@@ -38,31 +38,27 @@ public class ThirdFragment extends Fragment implements View.OnClickListener{
     private EditText year, dateFrom, dateTo, daysCount, workDaysCount, remark, memo;
     private DatePickerDialog dateFromPickerDialog, dateToPickerDialog;
     private SimpleDateFormat dateFormat;
-    private Connection connect;
-    private Statement statement;
     private Spinner spinner;
     private Switch switchLock;
-    private Button buttonSave;
     private ArrayList<Ovlastenik> ovlastenici;
     private int ovlastenikPickedIndex, isLocked;
     private long from, to, diff = 0;
-    private boolean yearSet = false, dateFromSet = false, dateToSet = false;
+    private boolean dateFromSet = false, dateToSet = false;
     private DocumentData document;
-    private SharedPreferences sharedPreferences;
-    private int PRIVATE_MODE = 0;
-    private static final String PREF_NAME = "UserLoginData";
-    public static final String KEY_PARTNER_ID = "partnerId";
-    public static final String KEY_USER_ID = "userId";
     private static final String TIP_DOKUMENTA = "103";
     private static final String FIXED_PART_SIFRA = "10315";
     private int docNum;
     private static final int TYPE_SAVE = 0;
     private static final int TYPE_LOCK = 1;
     private static final int TYPE_UNLOCK = 2;
+    private SessionManager sessionManager;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        Connection connect;
+        Statement statement;
 
         ovlastenici = new ArrayList<>();
         try{
@@ -104,8 +100,9 @@ public class ThirdFragment extends Fragment implements View.OnClickListener{
         workDaysCount = (EditText)view.findViewById(R.id.workDaysCount);
         remark = (EditText)view.findViewById(R.id.editRemark);
         memo = (EditText)view.findViewById(R.id.editMemo);
-        buttonSave = (Button)view.findViewById(R.id.buttonSave);
         switchLock = (Switch)view.findViewById(R.id.switchLock);
+        Button buttonSave = (Button)view.findViewById(R.id.buttonSave);
+        sessionManager = new SessionManager(getActivity());
 
         switchLock.setEnabled(false);
         daysCount.setEnabled(false);
@@ -127,27 +124,23 @@ public class ThirdFragment extends Fragment implements View.OnClickListener{
             }
         });
 
-        year.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+        /*year.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
                 if (!hasFocus && year.getText().toString().trim().length() == 4) {
                     yearSet = true;
                 }
             }
-        });
+        });*/
 
         buttonSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                 if (checkFields(view, workDaysCount, yearSet, dateFromSet, dateToSet)){
-                    sharedPreferences = getActivity().getSharedPreferences(PREF_NAME, PRIVATE_MODE);
-                    int userId = Integer.valueOf(sharedPreferences.getString(KEY_USER_ID, null));
-                    int partnerId = Integer.valueOf(sharedPreferences.getString(KEY_PARTNER_ID, null));
+                 if (checkFields(view, workDaysCount, dateFromSet, dateToSet)){
+                    int userId = Integer.valueOf(sessionManager.getUserId());
+                    int partnerId = Integer.valueOf(sessionManager.getPartnerId());
                     document = new DocumentData(FIXED_PART_SIFRA + String.valueOf(docNum), TIP_DOKUMENTA, partnerId, ovlastenici.get(ovlastenikPickedIndex).Id, userId, isLocked, Integer.valueOf(daysCount.getText().toString()), Integer.valueOf(workDaysCount.getText().toString()), clearDateString(dateFrom.getText().toString()), clearDateString(dateTo.getText().toString()), addApostrophe(remark.getText().toString()), addApostrophe(memo.getText().toString()));
                     new AsyncSavingDocument(document, view, TYPE_SAVE).execute();
-                     yearSet = false;
-                     dateFromSet = false;
-                     dateToSet = false;
                 }
             }
         });
@@ -157,31 +150,24 @@ public class ThirdFragment extends Fragment implements View.OnClickListener{
         switchLock.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                boolean checkValue = checkFields(view, workDaysCount, yearSet, dateFromSet, dateToSet);
+                boolean checkValue = checkFields(view, workDaysCount, dateFromSet, dateToSet);
 
                 if(isChecked && checkValue){
                     isLocked = 1;
 
-                    sharedPreferences = getActivity().getSharedPreferences(PREF_NAME, PRIVATE_MODE);
-                    int userId = Integer.valueOf(sharedPreferences.getString(KEY_USER_ID, null));
-                    int partnerId = Integer.valueOf(sharedPreferences.getString(KEY_PARTNER_ID, null));
+                    int userId = Integer.valueOf(sessionManager.getUserId());
+                    int partnerId = Integer.valueOf(sessionManager.getPartnerId());
                     document = new DocumentData(FIXED_PART_SIFRA + String.valueOf(docNum), TIP_DOKUMENTA, partnerId, ovlastenici.get(ovlastenikPickedIndex).Id, userId, isLocked, Integer.valueOf(daysCount.getText().toString()), Integer.valueOf(workDaysCount.getText().toString()), clearDateString(dateFrom.getText().toString()), clearDateString(dateTo.getText().toString()), addApostrophe(remark.getText().toString()), addApostrophe(memo.getText().toString()));
                     new AsyncSavingDocument(document, view, TYPE_LOCK).execute();
 
                     enableDisableViews(spinner, editTexts, false);
-                    yearSet = false;
-                    dateFromSet = false;
-                    dateToSet = false;
                 } else if (isChecked && !checkValue){
                     switchLock.setChecked(false);
                 }
                 else {
                     isLocked = 0;
 
-                    sharedPreferences = getActivity().getSharedPreferences(PREF_NAME, PRIVATE_MODE);
-                    int userId = Integer.valueOf(sharedPreferences.getString(KEY_USER_ID, null));
-                    int partnerId = Integer.valueOf(sharedPreferences.getString(KEY_PARTNER_ID, null));
-                    document = new DocumentData(FIXED_PART_SIFRA + String.valueOf(docNum), TIP_DOKUMENTA, partnerId, ovlastenici.get(ovlastenikPickedIndex).Id, userId, isLocked, Integer.valueOf(daysCount.getText().toString()), Integer.valueOf(workDaysCount.getText().toString()), clearDateString(dateFrom.getText().toString()), clearDateString(dateTo.getText().toString()), addApostrophe(remark.getText().toString()), addApostrophe(memo.getText().toString()));
+                    document = new DocumentData(FIXED_PART_SIFRA + String.valueOf(docNum), isLocked);
                     new AsyncSavingDocument(document, view, TYPE_UNLOCK).execute();
 
                     enableDisableViews(spinner, editTexts, true);
@@ -247,7 +233,12 @@ public class ThirdFragment extends Fragment implements View.OnClickListener{
     }
 
     private void makeWarningSnackbar(View view,String warning){
-        Snackbar.make(view, warning, Snackbar.LENGTH_LONG).show();
+        Snackbar.make(view, warning, Snackbar.LENGTH_LONG).setAction("OK", new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        }).show();
     }
 
     private String addApostrophe(String string){
@@ -269,15 +260,21 @@ public class ThirdFragment extends Fragment implements View.OnClickListener{
         }
     }
 
-    private boolean checkFields(View view, EditText workDaysCount, boolean yearSet, boolean dateFromSet, boolean dateToSet){
+    private boolean checkFields(View view, EditText workDaysCount, boolean dateFromSet, boolean dateToSet){
         int days, daysWork;
+        boolean yearSet = false;
         boolean result = false;
+
         if (workDaysCount.getText().length() != 0) {
             daysWork = Integer.valueOf(workDaysCount.getText().toString());
             days = (int) diff;
         } else {
             days = 0;
             daysWork = 1;
+        }
+
+        if (year.getText().toString().trim().length() == 4) {
+            yearSet = true;
         }
 
         if (!yearSet) {

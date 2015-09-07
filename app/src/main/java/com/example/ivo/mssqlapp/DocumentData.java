@@ -21,4 +21,9 @@ public class DocumentData {
         this.Napomena = napomena;
         this.Memo = memo;
     }
+
+    public DocumentData(String sifra, int status){
+        this.Sifra = sifra;
+        this.Status = status;
+    }
 }
