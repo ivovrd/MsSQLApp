@@ -60,8 +60,8 @@ public class ThirdFragment extends Fragment implements View.OnClickListener{
         Connection connect;
         Statement statement;
 
-        ovlastenici = new ArrayList<>();
-        try{
+
+        /*try{
             connect = DatabaseConnection.Connect();
             statement = connect.createStatement();
             ResultSet resultSet = statement.executeQuery("SELECT Id, Naziv FROM Sifrarnici.Partner WHERE Vrsta & 64 != 0");
@@ -72,7 +72,7 @@ public class ThirdFragment extends Fragment implements View.OnClickListener{
 
         }catch (SQLException e){
             Log.e("SQL error", e.getMessage());
-        }
+        }*/
 
         try{
             connect = DatabaseConnection.Connect();
@@ -107,7 +107,10 @@ public class ThirdFragment extends Fragment implements View.OnClickListener{
         switchLock.setEnabled(false);
         daysCount.setEnabled(false);
 
-        fillSpinner();
+        ovlastenici = new ArrayList<>();
+        new AsyncDataLoading(ovlastenici, getActivity(), spinner).execute();
+
+        //fillSpinner();
         setDateFields();
 
 
@@ -123,15 +126,6 @@ public class ThirdFragment extends Fragment implements View.OnClickListener{
 
             }
         });
-
-        /*year.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (!hasFocus && year.getText().toString().trim().length() == 4) {
-                    yearSet = true;
-                }
-            }
-        });*/
 
         buttonSave.setOnClickListener(new View.OnClickListener() {
             @Override
