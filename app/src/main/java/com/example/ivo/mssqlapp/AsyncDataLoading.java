@@ -56,6 +56,10 @@ public class AsyncDataLoading extends AsyncTask<Void, Void, ResultSet> {
             Log.e("SQL error", e.getMessage());
         }
 
+        fillSpinner();
+    }
+
+    private void fillSpinner(){
         ArrayList<String> labels = new ArrayList<>();
 
         for(int i = 0; i < ovlastenici.size(); i++){

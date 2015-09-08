@@ -1,7 +1,6 @@
 package com.example.ivo.mssqlapp;
 
 import android.app.DatePickerDialog;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
@@ -10,18 +9,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.DatePicker;
 import android.widget.EditText;
-import android.widget.ListAdapter;
 import android.widget.Spinner;
 import android.widget.Switch;
-import android.widget.Toast;
-
-import java.lang.reflect.Array;
-import java.nio.charset.Charset;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -52,45 +45,18 @@ public class ThirdFragment extends Fragment implements View.OnClickListener{
     private static final int TYPE_LOCK = 1;
     private static final int TYPE_UNLOCK = 2;
     private SessionManager sessionManager;
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        Connection connect;
-        Statement statement;
-
-
-        /*try{
-            connect = DatabaseConnection.Connect();
-            statement = connect.createStatement();
-            ResultSet resultSet = statement.executeQuery("SELECT Id, Naziv FROM Sifrarnici.Partner WHERE Vrsta & 64 != 0");
-            while (resultSet.next()){
-                Ovlastenik ovlastenik = new Ovlastenik(resultSet.getInt("Id"), resultSet.getString("Naziv"));
-                ovlastenici.add(ovlastenik);
-            }
-
-        }catch (SQLException e){
-            Log.e("SQL error", e.getMessage());
-        }*/
-
-        try{
-            connect = DatabaseConnection.Connect();
-            statement = connect.createStatement();
-            ResultSet resultSet = statement.executeQuery("SELECT Sifra FROM UpravljanjeLjudskimResursima.Dokument WHERE Id = (SELECT MAX(Id) FROM UpravljanjeLjudskimResursima.Dokument)");
-            if (resultSet != null && resultSet.next()){
-                String temp = resultSet.getString("Sifra").substring(5);
-                docNum = Integer.parseInt(temp);
-                docNum ++;
-            }
-        }catch(SQLException e){
-            Log.e("SQL error", e.getMessage());
-        }
-    }
+    private Connection connect;
+    private Statement statement;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        final View view =  inflater.inflate(R.layout.third_fragment, container, false);
+        return inflater.inflate(R.layout.third_fragment, container, false);
+    }
+
+    @Override
+    public void onViewCreated(final View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
         spinner = (Spinner)view.findViewById(R.id.spinner);
         year = (EditText)view.findViewById(R.id.editYear);
         dateFormat = new SimpleDateFormat("dd.MM.yyyy", Locale.ENGLISH);
@@ -110,10 +76,7 @@ public class ThirdFragment extends Fragment implements View.OnClickListener{
         ovlastenici = new ArrayList<>();
         new AsyncDataLoading(ovlastenici, getActivity(), spinner).execute();
 
-        //fillSpinner();
         setDateFields();
-
-
 
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -130,7 +93,20 @@ public class ThirdFragment extends Fragment implements View.OnClickListener{
         buttonSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                 if (checkFields(view, workDaysCount, dateFromSet, dateToSet)){
+                if (checkFields(view, workDaysCount, dateFromSet, dateToSet)){
+                    try{
+                        connect = DatabaseConnection.Connect();
+                        statement = connect.createStatement();
+                        ResultSet resultSet = statement.executeQuery("SELECT Sifra FROM UpravljanjeLjudskimResursima.Dokument WHERE Id = (SELECT MAX(Id) FROM UpravljanjeLjudskimResursima.Dokument)");
+                        if (resultSet != null && resultSet.next()){
+                            String temp = resultSet.getString("Sifra").substring(5);
+                            docNum = Integer.parseInt(temp);
+                            docNum ++;
+                        }
+                    }catch(SQLException e){
+                        Log.e("SQL error", e.getMessage());
+                    }
+
                     int userId = Integer.valueOf(sessionManager.getUserId());
                     int partnerId = Integer.valueOf(sessionManager.getPartnerId());
                     document = new DocumentData(FIXED_PART_SIFRA + String.valueOf(docNum), TIP_DOKUMENTA, partnerId, ovlastenici.get(ovlastenikPickedIndex).Id, userId, isLocked, Integer.valueOf(daysCount.getText().toString()), Integer.valueOf(workDaysCount.getText().toString()), clearDateString(dateFrom.getText().toString()), clearDateString(dateTo.getText().toString()), addApostrophe(remark.getText().toString()), addApostrophe(memo.getText().toString()));
@@ -155,7 +131,7 @@ public class ThirdFragment extends Fragment implements View.OnClickListener{
                     new AsyncSavingDocument(document, view, TYPE_LOCK).execute();
 
                     enableDisableViews(spinner, editTexts, false);
-                } else if (isChecked && !checkValue){
+                } else if (isChecked){
                     switchLock.setChecked(false);
                 }
                 else {
@@ -168,8 +144,6 @@ public class ThirdFragment extends Fragment implements View.OnClickListener{
                 }
             }
         });
-
-        return view;
     }
 
     @Override
@@ -212,18 +186,6 @@ public class ThirdFragment extends Fragment implements View.OnClickListener{
                     daysCount.setText(String.valueOf(diff));
             }
         }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
-    }
-
-    private void fillSpinner(){
-        ArrayList<String> labels = new ArrayList<>();
-
-        for(int i = 0; i < ovlastenici.size(); i++){
-            labels.add(ovlastenici.get(i).Naziv);
-        }
-
-        ArrayAdapter<String> adapter = new ArrayAdapter(getActivity(), android.R.layout.simple_spinner_dropdown_item, labels);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(adapter);
     }
 
     private void makeWarningSnackbar(View view,String warning){
@@ -282,7 +244,6 @@ public class ThirdFragment extends Fragment implements View.OnClickListener{
         } else{
             result = true;
         }
-
 
         return result;
     }

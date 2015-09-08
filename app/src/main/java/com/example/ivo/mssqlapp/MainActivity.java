@@ -57,17 +57,10 @@ public class MainActivity extends AppCompatActivity {
 
         fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction().add(R.id.flContent, new FirstFragment()).commit();
+        setTitle("Lista artikala");
 
         navigationView = (NavigationView)findViewById(R.id.nvView);
         setupDrawerContent(navigationView);
-
-        /*getSupportFragmentManager().addOnBackStackChangedListener(new FragmentManager.OnBackStackChangedListener() {
-            @Override
-            public void onBackStackChanged() {
-                Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.flContent);
-                setTitle(getTitle());
-            }
-        });*/
     }
 
     @Override
