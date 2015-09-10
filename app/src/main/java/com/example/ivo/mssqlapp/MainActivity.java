@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -109,6 +110,15 @@ public class MainActivity extends AppCompatActivity {
         drawerToggle.onConfigurationChanged(newConfig);
     }
 
+    @Override
+    public void onBackPressed()
+    {
+        if (mDrawer.isDrawerOpen(GravityCompat.START))
+            mDrawer.closeDrawer(GravityCompat.START);
+        else
+            super.onBackPressed();
+    }
+
     private void setupDrawerContent(NavigationView navigationView){
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
@@ -121,7 +131,6 @@ public class MainActivity extends AppCompatActivity {
 
     public void selectDrawerItem(MenuItem menuItem){
         Fragment fragment = null;
-        final String fragmentTag = "";
 
         Class fragmentClass;
         switch (menuItem.getItemId()){
@@ -145,7 +154,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         fragmentManager = getSupportFragmentManager();
-        fragmentManager.beginTransaction().replace(R.id.flContent, fragment, fragmentTag).addToBackStack(fragmentTag).commit();
+        fragmentManager.beginTransaction().replace(R.id.flContent, fragment).commit();
 
         menuItem.setChecked(true);
         setTitle(menuItem.getTitle());

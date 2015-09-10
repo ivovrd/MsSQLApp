@@ -13,7 +13,9 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Created by Ivo on 1.7.2015..
@@ -32,10 +34,11 @@ public class SecondFragment extends Fragment {
         try{
             connect = DatabaseConnection.Connect();
             statement = connect.createStatement();
-            ResultSet result = statement.executeQuery("select top 10 Sifra, Naziv, Opis from Sifrarnici.Artikl");
+            ResultSet result = statement.executeQuery("select top 10 Sifra, Datum, Napomena from UpravljanjeLjudskimResursima.Dokument");
 
             while(result.next()){
-                ContactManager.getInstance().setContacts(result.getString("Sifra"), result.getString("Naziv"), result.getString("Opis"));
+                SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy.", Locale.ENGLISH);
+                ContactManager.getInstance().setContacts(result.getString("Sifra"), String.valueOf(dateFormat.format(result.getDate("Datum"))), result.getString("Napomena"));
             }
         }catch(SQLException e){
             Log.e("SQL error", e.getMessage());
@@ -65,5 +68,11 @@ public class SecondFragment extends Fragment {
             }
         });
         return view;
+    }
+
+    @Override
+    public void onDestroyView() {
+        ContactManager.getInstance().getContacts().clear();
+        super.onDestroyView();
     }
 }

@@ -80,8 +80,8 @@ public class ContactAdapter extends RecyclerView.Adapter {
     public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int i) {
         if(viewHolder instanceof ContactViewHolder) {
             Contact contact = contacts.get(i);
-            ((ContactViewHolder) viewHolder).firstName.setText(contact.firstName);
-            ((ContactViewHolder) viewHolder).lastName.setText(contact.lastName);
+            ((ContactViewHolder) viewHolder).firstName.setText("Šifra dokumenta: " + contact.firstName);
+            ((ContactViewHolder) viewHolder).lastName.setText("Datum kreiranja: " + contact.lastName);
         }else{
             ((ProgressViewHolder)viewHolder).progressBar.setIndeterminate(true);
         }
@@ -109,8 +109,8 @@ public class ContactAdapter extends RecyclerView.Adapter {
 
         public ContactViewHolder(View itemView) {
             super(itemView);
-            firstName = (TextView)itemView.findViewById(R.id.contactFirstName);
-            lastName = (TextView)itemView.findViewById(R.id.contactLastName);
+            firstName = (TextView)itemView.findViewById(R.id.sifraDokumenta);
+            lastName = (TextView)itemView.findViewById(R.id.datumNastanka);
             itemView.setOnClickListener(this);
         }
 

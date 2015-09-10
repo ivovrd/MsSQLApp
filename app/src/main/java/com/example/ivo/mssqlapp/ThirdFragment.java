@@ -59,7 +59,7 @@ public class ThirdFragment extends Fragment implements View.OnClickListener{
 
         spinner = (Spinner)view.findViewById(R.id.spinner);
         year = (EditText)view.findViewById(R.id.editYear);
-        dateFormat = new SimpleDateFormat("dd.MM.yyyy", Locale.ENGLISH);
+        dateFormat = new SimpleDateFormat("dd.MM.yyyy.", Locale.ENGLISH);
         dateFrom = (EditText)view.findViewById(R.id.editDateFrom);
         dateTo = (EditText)view.findViewById(R.id.editDateTo);
         daysCount = (EditText)view.findViewById(R.id.daysCount);
@@ -164,7 +164,7 @@ public class ThirdFragment extends Fragment implements View.OnClickListener{
             public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
                 Calendar newDate = Calendar.getInstance();
                 newDate.set(year, monthOfYear, dayOfMonth);
-                dateFrom.setText(dateFormat.format(newDate.getTime()) + ".");
+                dateFrom.setText(dateFormat.format(newDate.getTime()));
                 dateFromSet = true;
                 from = newDate.getTimeInMillis();
                 diff = (to - from)/(24*60*60*1000);
@@ -178,7 +178,7 @@ public class ThirdFragment extends Fragment implements View.OnClickListener{
             public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
                 Calendar newDate = Calendar.getInstance();
                 newDate.set(year, monthOfYear, dayOfMonth);
-                dateTo.setText(dateFormat.format(newDate.getTime()) + ".");
+                dateTo.setText(dateFormat.format(newDate.getTime()));
                 dateToSet = true;
                 to = newDate.getTimeInMillis();
                 diff = (to - from)/(24*60*60*1000);
