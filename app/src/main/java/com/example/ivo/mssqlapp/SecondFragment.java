@@ -21,20 +21,20 @@ import java.util.Locale;
  * Created by Ivo on 1.7.2015..
  */
 public class SecondFragment extends Fragment {
-    private Connection connect;
-    private Statement statement;
-    private RecyclerView recyclerView;
     private ContactAdapter contactAdapter;
     private List<Contact> contacts;
 
     @Override
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
+        SessionManager session = new SessionManager(getActivity());
+        Connection connect;
+        Statement statement;
 
         try{
             connect = DatabaseConnection.Connect();
             statement = connect.createStatement();
-            ResultSet result = statement.executeQuery("select top 10 Sifra, Datum, Napomena from UpravljanjeLjudskimResursima.Dokument");
+            ResultSet result = statement.executeQuery("SELECT TOP 10 Sifra, Datum, Napomena FROM UpravljanjeLjudskimResursima.Dokument WHERE KorisnikId=" + session.getUserId());
 
             while(result.next()){
                 SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy.", Locale.ENGLISH);
@@ -48,7 +48,7 @@ public class SecondFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view =  inflater.inflate(R.layout.second_fragment, container, false);
-        recyclerView = (RecyclerView)view.findViewById(R.id.recyclerList2);
+        RecyclerView recyclerView = (RecyclerView)view.findViewById(R.id.recyclerList2);
         recyclerView.setHasFixedSize(true);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());

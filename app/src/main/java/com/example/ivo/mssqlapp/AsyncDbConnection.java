@@ -7,7 +7,9 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Created by Ivo on 4.7.2015..
@@ -38,7 +40,7 @@ public class AsyncDbConnection extends AsyncTask<Void, Void, ResultSet> {
         try{
             connect = DatabaseConnection.Connect();
             statement = connect.createStatement();
-            result = statement.executeQuery("select Sifra, TrajanjeDana, Napomena from UpravljanjeLjudskimResursima.Dokument where ID between " + String.valueOf(start) + " and " + String.valueOf(end));
+            result = statement.executeQuery("select Sifra, Datum, Napomena from UpravljanjeLjudskimResursima.Dokument ORDER BY Id OFFSET " + String.valueOf(start) + " ROWS FETCH NEXT 10 ROWS ONLY");
         }catch(SQLException e){
             Log.e("SQL error", e.getMessage());
         }
@@ -57,7 +59,8 @@ public class AsyncDbConnection extends AsyncTask<Void, Void, ResultSet> {
 
         try {
             while(result.next()){
-                ContactManager.getInstance().setContacts(result.getString("Sifra"), String.valueOf(result.getString("TrajanjeDana")), result.getString("Napomena"));
+                SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy.", Locale.ENGLISH);
+                ContactManager.getInstance().setContacts(result.getString("Sifra"), String.valueOf(dateFormat.format(result.getDate("Datum"))), result.getString("Napomena"));
                 mAdapter.notifyDataSetChanged();
             }
         } catch (SQLException e) {

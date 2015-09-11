@@ -22,16 +22,14 @@ import java.util.Locale;
  * Created by Ivo on 1.7.2015..
  */
 public class FirstFragment extends Fragment{
-
-    private RecyclerView mRecyclerView;
-    private Connection connect;
-    private Statement statement;
     private ContactAdapter mAdapter;
     private List<Contact> contacts;
 
     @Override
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
+        Connection connect;
+        Statement statement;
 
         try{
             connect = DatabaseConnection.Connect();
@@ -52,7 +50,7 @@ public class FirstFragment extends Fragment{
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.first_fragment, container, false);
 
-        mRecyclerView = (RecyclerView)view.findViewById(R.id.recyclerList);
+        RecyclerView mRecyclerView = (RecyclerView)view.findViewById(R.id.recyclerList);
         mRecyclerView.setHasFixedSize(true);
         LinearLayoutManager mLayoutManager = new LinearLayoutManager(getActivity().getApplicationContext());
         mRecyclerView.setLayoutManager(mLayoutManager);

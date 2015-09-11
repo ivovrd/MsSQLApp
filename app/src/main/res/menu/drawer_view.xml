@@ -5,15 +5,15 @@
         <item
             android:id="@+id/nav_first_fragment"
             android:icon="@drawable/ic_android_black_24dp"
-            android:title="Lista artikala"
+            android:title="Svi zahtjevi"
             android:checked="true" />
         <item
             android:id="@+id/nav_second_fragment"
             android:icon="@drawable/ic_shopping_cart_black_24dp"
-            android:title="Popis artikala" />
+            android:title="Moji zahtjevi" />
         <item
             android:id="@+id/nav_third_fragment"
             android:icon="@drawable/ic_work_black_24dp"
-            android:title="Zahtjev za godišnji odmor" />
+            android:title="Novi zahtjev" />
     </group>
 </menu>

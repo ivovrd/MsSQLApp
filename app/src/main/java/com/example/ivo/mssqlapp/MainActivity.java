@@ -13,29 +13,22 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.Window;
 import android.widget.TextView;
-
-import java.lang.reflect.Array;
 import java.util.HashMap;
 
 
 public class MainActivity extends AppCompatActivity {
-
-    private Toolbar toolbar;
     private DrawerLayout mDrawer;
-    private NavigationView navigationView;
     private FragmentManager fragmentManager;
     private ActionBarDrawerToggle drawerToggle;
     private SessionManager session;
-    private TextView userDetails;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        toolbar = (Toolbar)findViewById(R.id.toolbar);
+        Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         session = new SessionManager(getApplicationContext());
@@ -45,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
         String userLastName = user.get(SessionManager.KEY_LAST_NAME);
 
         mDrawer = (DrawerLayout)findViewById(R.id.drawer_layout);
-        userDetails = (TextView)findViewById(R.id.userName);
+        TextView userDetails = (TextView)findViewById(R.id.userName);
         userDetails.setText(userFirstName + " " + userLastName);
         drawerToggle = setupDrawerToggle();
         mDrawer.setDrawerListener(drawerToggle);
@@ -58,9 +51,9 @@ public class MainActivity extends AppCompatActivity {
 
         fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction().add(R.id.flContent, new FirstFragment()).commit();
-        setTitle("Lista artikala");
+        setTitle("Svi zahtjevi");
 
-        navigationView = (NavigationView)findViewById(R.id.nvView);
+        NavigationView navigationView = (NavigationView)findViewById(R.id.nvView);
         setupDrawerContent(navigationView);
     }
 
