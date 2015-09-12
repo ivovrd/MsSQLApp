@@ -1,6 +1,7 @@
 package com.example.ivo.mssqlapp;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.StrictMode;
@@ -13,7 +14,7 @@ import java.sql.SQLException;
  * Created by Ivo on 6.7.2015..
  */
 public class DatabaseConnection {
-    private static String ipaddress = "";
+    private static String ipaddress = "192.168.2.14";
     //private static String ipaddress = "94.253.225.125";
     private static String database = "PivisDB_Prazna";
     private static String username = "admin";
@@ -25,14 +26,6 @@ public class DatabaseConnection {
         StrictMode.setThreadPolicy(policy);
         Connection connection = null;
         String connectionURL;
-
-        ConnectivityManager connectivityManager = null;
-        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
-        int networkType = networkInfo.getType();
-        if(networkType == ConnectivityManager.TYPE_WIFI)
-            ipaddress = "192.168.2.14";
-        else if (networkType == ConnectivityManager.TYPE_MOBILE)
-            ipaddress = "94.253.225.125";
 
         try{
             Class.forName("net.sourceforge.jtds.jdbc.Driver");
