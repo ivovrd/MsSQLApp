@@ -167,8 +167,8 @@ public class ThirdFragment extends Fragment implements View.OnClickListener{
                 dateFrom.setText(dateFormat.format(newDate.getTime()));
                 dateFromSet = true;
                 from = newDate.getTimeInMillis();
-                diff = (to - from)/(24*60*60*1000);
-                if(diff >= 0)
+                diff = (to - from)/(24*60*60*1000) + 1;
+                if(diff >= 1)
                     daysCount.setText(String.valueOf(diff));
             }
         }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
@@ -181,8 +181,8 @@ public class ThirdFragment extends Fragment implements View.OnClickListener{
                 dateTo.setText(dateFormat.format(newDate.getTime()));
                 dateToSet = true;
                 to = newDate.getTimeInMillis();
-                diff = (to - from)/(24*60*60*1000);
-                if(diff >= 0)
+                diff = (to - from)/(24*60*60*1000) + 1;
+                if(diff >= 1)
                     daysCount.setText(String.valueOf(diff));
             }
         }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));

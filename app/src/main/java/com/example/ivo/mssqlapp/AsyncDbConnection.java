@@ -19,7 +19,7 @@ public class AsyncDbConnection extends AsyncTask<Void, Void, ResultSet> {
     Statement statement;
     ContactAdapter mAdapter;
     private List<Contact> contacts;
-    int start, end;
+    int start;
 
     public AsyncDbConnection(ContactAdapter adapter, List<Contact> contacts){
         this.mAdapter = adapter;
@@ -29,7 +29,6 @@ public class AsyncDbConnection extends AsyncTask<Void, Void, ResultSet> {
     @Override
     protected void onPreExecute() {
         start = contacts.size();
-        end = start + 9;
         super.onPreExecute();
     }
 
