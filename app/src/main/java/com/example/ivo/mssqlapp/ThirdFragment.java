@@ -159,6 +159,9 @@ public class ThirdFragment extends Fragment implements View.OnClickListener{
         dateFrom.setOnClickListener(this);
         dateTo.setOnClickListener(this);
         final Calendar calendar = Calendar.getInstance();
+        dateFrom.setText(dateFormat.format(calendar.getTime()));
+        dateTo.setText(dateFormat.format(calendar.getTime()));
+
         dateFromPickerDialog = new DatePickerDialog(getActivity(), new DatePickerDialog.OnDateSetListener() {
             @Override
             public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {

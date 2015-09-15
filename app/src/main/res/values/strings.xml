@@ -6,10 +6,12 @@
     <string name="drawer_close">Close navigation drawer</string>
     <string name="ovlastenik">Ovlaštenik</string>
     <string name="year">Godina</string>
-    <string name="date_from">Datum od</string>
-    <string name="date_to">Datum do</string>
+    <string name="date_from">Početak godišnjeg</string>
+    <string name="date_to">Završetak godišnjeg</string>
     <string name="days">Trajanje dana</string>
     <string name="work_days">Trajanje radnih dana</string>
     <string name="napomena">Napomena</string>
     <string name="memo">Memo</string>
+    <string name="switchLabel">Zaključi </string>
+    <string name="saveButtonLabel">Spremi</string>
 </resources>

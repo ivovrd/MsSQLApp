@@ -124,7 +124,6 @@ public class MainActivity extends AppCompatActivity {
 
     public void selectDrawerItem(MenuItem menuItem){
         Fragment fragment = null;
-
         Class fragmentClass;
         switch (menuItem.getItemId()){
             case R.id.nav_first_fragment:

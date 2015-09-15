@@ -1,7 +1,9 @@
 package com.example.ivo.mssqlapp;
 
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -67,12 +69,28 @@ public class SecondFragment extends Fragment {
                 new AsyncDbConnection(contactAdapter, contacts).execute();
             }
         });
+
+        contactAdapter.setOnRecyclerViewClickListener(new RecyclerViewClickListener() {
+            @Override
+            public void recyclerViewItemClicked(View view, int position) {
+                Snackbar.make(view, "Item number " + (position + 1) + " clicked!", Snackbar.LENGTH_LONG).setAction("OK", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+
+                    }
+                }).show();
+                Fragment fragment = new NewFragment();
+                FragmentManager fragmentManager = getFragmentManager();
+                fragmentManager.beginTransaction().replace(R.id.flContent, fragment).addToBackStack("FRAGMENT_TAG").commit();
+            }
+        });
+
         return view;
     }
 
-    @Override
+    /*@Override
     public void onDestroyView() {
         ContactManager.getInstance().getContacts().clear();
         super.onDestroyView();
-    }
+    }*/
 }
