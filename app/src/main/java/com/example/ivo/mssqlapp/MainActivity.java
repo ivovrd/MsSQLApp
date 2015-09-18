@@ -22,14 +22,12 @@ public class MainActivity extends AppCompatActivity {
     private FragmentManager fragmentManager;
     private ActionBarDrawerToggle drawerToggle;
     private SessionManager session;
+    private ActionBar actionBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
 
         session = new SessionManager(getApplicationContext());
         session.checkLogin(this);
@@ -37,23 +35,38 @@ public class MainActivity extends AppCompatActivity {
         String userFirstName = user.get(SessionManager.KEY_FIRST_NAME);
         String userLastName = user.get(SessionManager.KEY_LAST_NAME);
 
+        Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
         mDrawer = (DrawerLayout)findViewById(R.id.drawer_layout);
         TextView userDetails = (TextView)findViewById(R.id.userName);
         userDetails.setText(userFirstName + " " + userLastName);
         drawerToggle = setupDrawerToggle();
-        mDrawer.setDrawerListener(drawerToggle);
+        //mDrawer.setDrawerListener(drawerToggle);
 
-        //Set the menu icon instead of the launcher icon
-        ActionBar actionBar = getSupportActionBar();
-        if(actionBar != null) {
-            actionBar.setDisplayHomeAsUpEnabled(true);
-        }
+        final NavigationView navigationView = (NavigationView)findViewById(R.id.nvView);
+        actionBar = getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        //actionBar.setHomeButtonEnabled(true);
 
         fragmentManager = getSupportFragmentManager();
-        fragmentManager.beginTransaction().add(R.id.flContent, new FirstFragment()).commit();
-        setTitle("Svi zahtjevi");
 
-        NavigationView navigationView = (NavigationView)findViewById(R.id.nvView);
+        fragmentManager.addOnBackStackChangedListener(new FragmentManager.OnBackStackChangedListener() {
+            @Override
+            public void onBackStackChanged() {
+                if (getSupportFragmentManager().getBackStackEntryCount() == 0) {
+                    if(navigationView.getMenu().getItem(0).isChecked())
+                        actionBar.setTitle(navigationView.getMenu().getItem(0).getTitle());
+                    else if (navigationView.getMenu().getItem(1).isChecked())
+                        actionBar.setTitle(navigationView.getMenu().getItem(1).getTitle());
+                    else if (navigationView.getMenu().getItem(2).isChecked())
+                        actionBar.setTitle(navigationView.getMenu().getItem(2).getTitle());
+                }
+            }
+        });
+
+        fragmentManager.beginTransaction().add(R.id.flContent, new FirstFragment()).commit();
+        actionBar.setTitle(navigationView.getMenu().getItem(0).getTitle());
+
         setupDrawerContent(navigationView);
     }
 
@@ -146,10 +159,11 @@ public class MainActivity extends AppCompatActivity {
         }
 
         fragmentManager = getSupportFragmentManager();
+        fragmentManager.popBackStack();
         fragmentManager.beginTransaction().replace(R.id.flContent, fragment).commit();
 
         menuItem.setChecked(true);
-        setTitle(menuItem.getTitle());
+        actionBar.setTitle(menuItem.getTitle());
         mDrawer.closeDrawers();
     }
 

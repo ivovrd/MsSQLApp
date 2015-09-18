@@ -99,7 +99,7 @@ public class Login extends AppCompatActivity {
             try{
                 connect = DatabaseConnection.Connect();
                 statement = connect.createStatement();
-                result = statement.executeQuery("SELECT Sifrarnici.Partner.Id, Korisnik.Id, Korisnik.KorisnickoIme, Korisnik.Lozinka, Korisnik.Ime, Korisnik.Prezime FROM Korisnik INNER JOIN Sifrarnici.Partner ON Korisnik.OIB=Sifrarnici.Partner.OIB where Korisnik.KorisnickoIme='" + name + "' and Korisnik.Lozinka='" + pass + "'");
+                result = statement.executeQuery("SELECT Sifrarnici.Partner.Id, Korisnik.Id, Korisnik.KorisnickoIme, Korisnik.Lozinka, Korisnik.Ime, Korisnik.Prezime FROM Korisnik INNER JOIN Sifrarnici.Partner ON Korisnik.OIB=Sifrarnici.Partner.OIB WHERE Korisnik.KorisnickoIme='" + name + "' and Korisnik.Lozinka='" + pass + "'");
             }catch(SQLException e){
                 Log.e("SQL error", e.getMessage());
             }

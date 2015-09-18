@@ -1,14 +1,15 @@
 package com.example.ivo.mssqlapp;
 
 import android.os.Bundle;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import java.sql.Connection;
@@ -31,6 +32,7 @@ public class FirstFragment extends Fragment{
         super.onCreate(savedInstanceState);
         Connection connect;
         Statement statement;
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy.", Locale.ENGLISH);
 
         try{
             connect = DatabaseConnection.Connect();
@@ -38,7 +40,6 @@ public class FirstFragment extends Fragment{
             ResultSet result = statement.executeQuery("select top 10 Sifra, Datum, Napomena from UpravljanjeLjudskimResursima.Dokument");
 
             while(result.next()){
-                SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy.", Locale.ENGLISH);
                 ContactManager.getInstance().setContacts(result.getString("Sifra"), String.valueOf(dateFormat.format(result.getDate("Datum"))), result.getString("Napomena"));
             }
 
@@ -72,15 +73,23 @@ public class FirstFragment extends Fragment{
         mAdapter.setOnRecyclerViewClickListener(new RecyclerViewClickListener() {
             @Override
             public void recyclerViewItemClicked(View view, int position) {
-                Snackbar.make(view, "Item number " + (position + 1) + " clicked!", Snackbar.LENGTH_LONG).setAction("OK", new View.OnClickListener() {
+                /*Snackbar.make(view, "Item number " + (position + 1) + " clicked!", Snackbar.LENGTH_LONG).setAction("OK", new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
 
                     }
-                }).show();
+                }).show();*/
+
+                contacts = ContactManager.getInstance().getContacts();
+                Bundle args = new Bundle();
+                args.putString("DOC_SIFRA", contacts.get(position).firstName);
+
                 Fragment fragment = new NewFragment();
-                FragmentManager fragmentManager = getFragmentManager();
-                fragmentManager.beginTransaction().replace(R.id.flContent, fragment).addToBackStack("FRAGMENT_TAG").commit();
+                fragment.setArguments(args);
+                FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+
+                fragmentManager.beginTransaction().replace(R.id.flContent, fragment).addToBackStack("firstFragment").commit();
+                ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle("");
             }
         });
 

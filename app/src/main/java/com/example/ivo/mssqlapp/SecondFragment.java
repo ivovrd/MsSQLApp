@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -73,15 +74,23 @@ public class SecondFragment extends Fragment {
         contactAdapter.setOnRecyclerViewClickListener(new RecyclerViewClickListener() {
             @Override
             public void recyclerViewItemClicked(View view, int position) {
-                Snackbar.make(view, "Item number " + (position + 1) + " clicked!", Snackbar.LENGTH_LONG).setAction("OK", new View.OnClickListener() {
+                /*Snackbar.make(view, "Item number " + (position + 1) + " clicked!", Snackbar.LENGTH_LONG).setAction("OK", new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
 
                     }
-                }).show();
+                }).show();*/
+                contacts = ContactManager.getInstance().getContacts();
+                Bundle args = new Bundle();
+                args.putString("DOC_SIFRA", contacts.get(position).firstName);
+
                 Fragment fragment = new NewFragment();
-                FragmentManager fragmentManager = getFragmentManager();
+                fragment.setArguments(args);
+                FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+
+
                 fragmentManager.beginTransaction().replace(R.id.flContent, fragment).addToBackStack("FRAGMENT_TAG").commit();
+                ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle("");
             }
         });
 
