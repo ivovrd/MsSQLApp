@@ -35,11 +35,11 @@ public class AsyncSavingDocument extends AsyncTask<Void, Void, Void> {
             statement = connect.createStatement();
             if(task == 0){
                 String queryPartOne, queryPartTwo;
-                queryPartOne = "INSERT INTO UpravljanjeLjudskimResursima.Dokument (Sifra, TipDokumentaSifra, ZaposlenikId, OvlastenikId, Datum, Napomena, Memo, DatumOd, DatumDo, KorisnikId, KorisnikLastId, Status, TrajanjeDana, TrajanjeRadnihDana) VALUES ";
-                queryPartTwo = "(" + newDocument.Sifra + ", " + newDocument.TipDokumenta + ", " + newDocument.ZaposlenikId +  ", " + newDocument.OvlastenikId + ", CURRENT_TIMESTAMP, " + newDocument.Napomena + ", " + newDocument.Memo + ", " + newDocument.DatumOd + ", " + newDocument.DatumDo + ", " + newDocument.KorisnikId + ", " + newDocument.KorisnikId + ", " + newDocument.Status + ", " + newDocument.Dani + ", " + newDocument.RadniDani + ")";
+                queryPartOne = "INSERT INTO UpravljanjeLjudskimResursima.Dokument (Sifra, TipDokumentaSifra, ZaposlenikId, OvlastenikId, Datum, Napomena, Memo, DatumOd, DatumDo, KorisnikId, KorisnikLastId, Status, TrajanjeDana, TrajanjeRadnihDana, GodinaGodisnjegOdmora) VALUES ";
+                queryPartTwo = "(" + newDocument.Sifra + ", " + newDocument.TipDokumenta + ", " + newDocument.ZaposlenikId +  ", " + newDocument.OvlastenikId + ", CURRENT_TIMESTAMP, " + newDocument.Napomena + ", " + newDocument.Memo + ", " + newDocument.DatumOd + ", " + newDocument.DatumDo + ", " + newDocument.KorisnikId + ", " + newDocument.KorisnikId + ", " + newDocument.Status + ", " + newDocument.Dani + ", " + newDocument.RadniDani + ", " + newDocument.Godina + ")";
                 statement.executeUpdate(queryPartOne + queryPartTwo);
             } else if (task == 1){
-                String queryUpdate = "UPDATE UpravljanjeLjudskimResursima.Dokument SET OvlastenikId=" + newDocument.OvlastenikId + ", Datum=CURRENT_TIMESTAMP, Napomena=" + newDocument.Napomena + ", Memo=" + newDocument.Memo + ", DatumOd=" + newDocument.DatumOd + ", DatumDo=" + newDocument.DatumDo +  ", Status=" + newDocument.Status + ", TrajanjeDana=" + newDocument.Dani + ", TrajanjeRadnihDana=" + newDocument.RadniDani + " WHERE Sifra=" + newDocument.Sifra;
+                String queryUpdate = "UPDATE UpravljanjeLjudskimResursima.Dokument SET OvlastenikId=" + newDocument.OvlastenikId + ", Datum=CURRENT_TIMESTAMP, Napomena=" + newDocument.Napomena + ", Memo=" + newDocument.Memo + ", DatumOd=" + newDocument.DatumOd + ", DatumDo=" + newDocument.DatumDo +  ", Status=" + newDocument.Status + ", TrajanjeDana=" + newDocument.Dani + ", TrajanjeRadnihDana=" + newDocument.RadniDani + ", GodinaGodisnjegOdmora=" + newDocument.Godina + " WHERE Sifra=" + newDocument.Sifra;
                 statement.executeUpdate(queryUpdate);
             } else if (task == 2){
                 String queryLock = "UPDATE UpravljanjeLjudskimResursima.Dokument SET Status=" + newDocument.Status + " WHERE Sifra=" + newDocument.Sifra;
@@ -73,7 +73,7 @@ public class AsyncSavingDocument extends AsyncTask<Void, Void, Void> {
             snackBarText = "Dokument zaključen!";
         }
         else if (task == 2){
-            snackBarText = "Dokument otključan!";
+            snackBarText = "Dokument otključen!";
         }
 
         Snackbar.make(view, snackBarText, Snackbar.LENGTH_LONG).setAction("OK", new View.OnClickListener() {

@@ -96,9 +96,9 @@ public class FirstFragment extends Fragment{
         return view;
     }
 
-    /*@Override
+    @Override
     public void onDestroyView() {
         ContactManager.getInstance().getContacts().clear();
         super.onDestroyView();
-    }*/
+    }
 }

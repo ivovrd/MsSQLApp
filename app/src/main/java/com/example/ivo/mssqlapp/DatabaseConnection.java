@@ -15,7 +15,7 @@ import java.sql.SQLException;
  */
 public class DatabaseConnection {
     private static String ipaddress = "192.168.2.14";
-    //private static String ipaddress = "109.60.41.136";
+    //private static String ipaddress = "94.253.226.233";
     private static String database = "PivisDB_Prazna";
     private static String username = "admin";
     private static String password = "admin123";

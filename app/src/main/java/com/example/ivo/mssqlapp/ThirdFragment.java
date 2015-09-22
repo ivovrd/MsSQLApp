@@ -109,7 +109,7 @@ public class ThirdFragment extends Fragment implements View.OnClickListener{
 
                     int userId = Integer.valueOf(sessionManager.getUserId());
                     int partnerId = Integer.valueOf(sessionManager.getPartnerId());
-                    document = new DocumentData(FIXED_PART_SIFRA + String.valueOf(docNum), TIP_DOKUMENTA, partnerId, ovlastenici.get(ovlastenikPickedIndex).Id, userId, isLocked, Integer.valueOf(daysCount.getText().toString()), Integer.valueOf(workDaysCount.getText().toString()), clearDateString(dateFrom.getText().toString()), clearDateString(dateTo.getText().toString()), addApostrophe(remark.getText().toString()), addApostrophe(memo.getText().toString()));
+                    document = new DocumentData(FIXED_PART_SIFRA + String.valueOf(docNum), TIP_DOKUMENTA, partnerId, ovlastenici.get(ovlastenikPickedIndex).Id, userId, isLocked, Integer.valueOf(daysCount.getText().toString()), Integer.valueOf(workDaysCount.getText().toString()), Integer.valueOf(year.getText().toString()), clearDateString(dateFrom.getText().toString()), clearDateString(dateTo.getText().toString()), addApostrophe(remark.getText().toString()), addApostrophe(memo.getText().toString()));
                     new AsyncSavingDocument(document, view, TYPE_SAVE).execute();
                 }
             }
@@ -127,7 +127,7 @@ public class ThirdFragment extends Fragment implements View.OnClickListener{
 
                     int userId = Integer.valueOf(sessionManager.getUserId());
                     int partnerId = Integer.valueOf(sessionManager.getPartnerId());
-                    document = new DocumentData(FIXED_PART_SIFRA + String.valueOf(docNum), TIP_DOKUMENTA, partnerId, ovlastenici.get(ovlastenikPickedIndex).Id, userId, isLocked, Integer.valueOf(daysCount.getText().toString()), Integer.valueOf(workDaysCount.getText().toString()), clearDateString(dateFrom.getText().toString()), clearDateString(dateTo.getText().toString()), addApostrophe(remark.getText().toString()), addApostrophe(memo.getText().toString()));
+                    document = new DocumentData(FIXED_PART_SIFRA + String.valueOf(docNum), TIP_DOKUMENTA, partnerId, ovlastenici.get(ovlastenikPickedIndex).Id, userId, isLocked, Integer.valueOf(daysCount.getText().toString()), Integer.valueOf(workDaysCount.getText().toString()), Integer.valueOf(year.getText().toString()), clearDateString(dateFrom.getText().toString()), clearDateString(dateTo.getText().toString()), addApostrophe(remark.getText().toString()), addApostrophe(memo.getText().toString()));
                     new AsyncSavingDocument(document, view, TYPE_LOCK).execute();
 
                     enableDisableViews(spinner, editTexts, false);
@@ -237,7 +237,7 @@ public class ThirdFragment extends Fragment implements View.OnClickListener{
         }
 
         if (!yearSet) {
-            makeWarningSnackbar(view, "Nije unesena točna godina!");
+            makeWarningSnackbar(view, "Nije unesena godina!");
         } else if (!dateFromSet) {
             makeWarningSnackbar(view, "Nije unesen datum početka godišnjeg!");
         } else if (!dateToSet) {
