@@ -98,7 +98,7 @@ public class FirstFragment extends Fragment{
 
     @Override
     public void onDestroyView() {
-        ContactManager.getInstance().getContacts().clear();
+        //ContactManager.getInstance().getContacts().clear();
         super.onDestroyView();
     }
 }
