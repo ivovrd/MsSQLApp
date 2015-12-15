@@ -74,12 +74,6 @@ public class SecondFragment extends Fragment {
         contactAdapter.setOnRecyclerViewClickListener(new RecyclerViewClickListener() {
             @Override
             public void recyclerViewItemClicked(View view, int position) {
-                /*Snackbar.make(view, "Item number " + (position + 1) + " clicked!", Snackbar.LENGTH_LONG).setAction("OK", new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-
-                    }
-                }).show();*/
                 contacts = ContactManager.getInstance().getContacts();
                 Bundle args = new Bundle();
                 args.putString("DOC_SIFRA", contacts.get(position).firstName);
@@ -99,7 +93,8 @@ public class SecondFragment extends Fragment {
 
     @Override
     public void onDestroyView() {
-        //ContactManager.getInstance().getContacts().clear();
+        if(ContactManager.getInstance().getContacts() != null)
+            ContactManager.getInstance().getContacts().clear();
         super.onDestroyView();
     }
 }
