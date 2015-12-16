@@ -127,7 +127,7 @@ public class Login extends AppCompatActivity {
                     startActivity(intent);
                     finish();
                 } else {
-                    errorLbl.setText("Wrong username or password, please try again!");
+                    errorLbl.setText("Pogrešno uneseno korisničko ime ili lozinka!");
                 }
             }catch (SQLException e){
                 Log.e("SQL error", e.getMessage());
