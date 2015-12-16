@@ -79,13 +79,13 @@ public class NewFragment extends Fragment {
 
             try{
                 while (resultSet.next()){
-                    docSifra.setText(resultSet.getString(1));
-                    docOvlastenik.setText(resultSet.getString(2));
-                    docDate.setText(String.valueOf(dateFormat.format(resultSet.getDate(3))));
-                    docDateFrom.setText(String.valueOf(dateFormat.format(resultSet.getDate(4))));
-                    docDateTo.setText(String.valueOf(dateFormat.format(resultSet.getDate(5))));
-                    docDani.setText(String.valueOf(resultSet.getInt(6)));
-                    docRadniDani.setText(String.valueOf(resultSet.getInt(7)));
+                    docSifra.setText("Šifra dokumenta: " + resultSet.getString(1));
+                    docOvlastenik.setText("Ovlaštenik: " + resultSet.getString(2));
+                    docDate.setText("Datum stvaranja dokumenta: " + String.valueOf(dateFormat.format(resultSet.getDate(3))));
+                    docDateFrom.setText("Početak godišnjeg odmora: " + String.valueOf(dateFormat.format(resultSet.getDate(4))));
+                    docDateTo.setText("Kraj godišnjeg odmora: " + String.valueOf(dateFormat.format(resultSet.getDate(5))));
+                    docDani.setText("Trajanje dana: " + String.valueOf(resultSet.getInt(6)));
+                    docRadniDani.setText("Trajanje radnih dana: " + String.valueOf(resultSet.getInt(7)));
                 }
 
             }catch (SQLException e){

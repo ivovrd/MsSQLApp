@@ -17,18 +17,18 @@ import java.util.Locale;
 public class AsyncDbConnection extends AsyncTask<Void, Void, ResultSet> {
     Connection connect;
     Statement statement;
-    ContactAdapter mAdapter;
-    private List<Contact> contacts;
+    DocPrevAdapter mAdapter;
+    private List<DocPrev> docPrevList;
     int start;
 
-    public AsyncDbConnection(ContactAdapter adapter, List<Contact> contacts){
+    public AsyncDbConnection(DocPrevAdapter adapter, List<DocPrev> docPrevList){
         this.mAdapter = adapter;
-        this.contacts = contacts;
+        this.docPrevList = docPrevList;
     }
 
     @Override
     protected void onPreExecute() {
-        start = contacts.size();
+        start = docPrevList.size();
         super.onPreExecute();
     }
 
@@ -53,13 +53,13 @@ public class AsyncDbConnection extends AsyncTask<Void, Void, ResultSet> {
 
     @Override
     protected void onPostExecute(ResultSet result) {
-        contacts.remove(contacts.size() - 1);
-        mAdapter.notifyItemRemoved(contacts.size());
+        docPrevList.remove(docPrevList.size() - 1);
+        mAdapter.notifyItemRemoved(docPrevList.size());
 
         try {
             while(result.next()){
                 SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy.", Locale.ENGLISH);
-                ContactManager.getInstance().setContacts(result.getString("Sifra"), String.valueOf(dateFormat.format(result.getDate("Datum"))), result.getString("Napomena"));
+                DocPrevManager.getInstance().setDocPrevs(result.getString("Sifra"), String.valueOf(dateFormat.format(result.getDate("Datum"))), result.getString("Napomena"));
                 mAdapter.notifyDataSetChanged();
             }
         } catch (SQLException e) {

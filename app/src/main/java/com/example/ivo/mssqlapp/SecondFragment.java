@@ -24,12 +24,16 @@ import java.util.Locale;
  * Created by Ivo on 1.7.2015..
  */
 public class SecondFragment extends Fragment {
-    private ContactAdapter contactAdapter;
-    private List<Contact> contacts;
+    private DocPrevAdapter mAdapter;
+    private List<DocPrev> docPrevList;
 
     @Override
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         SessionManager session = new SessionManager(getActivity());
         Connection connect;
         Statement statement;
@@ -41,15 +45,12 @@ public class SecondFragment extends Fragment {
 
             while(result.next()){
                 SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy.", Locale.ENGLISH);
-                ContactManager.getInstance().setContacts(result.getString("Sifra"), String.valueOf(dateFormat.format(result.getDate("Datum"))), result.getString("Napomena"));
+                DocPrevManager.getInstance().setDocPrevs(result.getString("Sifra"), String.valueOf(dateFormat.format(result.getDate("Datum"))), result.getString("Napomena"));
             }
         }catch(SQLException e){
             Log.e("SQL error", e.getMessage());
         }
-    }
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view =  inflater.inflate(R.layout.second_fragment, container, false);
         RecyclerView recyclerView = (RecyclerView)view.findViewById(R.id.recyclerList2);
         recyclerView.setHasFixedSize(true);
@@ -58,25 +59,25 @@ public class SecondFragment extends Fragment {
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.addItemDecoration(new DividerItemDecoration(getActivity(), LinearLayoutManager.VERTICAL));
-        contactAdapter = new NewContactAdapter(ContactManager.getInstance().getContacts(),recyclerView);
-        recyclerView.setAdapter(contactAdapter);
+        mAdapter = new NewContactAdapter(DocPrevManager.getInstance().getDocPrevs(),recyclerView);
+        recyclerView.setAdapter(mAdapter);
 
-        contactAdapter.setOnLoadMoreListener(new OnLoadMoreListener() {
+        mAdapter.setOnLoadMoreListener(new OnLoadMoreListener() {
             @Override
             public void onLoadMore() {
-                contacts = ContactManager.getInstance().getContacts();
-                contacts.add(null);
-                contactAdapter.notifyItemInserted(contacts.size() - 1);
-                new AsyncDbConnection(contactAdapter, contacts).execute();
+                docPrevList = DocPrevManager.getInstance().getDocPrevs();
+                docPrevList.add(null);
+                mAdapter.notifyItemInserted(docPrevList.size() - 1);
+                new AsyncDbConnection(mAdapter, docPrevList).execute();
             }
         });
 
-        contactAdapter.setOnRecyclerViewClickListener(new RecyclerViewClickListener() {
+        mAdapter.setOnRecyclerViewClickListener(new RecyclerViewClickListener() {
             @Override
             public void recyclerViewItemClicked(View view, int position) {
-                contacts = ContactManager.getInstance().getContacts();
+                docPrevList = DocPrevManager.getInstance().getDocPrevs();
                 Bundle args = new Bundle();
-                args.putString("DOC_SIFRA", contacts.get(position).firstName);
+                args.putString("DOC_SIFRA", docPrevList.get(position).sifra);
 
                 Fragment fragment = new NewFragment();
                 fragment.setArguments(args);
@@ -84,7 +85,7 @@ public class SecondFragment extends Fragment {
 
 
                 fragmentManager.beginTransaction().replace(R.id.flContent, fragment).addToBackStack("FRAGMENT_TAG").commit();
-                ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle("");
+                ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle("Pregled dokumeta");
             }
         });
 
@@ -93,8 +94,8 @@ public class SecondFragment extends Fragment {
 
     @Override
     public void onDestroyView() {
-        if(ContactManager.getInstance().getContacts() != null)
-            ContactManager.getInstance().getContacts().clear();
+        if(DocPrevManager.getInstance().getDocPrevs() != null)
+            DocPrevManager.getInstance().getDocPrevs().clear();
         super.onDestroyView();
     }
 }

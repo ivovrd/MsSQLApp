@@ -24,12 +24,16 @@ import java.util.Locale;
  * Created by Ivo on 1.7.2015..
  */
 public class FirstFragment extends Fragment{
-    private ContactAdapter mAdapter;
-    private List<Contact> contacts;
+    private DocPrevAdapter mAdapter;
+    private List<DocPrev> docPrevList;
 
     @Override
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         Connection connect;
         Statement statement;
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy.", Locale.ENGLISH);
@@ -40,16 +44,13 @@ public class FirstFragment extends Fragment{
             ResultSet result = statement.executeQuery("select top 10 Sifra, Datum, Napomena from UpravljanjeLjudskimResursima.Dokument");
 
             while(result.next()){
-                ContactManager.getInstance().setContacts(result.getString("Sifra"), String.valueOf(dateFormat.format(result.getDate("Datum"))), result.getString("Napomena"));
+                DocPrevManager.getInstance().setDocPrevs(result.getString("Sifra"), String.valueOf(dateFormat.format(result.getDate("Datum"))), result.getString("Napomena"));
             }
 
         }catch(SQLException e){
             Log.e("SQL error", e.getMessage());
         }
-    }
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.first_fragment, container, false);
 
         RecyclerView mRecyclerView = (RecyclerView)view.findViewById(R.id.recyclerList);
@@ -57,16 +58,16 @@ public class FirstFragment extends Fragment{
         LinearLayoutManager mLayoutManager = new LinearLayoutManager(getActivity().getApplicationContext());
         mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
-        mAdapter = new ContactAdapter(ContactManager.getInstance().getContacts(), mRecyclerView);
+        mAdapter = new DocPrevAdapter(DocPrevManager.getInstance().getDocPrevs(), mRecyclerView);
         mRecyclerView.setAdapter(mAdapter);
 
         mAdapter.setOnLoadMoreListener(new OnLoadMoreListener() {
             @Override
             public void onLoadMore() {
-                contacts = ContactManager.getInstance().getContacts();
-                contacts.add(null);
-                mAdapter.notifyItemInserted(contacts.size() - 1);
-                new AsyncDbConnection(mAdapter, contacts).execute();
+                docPrevList = DocPrevManager.getInstance().getDocPrevs();
+                docPrevList.add(null);
+                mAdapter.notifyItemInserted(docPrevList.size() - 1);
+                new AsyncDbConnection(mAdapter, docPrevList).execute();
             }
         });
 
@@ -74,16 +75,16 @@ public class FirstFragment extends Fragment{
             @Override
             public void recyclerViewItemClicked(View view, int position) {
 
-                contacts = ContactManager.getInstance().getContacts();
+                docPrevList = DocPrevManager.getInstance().getDocPrevs();
                 Bundle args = new Bundle();
-                args.putString("DOC_SIFRA", contacts.get(position).firstName);
+                args.putString("DOC_SIFRA", docPrevList.get(position).sifra);
 
                 Fragment fragment = new NewFragment();
                 fragment.setArguments(args);
                 FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
 
                 fragmentManager.beginTransaction().replace(R.id.flContent, fragment).addToBackStack("firstFragment").commit();
-                ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle("");
+                ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle("Pregled dokumenta");
             }
         });
 
@@ -92,8 +93,8 @@ public class FirstFragment extends Fragment{
 
     @Override
     public void onDestroyView() {
-        if(ContactManager.getInstance().getContacts() != null)
-            ContactManager.getInstance().getContacts().clear();
+        if(DocPrevManager.getInstance().getDocPrevs() != null)
+            DocPrevManager.getInstance().getDocPrevs().clear();
         super.onDestroyView();
     }
 }

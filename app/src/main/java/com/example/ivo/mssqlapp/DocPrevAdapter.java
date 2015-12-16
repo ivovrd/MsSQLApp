@@ -15,8 +15,8 @@ import java.util.List;
 /**
  * Created by Ivo on 1.7.2015..
  */
-public class ContactAdapter extends RecyclerView.Adapter {
-    private List<Contact> contacts;
+public class DocPrevAdapter extends RecyclerView.Adapter {
+    private List<DocPrev> docPrevList;
     private final int VIEW_ITEM = 1;
     private final int VIEW_PROG = 0;
 
@@ -25,8 +25,8 @@ public class ContactAdapter extends RecyclerView.Adapter {
     private OnLoadMoreListener onLoadMoreListener;
     private static RecyclerViewClickListener recyclerViewClickListener;
 
-    public ContactAdapter(List<Contact> contacts, RecyclerView recyclerView){
-        this.contacts = contacts;
+    public DocPrevAdapter(List<DocPrev> docPrevList, RecyclerView recyclerView){
+        this.docPrevList = docPrevList;
 
         if(recyclerView.getLayoutManager() instanceof LinearLayoutManager){
             final LinearLayoutManager linearLayoutManager = (LinearLayoutManager)recyclerView.getLayoutManager();
@@ -62,14 +62,14 @@ public class ContactAdapter extends RecyclerView.Adapter {
 
     @Override
     public int getItemViewType(int position){
-        return contacts.get(position) != null ? VIEW_ITEM : VIEW_PROG;
+        return docPrevList.get(position) != null ? VIEW_ITEM : VIEW_PROG;
     }
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
         RecyclerView.ViewHolder holder;
         if(viewType == VIEW_ITEM){
-            holder = new ContactViewHolder(LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.recycler_item, viewGroup, false));
+            holder = new DocPrevViewHolder(LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.recycler_item, viewGroup, false));
         }else{
             holder = new ProgressViewHolder(LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.progressbar_item, viewGroup, false));
         }
@@ -78,10 +78,10 @@ public class ContactAdapter extends RecyclerView.Adapter {
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int i) {
-        if(viewHolder instanceof ContactViewHolder) {
-            Contact contact = contacts.get(i);
-            ((ContactViewHolder) viewHolder).firstName.setText("Šifra dokumenta: " + contact.firstName);
-            ((ContactViewHolder) viewHolder).lastName.setText("Datum kreiranja: " + contact.lastName);
+        if(viewHolder instanceof DocPrevViewHolder) {
+            DocPrev docPrev = docPrevList.get(i);
+            ((DocPrevViewHolder) viewHolder).sifra.setText("Šifra dokumenta: " + docPrev.sifra);
+            ((DocPrevViewHolder) viewHolder).datum.setText("Datum kreiranja: " + docPrev.datum);
         }else{
             ((ProgressViewHolder)viewHolder).progressBar.setIndeterminate(true);
         }
@@ -89,7 +89,7 @@ public class ContactAdapter extends RecyclerView.Adapter {
 
     @Override
     public int getItemCount() {
-        return contacts == null ? 0 : contacts.size();
+        return docPrevList == null ? 0 : docPrevList.size();
     }
 
     public void setLoaded() {
@@ -104,13 +104,13 @@ public class ContactAdapter extends RecyclerView.Adapter {
         this.recyclerViewClickListener = recyclerViewClickListener;
     }
 
-    public static class ContactViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
-        public TextView firstName, lastName;
+    public static class DocPrevViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+        public TextView sifra, datum;
 
-        public ContactViewHolder(View itemView) {
+        public DocPrevViewHolder(View itemView) {
             super(itemView);
-            firstName = (TextView)itemView.findViewById(R.id.sifraDokumenta);
-            lastName = (TextView)itemView.findViewById(R.id.datumNastanka);
+            sifra = (TextView)itemView.findViewById(R.id.sifraDokumenta);
+            datum = (TextView)itemView.findViewById(R.id.datumNastanka);
             itemView.setOnClickListener(this);
         }
 
