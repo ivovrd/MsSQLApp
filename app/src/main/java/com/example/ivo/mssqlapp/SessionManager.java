@@ -2,9 +2,16 @@ package com.example.ivo.mssqlapp;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-
+import android.os.AsyncTask;
+import android.app.AlertDialog;
+import android.util.Log;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.HashMap;
 
 /**
@@ -18,6 +25,7 @@ public class SessionManager {
     private static final String PREF_NAME = "UserLoginData";
     private static final String IS_LOGIN = "IsLoggedIn";
     public static final String KEY_USER_NAME = "userName";
+    public static final String KEY_PASSWORD = "password";
     public static final String KEY_FIRST_NAME = "name";
     public static final String KEY_LAST_NAME = "lastName";
     public static final String KEY_PARTNER_ID = "partnerId";
@@ -29,9 +37,10 @@ public class SessionManager {
         editor = sharedPreferences.edit();
     }
 
-    public void loginUser(String userName, String name, String lastName, String partnerId, String userId){
+    public void loginUser(String userName, String password, String name, String lastName, String partnerId, String userId){
         editor.putBoolean(IS_LOGIN, true);
         editor.putString(KEY_USER_NAME, userName);
+        editor.putString(KEY_PASSWORD, password);
         editor.putString(KEY_FIRST_NAME, name);
         editor.putString(KEY_LAST_NAME, lastName);
         editor.putString(KEY_PARTNER_ID, partnerId);
@@ -42,6 +51,7 @@ public class SessionManager {
     public HashMap<String, String> getUserDetails(){
         HashMap<String, String> user = new HashMap<>();
         user.put(KEY_USER_NAME, sharedPreferences.getString(KEY_USER_NAME, null));
+        user.put(KEY_PASSWORD, sharedPreferences.getString(KEY_PASSWORD, null));
         user.put(KEY_FIRST_NAME, sharedPreferences.getString(KEY_FIRST_NAME, null));
         user.put(KEY_LAST_NAME, sharedPreferences.getString(KEY_LAST_NAME, null));
         user.put(KEY_PARTNER_ID, sharedPreferences.getString(KEY_PARTNER_ID, null));
@@ -58,6 +68,8 @@ public class SessionManager {
             i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             mContext.startActivity(i);
             mActivity.finish();
+        } else {
+            new CheckUserLogin(sharedPreferences.getString(KEY_USER_NAME, null), sharedPreferences.getString(KEY_PASSWORD, null), mActivity).execute();
         }
     }
 
@@ -84,5 +96,89 @@ public class SessionManager {
 
     public String getPartnerId(){
         return sharedPreferences.getString(KEY_PARTNER_ID, null);
+    }
+
+    public class CheckUserLogin extends AsyncTask<Void, Void, ResultSet> {
+        Connection connect;
+        Statement statement;
+        String name, pass;
+        Activity mActivity;
+
+        public CheckUserLogin(String name, String pass, Activity mActivity){
+            this.name = name;
+            this.pass = pass;
+            this.mActivity = mActivity;
+        }
+
+        @Override
+        protected ResultSet doInBackground(Void... params) {
+            ResultSet result = null;
+
+            try{
+                connect = DatabaseConnection.Connect();
+                if(connect == null){
+                    Log.e("SERVER_ERROR_MESSAGE", "Server not running");
+                }else {
+                    statement = connect.createStatement();
+                    result = statement.executeQuery("SELECT Sifrarnici.Partner.Id, Korisnik.Id, Korisnik.KorisnickoIme, Korisnik.Lozinka, Korisnik.Ime, Korisnik.Prezime FROM Korisnik INNER JOIN Sifrarnici.Partner ON Korisnik.OIB=Sifrarnici.Partner.OIB WHERE Korisnik.KorisnickoIme='" + this.name + "'");
+                }
+            }catch(SQLException e){
+                Log.e("SQL error", e.getMessage());
+            }
+
+            if(result != null) {
+                return result;
+            }else{
+                return null;
+            }
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected void onPostExecute(ResultSet resultSet) {
+            if(connect == null) {
+                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(mActivity);
+                alertDialogBuilder.setTitle("Server ne radi");
+                alertDialogBuilder.setMessage("Klikni OK za izlazak iz aplikacije").setCancelable(false).setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        mActivity.finish();
+                    }
+                });
+                AlertDialog alertDialog = alertDialogBuilder.create();
+                alertDialog.show();
+            }else {
+                try {
+                    if (resultSet != null && resultSet.next()) {
+                        String temp = resultSet.getString("Lozinka");
+                        if (!temp.equals(this.pass)) {
+                            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(mActivity);
+                            alertDialogBuilder.setTitle("Pogrešna lozinka");
+                            alertDialogBuilder.setMessage("Klikni OK za ponovno logiranje").setCancelable(false).setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    logoutUser(mActivity);
+                                }
+                            }).setNegativeButton("Izlaz", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    mActivity.finish();
+                                }
+                            });
+                            AlertDialog alertDialog = alertDialogBuilder.create();
+                            alertDialog.show();
+                        }
+                    }
+                } catch (SQLException e) {
+                    Log.e("SQL error", e.getMessage());
+                }
+            }
+
+            super.onPostExecute(resultSet);
+        }
     }
 }

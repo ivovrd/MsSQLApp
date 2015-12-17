@@ -1,6 +1,8 @@
 package com.example.ivo.mssqlapp;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -98,8 +100,12 @@ public class Login extends AppCompatActivity {
 
             try{
                 connect = DatabaseConnection.Connect();
-                statement = connect.createStatement();
-                result = statement.executeQuery("SELECT Sifrarnici.Partner.Id, Korisnik.Id, Korisnik.KorisnickoIme, Korisnik.Lozinka, Korisnik.Ime, Korisnik.Prezime FROM Korisnik INNER JOIN Sifrarnici.Partner ON Korisnik.OIB=Sifrarnici.Partner.OIB WHERE Korisnik.KorisnickoIme='" + name + "' and Korisnik.Lozinka='" + pass + "'");
+                if(connect == null){
+                    Log.e("SERVER_ERROR_MESSAGE", "Server not running");
+                }else {
+                    statement = connect.createStatement();
+                    result = statement.executeQuery("SELECT Sifrarnici.Partner.Id, Korisnik.Id, Korisnik.KorisnickoIme, Korisnik.Lozinka, Korisnik.Ime, Korisnik.Prezime FROM Korisnik INNER JOIN Sifrarnici.Partner ON Korisnik.OIB=Sifrarnici.Partner.OIB WHERE Korisnik.KorisnickoIme='" + name + "' and Korisnik.Lozinka='" + pass + "'");
+                }
             }catch(SQLException e){
                 Log.e("SQL error", e.getMessage());
             }
@@ -120,17 +126,30 @@ public class Login extends AppCompatActivity {
         @Override
         protected void onPostExecute(ResultSet resultSet) {
             linProgBar.setVisibility(View.GONE);
-            try {
-                if (resultSet != null && resultSet.next()) {
-                    session.loginUser(resultSet.getString("KorisnickoIme"), resultSet.getString("Ime"), resultSet.getString("Prezime"), Integer.toString(resultSet.getInt("Id")), Integer.toString(resultSet.getInt(2)));
-                    Intent intent = new Intent(Login.this, MainActivity.class);
-                    startActivity(intent);
-                    finish();
-                } else {
-                    errorLbl.setText("Pogrešno uneseno korisničko ime ili lozinka!");
+            if(connect == null) {
+                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(Login.this);
+                alertDialogBuilder.setTitle("Server ne radi");
+                alertDialogBuilder.setMessage("Klikni OK za izlazak iz aplikacije").setCancelable(false).setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        finish();
+                    }
+                });
+                AlertDialog alertDialog = alertDialogBuilder.create();
+                alertDialog.show();
+            }else {
+                try {
+                    if (resultSet != null && resultSet.next()) {
+                        session.loginUser(resultSet.getString("KorisnickoIme"), resultSet.getString("Lozinka"), resultSet.getString("Ime"), resultSet.getString("Prezime"), Integer.toString(resultSet.getInt("Id")), Integer.toString(resultSet.getInt(2)));
+                        Intent intent = new Intent(Login.this, MainActivity.class);
+                        startActivity(intent);
+                        finish();
+                    } else {
+                        errorLbl.setText("Wrong username or password, please try again!");
+                    }
+                } catch (SQLException e) {
+                    Log.e("SQL error", e.getMessage());
                 }
-            }catch (SQLException e){
-                Log.e("SQL error", e.getMessage());
             }
 
             super.onPostExecute(resultSet);

@@ -37,16 +37,19 @@ public class FirstFragment extends Fragment{
         Connection connect;
         Statement statement;
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy.", Locale.ENGLISH);
+        ResultSet result;
 
         try{
             connect = DatabaseConnection.Connect();
-            statement = connect.createStatement();
-            ResultSet result = statement.executeQuery("select top 10 Sifra, Datum, Napomena from UpravljanjeLjudskimResursima.Dokument");
-
-            while(result.next()){
-                DocPrevManager.getInstance().setDocPrevs(result.getString("Sifra"), String.valueOf(dateFormat.format(result.getDate("Datum"))), result.getString("Napomena"));
+            if(connect == null){
+                Log.e("FIRST_FRAGMENT_ERROR", "Can't load data from server");
+            }else {
+                statement = connect.createStatement();
+                result = statement.executeQuery("select top 10 Sifra, Datum, Napomena from UpravljanjeLjudskimResursima.Dokument");
+                while (result.next()) {
+                    DocPrevManager.getInstance().setDocPrevs(result.getString("Sifra"), String.valueOf(dateFormat.format(result.getDate("Datum"))), result.getString("Napomena"));
+                }
             }
-
         }catch(SQLException e){
             Log.e("SQL error", e.getMessage());
         }

@@ -40,12 +40,16 @@ public class SecondFragment extends Fragment {
 
         try{
             connect = DatabaseConnection.Connect();
-            statement = connect.createStatement();
-            ResultSet result = statement.executeQuery("SELECT TOP 10 Sifra, Datum, Napomena FROM UpravljanjeLjudskimResursima.Dokument WHERE KorisnikId=" + session.getUserId());
+            if(connect == null){
+                Log.e("SECOND_FRAGMENT_ERROR", "Can't load data from server");
+            }else {
+                statement = connect.createStatement();
+                ResultSet result = statement.executeQuery("SELECT TOP 10 Sifra, Datum, Napomena FROM UpravljanjeLjudskimResursima.Dokument WHERE KorisnikId=" + session.getUserId());
 
-            while(result.next()){
-                SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy.", Locale.ENGLISH);
-                DocPrevManager.getInstance().setDocPrevs(result.getString("Sifra"), String.valueOf(dateFormat.format(result.getDate("Datum"))), result.getString("Napomena"));
+                while (result.next()) {
+                    SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy.", Locale.ENGLISH);
+                    DocPrevManager.getInstance().setDocPrevs(result.getString("Sifra"), String.valueOf(dateFormat.format(result.getDate("Datum"))), result.getString("Napomena"));
+                }
             }
         }catch(SQLException e){
             Log.e("SQL error", e.getMessage());
