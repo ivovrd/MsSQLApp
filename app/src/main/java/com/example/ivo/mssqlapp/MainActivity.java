@@ -1,6 +1,11 @@
 package com.example.ivo.mssqlapp;
 
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.res.Configuration;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
@@ -23,51 +28,71 @@ public class MainActivity extends AppCompatActivity {
     private ActionBarDrawerToggle drawerToggle;
     private SessionManager session;
     private ActionBar actionBar;
+    boolean isConnected;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
 
-        session = new SessionManager(getApplicationContext());
-        session.checkLogin(this);
-        HashMap<String, String> user = session.getUserDetails();
-        String userFirstName = user.get(SessionManager.KEY_FIRST_NAME);
-        String userLastName = user.get(SessionManager.KEY_LAST_NAME);
+        ConnectivityManager connectivityManager = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetwork = connectivityManager.getActiveNetworkInfo();
+        isConnected = activeNetwork != null && activeNetwork.isConnectedOrConnecting();
 
-        Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        mDrawer = (DrawerLayout)findViewById(R.id.drawer_layout);
-        TextView userDetails = (TextView)findViewById(R.id.userName);
-        userDetails.setText(userFirstName + " " + userLastName);
-        drawerToggle = setupDrawerToggle();
-        //mDrawer.setDrawerListener(drawerToggle);
-
-        final NavigationView navigationView = (NavigationView)findViewById(R.id.nvView);
-        actionBar = getSupportActionBar();
-        actionBar.setDisplayHomeAsUpEnabled(true);
-        //actionBar.setHomeButtonEnabled(true);
-
-        fragmentManager = getSupportFragmentManager();
-
-        fragmentManager.addOnBackStackChangedListener(new FragmentManager.OnBackStackChangedListener() {
-            @Override
-            public void onBackStackChanged() {
-                if (getSupportFragmentManager().getBackStackEntryCount() == 0) {
-                    if(navigationView.getMenu().getItem(0).isChecked())
-                        actionBar.setTitle(navigationView.getMenu().getItem(0).getTitle());
-                    else if (navigationView.getMenu().getItem(1).isChecked())
-                        actionBar.setTitle(navigationView.getMenu().getItem(1).getTitle());
-                    else if (navigationView.getMenu().getItem(2).isChecked())
-                        actionBar.setTitle(navigationView.getMenu().getItem(2).getTitle());
+        if(!isConnected){
+            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(MainActivity.this);
+            alertDialogBuilder.setTitle("Greška u povezivanju");
+            alertDialogBuilder.setMessage("Provjerite podatkovnu vezu i pokušajte ponovo").setCancelable(false).setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    finish();
                 }
-            }
-        });
+            });
+            AlertDialog alertDialog = alertDialogBuilder.create();
+            alertDialog.show();
+        }else {
 
-        fragmentManager.beginTransaction().add(R.id.flContent, new FirstFragment()).commit();
-        actionBar.setTitle(navigationView.getMenu().getItem(0).getTitle());
+            setContentView(R.layout.activity_main);
 
-        setupDrawerContent(navigationView);
+            session = new SessionManager(getApplicationContext());
+            session.checkLogin(this);
+            HashMap<String, String> user = session.getUserDetails();
+            String userFirstName = user.get(SessionManager.KEY_FIRST_NAME);
+            String userLastName = user.get(SessionManager.KEY_LAST_NAME);
+
+            Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+            setSupportActionBar(toolbar);
+            mDrawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+            TextView userDetails = (TextView) findViewById(R.id.userName);
+            userDetails.setText(userFirstName + " " + userLastName);
+            drawerToggle = setupDrawerToggle();
+            //mDrawer.setDrawerListener(drawerToggle);
+
+            final NavigationView navigationView = (NavigationView) findViewById(R.id.nvView);
+            actionBar = getSupportActionBar();
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            //actionBar.setHomeButtonEnabled(true);
+
+            fragmentManager = getSupportFragmentManager();
+
+            fragmentManager.addOnBackStackChangedListener(new FragmentManager.OnBackStackChangedListener() {
+                @Override
+                public void onBackStackChanged() {
+                    if (getSupportFragmentManager().getBackStackEntryCount() == 0) {
+                        if (navigationView.getMenu().getItem(0).isChecked())
+                            actionBar.setTitle(navigationView.getMenu().getItem(0).getTitle());
+                        else if (navigationView.getMenu().getItem(1).isChecked())
+                            actionBar.setTitle(navigationView.getMenu().getItem(1).getTitle());
+                        else if (navigationView.getMenu().getItem(2).isChecked())
+                            actionBar.setTitle(navigationView.getMenu().getItem(2).getTitle());
+                    }
+                }
+            });
+
+            fragmentManager.beginTransaction().add(R.id.flContent, new FirstFragment()).commit();
+            actionBar.setTitle(navigationView.getMenu().getItem(0).getTitle());
+
+            setupDrawerContent(navigationView);
+        }
     }
 
     @Override
@@ -107,7 +132,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onPostCreate(Bundle savedInstance){
         super.onPostCreate(savedInstance);
-        drawerToggle.syncState();
+        if(isConnected)
+            drawerToggle.syncState();
     }
 
     @Override
