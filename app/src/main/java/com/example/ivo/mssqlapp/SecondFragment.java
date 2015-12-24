@@ -44,7 +44,7 @@ public class SecondFragment extends Fragment {
                 Log.e("SECOND_FRAGMENT_ERROR", "Can't load data from server");
             }else {
                 statement = connect.createStatement();
-                ResultSet result = statement.executeQuery("SELECT TOP 10 Sifra, Datum, Napomena FROM UpravljanjeLjudskimResursima.Dokument WHERE KorisnikId=" + session.getUserId());
+                ResultSet result = statement.executeQuery("SELECT TOP 10 Sifra, Datum, Napomena FROM UpravljanjeLjudskimResursima.Dokument WHERE KorisnikId=" + session.getUserId() + "AND Status=1");
 
                 while (result.next()) {
                     SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy.", Locale.ENGLISH);

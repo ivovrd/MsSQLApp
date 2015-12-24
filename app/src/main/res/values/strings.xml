@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">PivisDroid</string>
+    <string name="app_name">VenioERP Mobile</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_logout">Logout</string>
     <string name="drawer_open">Open navigation drawer</string>

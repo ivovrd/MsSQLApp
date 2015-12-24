@@ -38,6 +38,7 @@ public class FirstFragment extends Fragment{
         Statement statement;
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy.", Locale.ENGLISH);
         ResultSet result;
+        SessionManager session = new SessionManager(getActivity());
 
         try{
             connect = DatabaseConnection.Connect();
@@ -45,7 +46,7 @@ public class FirstFragment extends Fragment{
                 Log.e("FIRST_FRAGMENT_ERROR", "Can't load data from server");
             }else {
                 statement = connect.createStatement();
-                result = statement.executeQuery("select top 10 Sifra, Datum, Napomena from UpravljanjeLjudskimResursima.Dokument");
+                result = statement.executeQuery("select top 10 Sifra, Datum, Napomena from UpravljanjeLjudskimResursima.Dokument WHERE KorisnikId=" + session.getUserId() + "AND Status=0");
                 while (result.next()) {
                     DocPrevManager.getInstance().setDocPrevs(result.getString("Sifra"), String.valueOf(dateFormat.format(result.getDate("Datum"))), result.getString("Napomena"));
                 }
