@@ -4,6 +4,6 @@
         <item name="colorPrimary">#00BCD4</item>
         <item name="colorPrimaryDark">#0097A7</item>
         <item name="android:windowTranslucentStatus">true</item>
-        <item name="colorAccent">#B2EBF2</item>
+        <item name="colorAccent">#00BCD4</item>
     </style>
 </resources>
