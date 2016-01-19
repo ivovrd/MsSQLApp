@@ -3,11 +3,14 @@ package com.example.ivo.mssqlapp;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
@@ -18,7 +21,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.TextView;
+
+import org.w3c.dom.Text;
+
 import java.util.HashMap;
 
 
@@ -58,12 +65,15 @@ public class MainActivity extends AppCompatActivity {
             HashMap<String, String> user = session.getUserDetails();
             String userFirstName = user.get(SessionManager.KEY_FIRST_NAME);
             String userLastName = user.get(SessionManager.KEY_LAST_NAME);
+            String userEmail = user.get(SessionManager.KEY_EMAIL);
 
             Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
             setSupportActionBar(toolbar);
             mDrawer = (DrawerLayout) findViewById(R.id.drawer_layout);
             TextView userDetails = (TextView) findViewById(R.id.userName);
+            TextView userDetailsEmail = (TextView) findViewById(R.id.userEmail);
             userDetails.setText(userFirstName + " " + userLastName);
+            userDetailsEmail.setText(userEmail);
             drawerToggle = setupDrawerToggle();
             //mDrawer.setDrawerListener(drawerToggle);
 
@@ -82,14 +92,20 @@ public class MainActivity extends AppCompatActivity {
                             actionBar.setTitle(navigationView.getMenu().getItem(0).getTitle());
                         else if (navigationView.getMenu().getItem(1).isChecked())
                             actionBar.setTitle(navigationView.getMenu().getItem(1).getTitle());
-                        else if (navigationView.getMenu().getItem(2).isChecked())
-                            actionBar.setTitle(navigationView.getMenu().getItem(2).getTitle());
                     }
                 }
             });
 
             fragmentManager.beginTransaction().add(R.id.flContent, new FirstFragment()).commit();
             actionBar.setTitle(navigationView.getMenu().getItem(0).getTitle());
+
+            FloatingActionButton floatingActionButton = (FloatingActionButton)findViewById(R.id.fab);
+            floatingActionButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    startActivity(new Intent(getApplicationContext(), MakeDocActivity.class));
+                }
+            });
 
             setupDrawerContent(navigationView);
         }
@@ -170,9 +186,6 @@ public class MainActivity extends AppCompatActivity {
                 break;
             case R.id.nav_second_fragment:
                 fragmentClass = SecondFragment.class;
-                break;
-            case R.id.nav_third_fragment:
-                fragmentClass = ThirdFragment.class;
                 break;
             default:
                 fragmentClass = FirstFragment.class;

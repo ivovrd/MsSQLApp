@@ -30,7 +30,7 @@ public class Login extends AppCompatActivity {
     Button loginBtn;
     TextView errorLbl;
     EditText editName, editPass;
-    Toolbar toolbar;
+    //Toolbar toolbar;
     SessionManager session;
 
     @Override
@@ -38,8 +38,8 @@ public class Login extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login_layout);
 
-        toolbar = (Toolbar)findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        //toolbar = (Toolbar)findViewById(R.id.toolbar);
+        //setSupportActionBar(toolbar);
 
         loginBtn = (Button)findViewById(R.id.btnlogin);
         errorLbl = (TextView)findViewById(R.id.lblerror);
@@ -104,7 +104,7 @@ public class Login extends AppCompatActivity {
                     Log.e("SERVER_ERROR_MESSAGE", "Server not running");
                 }else {
                     statement = connect.createStatement();
-                    result = statement.executeQuery("SELECT Sifrarnici.Partner.Id, Korisnik.Id, Korisnik.KorisnickoIme, Korisnik.Lozinka, Korisnik.Ime, Korisnik.Prezime FROM Korisnik INNER JOIN Sifrarnici.Partner ON Korisnik.OIB=Sifrarnici.Partner.OIB WHERE Korisnik.KorisnickoIme='" + name + "' and Korisnik.Lozinka='" + pass + "'");
+                    result = statement.executeQuery("SELECT Sifrarnici.Partner.Id, Korisnik.Id, Korisnik.KorisnickoIme, Korisnik.Lozinka, Korisnik.Ime, Korisnik.Prezime, Korisnik.Email FROM Korisnik INNER JOIN Sifrarnici.Partner ON Korisnik.OIB=Sifrarnici.Partner.OIB WHERE Korisnik.KorisnickoIme='" + name + "' and Korisnik.Lozinka='" + pass + "'");
                 }
             }catch(SQLException e){
                 Log.e("SQL error", e.getMessage());
@@ -129,7 +129,7 @@ public class Login extends AppCompatActivity {
             if(connect == null) {
                 AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(Login.this);
                 alertDialogBuilder.setTitle("Server ne radi");
-                alertDialogBuilder.setMessage("Klikni OK za izlazak iz aplikacije").setCancelable(false).setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                alertDialogBuilder.setMessage("Pritisnite OK za izlazak iz aplikacije").setCancelable(false).setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         finish();
@@ -140,12 +140,12 @@ public class Login extends AppCompatActivity {
             }else {
                 try {
                     if (resultSet != null && resultSet.next()) {
-                        session.loginUser(resultSet.getString("KorisnickoIme"), resultSet.getString("Lozinka"), resultSet.getString("Ime"), resultSet.getString("Prezime"), Integer.toString(resultSet.getInt("Id")), Integer.toString(resultSet.getInt(2)));
+                        session.loginUser(resultSet.getString("KorisnickoIme"), resultSet.getString("Lozinka"), resultSet.getString("Ime"), resultSet.getString("Prezime"), resultSet.getString("Email"), Integer.toString(resultSet.getInt("Id")), Integer.toString(resultSet.getInt(2)));
                         Intent intent = new Intent(Login.this, MainActivity.class);
                         startActivity(intent);
                         finish();
                     } else {
-                        errorLbl.setText("Wrong username or password, please try again!");
+                        errorLbl.setText("Pogrešno korisničko ime ili lozinka, pokušajte ponovo!");
                     }
                 } catch (SQLException e) {
                     Log.e("SQL error", e.getMessage());

@@ -9,11 +9,11 @@ import java.util.List;
 /**
  * Created by Ivo on 6.7.2015..
  */
-public class NewContactAdapter extends DocPrevAdapter {
+public class NewDocPrevAdapter extends DocPrevAdapter {
     private final int VIEW_ITEM = 1;
     private final int VIEW_PROG = 0;
 
-    public NewContactAdapter(List<DocPrev> docPrevList, RecyclerView recyclerView) {
+    public NewDocPrevAdapter(List<DocPrev> docPrevList, RecyclerView recyclerView) {
         super(docPrevList, recyclerView);
     }
 
@@ -36,7 +36,13 @@ public class NewContactAdapter extends DocPrevAdapter {
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int i) {
-        super.onBindViewHolder(viewHolder, i);
+        if(viewHolder instanceof DocPrevViewHolder) {
+            DocPrev docPrev = docPrevList.get(i);
+            ((DocPrevViewHolder) viewHolder).sifra.setText("Šifra dokumenta: " + docPrev.sifra);
+            ((DocPrevViewHolder) viewHolder).datum.setText("Datum kreiranja: " + docPrev.datum);
+        }else{
+            ((ProgressViewHolder)viewHolder).progressBar.setIndeterminate(true);
+        }
     }
 
     @Override

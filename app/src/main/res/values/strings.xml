@@ -14,4 +14,5 @@
     <string name="memo">Memo</string>
     <string name="switchLabel">Zaključi </string>
     <string name="saveButtonLabel">Spremi</string>
+    <string name="title_activity_make_doc">MakeDocActivity</string>
 </resources>

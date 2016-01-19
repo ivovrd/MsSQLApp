@@ -28,6 +28,7 @@ public class SessionManager {
     public static final String KEY_PASSWORD = "password";
     public static final String KEY_FIRST_NAME = "name";
     public static final String KEY_LAST_NAME = "lastName";
+    public static final String KEY_EMAIL = "eMail";
     public static final String KEY_PARTNER_ID = "partnerId";
     public static final String KEY_USER_ID = "userId";
 
@@ -37,12 +38,13 @@ public class SessionManager {
         editor = sharedPreferences.edit();
     }
 
-    public void loginUser(String userName, String password, String name, String lastName, String partnerId, String userId){
+    public void loginUser(String userName, String password, String name, String lastName, String eMail, String partnerId, String userId){
         editor.putBoolean(IS_LOGIN, true);
         editor.putString(KEY_USER_NAME, userName);
         editor.putString(KEY_PASSWORD, password);
         editor.putString(KEY_FIRST_NAME, name);
         editor.putString(KEY_LAST_NAME, lastName);
+        editor.putString(KEY_EMAIL, eMail);
         editor.putString(KEY_PARTNER_ID, partnerId);
         editor.putString(KEY_USER_ID, userId);
         editor.commit();
@@ -54,6 +56,7 @@ public class SessionManager {
         user.put(KEY_PASSWORD, sharedPreferences.getString(KEY_PASSWORD, null));
         user.put(KEY_FIRST_NAME, sharedPreferences.getString(KEY_FIRST_NAME, null));
         user.put(KEY_LAST_NAME, sharedPreferences.getString(KEY_LAST_NAME, null));
+        user.put(KEY_EMAIL, sharedPreferences.getString(KEY_EMAIL, null));
         user.put(KEY_PARTNER_ID, sharedPreferences.getString(KEY_PARTNER_ID, null));
         user.put(KEY_USER_ID, sharedPreferences.getString(KEY_USER_ID, null));
         return user;

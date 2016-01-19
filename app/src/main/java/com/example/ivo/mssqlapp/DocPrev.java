@@ -8,5 +8,13 @@ import java.io.Serializable;
 public class DocPrev implements Serializable{
     public String sifra;
     public String datum;
+    public String datumOd;
+    public String datumDo;
     public String napomena;
+    public String memo;
+    public String ovlastenik;
+    public int ovlastenikId;
+    public int dani;
+    public int radniDani;
+    public int godina;
 }

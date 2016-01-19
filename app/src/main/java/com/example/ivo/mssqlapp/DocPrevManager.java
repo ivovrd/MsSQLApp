@@ -22,7 +22,7 @@ public class DocPrevManager {
         return docPrevList;
     }
 
-    public void setDocPrevs(String sifra, String datum, String napomena){
+    public void setDocPrevs(String sifra, String datum, String datumOd, String datumDo, String napomena, String memo, String ovlastenik, int ovlastenikId, int dani, int radniDani, int godina){
         if(docPrevList == null) {
             docPrevList = new ArrayList<>();
         }
@@ -30,7 +30,15 @@ public class DocPrevManager {
         DocPrev docPrev = new DocPrev();
         docPrev.sifra = sifra;
         docPrev.datum = datum;
+        docPrev.datumOd = datumOd;
+        docPrev.datumDo = datumDo;
+        docPrev.ovlastenikId = ovlastenikId;
         docPrev.napomena = napomena;
+        docPrev.memo = memo;
+        docPrev.ovlastenik = ovlastenik;
+        docPrev.dani = dani;
+        docPrev.radniDani = radniDani;
+        docPrev.godina = godina;
 
         docPrevList.add(docPrev);
     }

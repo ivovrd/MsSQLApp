@@ -11,9 +11,5 @@
             android:id="@+id/nav_second_fragment"
             android:icon="@drawable/ic_view_list_black_24dp"
             android:title="Moji zahtjevi" />
-        <item
-            android:id="@+id/nav_third_fragment"
-            android:icon="@drawable/ic_create_black_24dp"
-            android:title="Novi zahtjev" />
     </group>
 </menu>

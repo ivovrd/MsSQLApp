@@ -2,12 +2,12 @@ package com.example.ivo.mssqlapp;
 
 import android.app.DatePickerDialog;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.Fragment;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.CompoundButton;
@@ -15,6 +15,7 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Switch;
+
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -24,10 +25,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Locale;
 
-/**
- * Created by Ivo on 1.7.2015..
- */
-public class ThirdFragment extends Fragment implements View.OnClickListener{
+public class MakeDocActivity extends AppCompatActivity implements View.OnClickListener{
     private EditText year, dateFrom, dateTo, daysCount, workDaysCount, remark, memo;
     private DatePickerDialog dateFromPickerDialog, dateToPickerDialog;
     private SimpleDateFormat dateFormat;
@@ -36,10 +34,12 @@ public class ThirdFragment extends Fragment implements View.OnClickListener{
     private ArrayList<Ovlastenik> ovlastenici;
     private int ovlastenikPickedIndex, isLocked;
     private long from, to, diff = 0;
-    private boolean dateFromSet = false, dateToSet = false;
+    private boolean dateFromSet = false, dateToSet = false, argsExists = false;
     private DocumentData document;
     private static final String TIP_DOKUMENTA = "103";
-    private static final String FIXED_PART_SIFRA = "10315";
+    private String docSifraYearPart = "";
+    private String thisDocSifra;
+    private int ovlastenikId = 0;
     private int docNum;
     private static final int TYPE_SAVE = 0;
     private static final int TYPE_LOCK = 1;
@@ -49,34 +49,59 @@ public class ThirdFragment extends Fragment implements View.OnClickListener{
     private Statement statement;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.third_fragment, container, false);
-    }
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_make_doc);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
-    @Override
-    public void onViewCreated(final View view, Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setTitle("Novi zahtjev");
 
-        spinner = (Spinner)view.findViewById(R.id.spinner);
-        year = (EditText)view.findViewById(R.id.editYear);
+        Calendar rightNow = Calendar.getInstance();
+        docSifraYearPart = Integer.toString(rightNow.get(Calendar.YEAR)).substring(2,4);
+
+        spinner = (Spinner)findViewById(R.id.spinner);
+        year = (EditText)findViewById(R.id.editYear);
         dateFormat = new SimpleDateFormat("dd.MM.yyyy.", Locale.ENGLISH);
-        dateFrom = (EditText)view.findViewById(R.id.editDateFrom);
-        dateTo = (EditText)view.findViewById(R.id.editDateTo);
-        daysCount = (EditText)view.findViewById(R.id.daysCount);
-        workDaysCount = (EditText)view.findViewById(R.id.workDaysCount);
-        remark = (EditText)view.findViewById(R.id.editRemark);
-        memo = (EditText)view.findViewById(R.id.editMemo);
-        switchLock = (Switch)view.findViewById(R.id.switchLock);
-        Button buttonSave = (Button)view.findViewById(R.id.buttonSave);
-        sessionManager = new SessionManager(getActivity());
+        dateFrom = (EditText)findViewById(R.id.editDateFrom);
+        dateTo = (EditText)findViewById(R.id.editDateTo);
+        daysCount = (EditText)findViewById(R.id.daysCount);
+        workDaysCount = (EditText)findViewById(R.id.workDaysCount);
+        remark = (EditText)findViewById(R.id.editRemark);
+        memo = (EditText)findViewById(R.id.editMemo);
+        switchLock = (Switch)findViewById(R.id.switchLock);
+        Button buttonSave = (Button)findViewById(R.id.buttonSave);
+        sessionManager = new SessionManager(this);
 
         switchLock.setEnabled(false);
         daysCount.setEnabled(false);
 
-        ovlastenici = new ArrayList<>();
-        new AsyncDataLoading(ovlastenici, getActivity(), spinner, 0).execute();
-
         setDateFields();
+
+        Bundle args = getIntent().getExtras();
+
+        if(args != null){
+            year.setText(Integer.toString(args.getInt("DOC_GODINA")));
+            dateFrom.setText(args.getString("DOC_DATUMOD"));
+            dateFromSet = true;
+            dateTo.setText(args.getString("DOC_DATUMDO"));
+            dateToSet = true;
+            daysCount.setText(Integer.toString(args.getInt("DOC_DANI")));
+            diff = args.getInt("DOC_DANI");
+            workDaysCount.setText(Integer.toString(args.getInt("DOC_RADNI_DANI")));
+            remark.setText(args.getString("DOC_NAPOMENA"));
+            memo.setText(args.getString("DOC_MEMO"));
+            ovlastenikId = args.getInt("DOC_OVLASTENIK");
+
+            switchLock.setEnabled(true);
+            buttonSave.setEnabled(false);
+            thisDocSifra = args.getString("DOC_SIFRA");
+            argsExists = true;
+        }
+
+        ovlastenici = new ArrayList<>();
+        new AsyncDataLoading(ovlastenici, this, spinner, ovlastenikId).execute();
 
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -93,7 +118,7 @@ public class ThirdFragment extends Fragment implements View.OnClickListener{
         buttonSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (checkFields(view, workDaysCount, dateFromSet, dateToSet)){
+                if (checkFields(findViewById(R.id.content), workDaysCount, dateFromSet, dateToSet)){
                     try{
                         connect = DatabaseConnection.Connect();
                         statement = connect.createStatement();
@@ -109,8 +134,8 @@ public class ThirdFragment extends Fragment implements View.OnClickListener{
 
                     int userId = Integer.valueOf(sessionManager.getUserId());
                     int partnerId = Integer.valueOf(sessionManager.getPartnerId());
-                    document = new DocumentData(FIXED_PART_SIFRA + String.valueOf(docNum), TIP_DOKUMENTA, partnerId, ovlastenici.get(ovlastenikPickedIndex).Id, userId, isLocked, Integer.valueOf(daysCount.getText().toString()), Integer.valueOf(workDaysCount.getText().toString()), Integer.valueOf(year.getText().toString()), clearDateString(dateFrom.getText().toString()), clearDateString(dateTo.getText().toString()), addApostrophe(remark.getText().toString()), addApostrophe(memo.getText().toString()));
-                    new AsyncSavingDocument(document, view, TYPE_SAVE).execute();
+                    document = new DocumentData(TIP_DOKUMENTA + docSifraYearPart + String.valueOf(docNum), TIP_DOKUMENTA, partnerId, ovlastenici.get(ovlastenikPickedIndex).Id, userId, isLocked, Integer.valueOf(daysCount.getText().toString()), Integer.valueOf(workDaysCount.getText().toString()), Integer.valueOf(year.getText().toString()), clearDateString(dateFrom.getText().toString()), clearDateString(dateTo.getText().toString()), addApostrophe(remark.getText().toString()), addApostrophe(memo.getText().toString()));
+                    new AsyncSavingDocument(document, findViewById(R.id.content), TYPE_SAVE).execute();
                 }
             }
         });
@@ -120,15 +145,21 @@ public class ThirdFragment extends Fragment implements View.OnClickListener{
         switchLock.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                boolean checkValue = checkFields(view, workDaysCount, dateFromSet, dateToSet);
+                boolean checkValue = checkFields(findViewById(R.id.content), workDaysCount, dateFromSet, dateToSet);
 
                 if(isChecked && checkValue){
                     isLocked = 1;
 
+                    String docSifra;
+                    if(argsExists)
+                        docSifra = thisDocSifra;
+                    else
+                        docSifra = TIP_DOKUMENTA + docSifraYearPart + String.valueOf(docNum);
+
                     int userId = Integer.valueOf(sessionManager.getUserId());
                     int partnerId = Integer.valueOf(sessionManager.getPartnerId());
-                    document = new DocumentData(FIXED_PART_SIFRA + String.valueOf(docNum), TIP_DOKUMENTA, partnerId, ovlastenici.get(ovlastenikPickedIndex).Id, userId, isLocked, Integer.valueOf(daysCount.getText().toString()), Integer.valueOf(workDaysCount.getText().toString()), Integer.valueOf(year.getText().toString()), clearDateString(dateFrom.getText().toString()), clearDateString(dateTo.getText().toString()), addApostrophe(remark.getText().toString()), addApostrophe(memo.getText().toString()));
-                    new AsyncSavingDocument(document, view, TYPE_LOCK).execute();
+                    document = new DocumentData(docSifra, TIP_DOKUMENTA, partnerId, ovlastenici.get(ovlastenikPickedIndex).Id, userId, isLocked, Integer.valueOf(daysCount.getText().toString()), Integer.valueOf(workDaysCount.getText().toString()), Integer.valueOf(year.getText().toString()), clearDateString(dateFrom.getText().toString()), clearDateString(dateTo.getText().toString()), addApostrophe(remark.getText().toString()), addApostrophe(memo.getText().toString()));
+                    new AsyncSavingDocument(document, findViewById(R.id.content), TYPE_LOCK).execute();
 
                     enableDisableViews(spinner, editTexts, false);
                 } else if (isChecked){
@@ -137,8 +168,14 @@ public class ThirdFragment extends Fragment implements View.OnClickListener{
                 else {
                     isLocked = 0;
 
-                    document = new DocumentData(FIXED_PART_SIFRA + String.valueOf(docNum), isLocked);
-                    new AsyncSavingDocument(document, view, TYPE_UNLOCK).execute();
+                    String docSifra;
+                    if(argsExists)
+                        docSifra = thisDocSifra;
+                    else
+                        docSifra = TIP_DOKUMENTA + docSifraYearPart + String.valueOf(docNum);
+
+                    document = new DocumentData(docSifra, isLocked);
+                    new AsyncSavingDocument(document, findViewById(R.id.content), TYPE_UNLOCK).execute();
 
                     enableDisableViews(spinner, editTexts, true);
                 }
@@ -162,7 +199,7 @@ public class ThirdFragment extends Fragment implements View.OnClickListener{
         dateFrom.setText(dateFormat.format(calendar.getTime()));
         dateTo.setText(dateFormat.format(calendar.getTime()));
 
-        dateFromPickerDialog = new DatePickerDialog(getActivity(), new DatePickerDialog.OnDateSetListener() {
+        dateFromPickerDialog = new DatePickerDialog(this, new DatePickerDialog.OnDateSetListener() {
             @Override
             public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
                 Calendar newDate = Calendar.getInstance();
@@ -176,7 +213,7 @@ public class ThirdFragment extends Fragment implements View.OnClickListener{
             }
         }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
 
-        dateToPickerDialog = new DatePickerDialog(getActivity(), new DatePickerDialog.OnDateSetListener() {
+        dateToPickerDialog = new DatePickerDialog(this, new DatePickerDialog.OnDateSetListener() {
             @Override
             public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
                 Calendar newDate = Calendar.getInstance();

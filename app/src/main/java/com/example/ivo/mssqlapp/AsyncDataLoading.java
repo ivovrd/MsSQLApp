@@ -21,11 +21,13 @@ public class AsyncDataLoading extends AsyncTask<Void, Void, ResultSet> {
     ArrayList<Ovlastenik> ovlastenici;
     Context mContext;
     Spinner spinner;
+    int selectedOvlastenikId;
 
-    public AsyncDataLoading(ArrayList<Ovlastenik> ovlastenici, Context context, Spinner spinner){
+    public AsyncDataLoading(ArrayList<Ovlastenik> ovlastenici, Context context, Spinner spinner, int selectedOvlastenikId){
         this.ovlastenici = ovlastenici;
         this.mContext = context;
         this.spinner = spinner;
+        this.selectedOvlastenikId = selectedOvlastenikId;
     }
 
     @Override
@@ -57,6 +59,15 @@ public class AsyncDataLoading extends AsyncTask<Void, Void, ResultSet> {
         }
 
         fillSpinner();
+
+        if(selectedOvlastenikId != 0) {
+            int i = 0, ovlastenikPosititon = 0;
+            while (ovlastenici.get(i).Id != selectedOvlastenikId) {
+                i++;
+                ovlastenikPosititon = i;
+            }
+            spinner.setSelection(ovlastenikPosititon);
+        }
     }
 
     private void fillSpinner(){

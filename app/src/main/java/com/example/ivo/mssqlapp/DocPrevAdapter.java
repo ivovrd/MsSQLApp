@@ -16,7 +16,7 @@ import java.util.List;
  * Created by Ivo on 1.7.2015..
  */
 public class DocPrevAdapter extends RecyclerView.Adapter {
-    private List<DocPrev> docPrevList;
+    protected List<DocPrev> docPrevList;
     private final int VIEW_ITEM = 1;
     private final int VIEW_PROG = 0;
 
@@ -80,8 +80,12 @@ public class DocPrevAdapter extends RecyclerView.Adapter {
     public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int i) {
         if(viewHolder instanceof DocPrevViewHolder) {
             DocPrev docPrev = docPrevList.get(i);
-            ((DocPrevViewHolder) viewHolder).sifra.setText("Šifra dokumenta: " + docPrev.sifra);
+            ((DocPrevViewHolder) viewHolder).sifra.setText("Šifra: " + docPrev.sifra);
             ((DocPrevViewHolder) viewHolder).datum.setText("Datum kreiranja: " + docPrev.datum);
+            ((DocPrevViewHolder) viewHolder).ovlastenik.setText("Ovlaštenik: " + docPrev.ovlastenik);
+            ((DocPrevViewHolder) viewHolder).raspon.setText("Trajanje: " + docPrev.datumOd + " - " + docPrev.datumDo);
+            ((DocPrevViewHolder) viewHolder).napomena.setText("Napomena: " + docPrev.napomena);
+
         }else{
             ((ProgressViewHolder)viewHolder).progressBar.setIndeterminate(true);
         }
@@ -105,12 +109,15 @@ public class DocPrevAdapter extends RecyclerView.Adapter {
     }
 
     public static class DocPrevViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
-        public TextView sifra, datum;
+        public TextView sifra, datum, ovlastenik, raspon, napomena;
 
         public DocPrevViewHolder(View itemView) {
             super(itemView);
             sifra = (TextView)itemView.findViewById(R.id.sifraDokumenta);
             datum = (TextView)itemView.findViewById(R.id.datumNastanka);
+            ovlastenik = (TextView)itemView.findViewById(R.id.ovlastenik);
+            raspon = (TextView)itemView.findViewById(R.id.datumRaspon);
+            napomena = (TextView)itemView.findViewById(R.id.napomena);
             itemView.setOnClickListener(this);
         }
 

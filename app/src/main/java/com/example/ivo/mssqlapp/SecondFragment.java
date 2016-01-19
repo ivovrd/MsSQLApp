@@ -26,6 +26,7 @@ import java.util.Locale;
 public class SecondFragment extends Fragment {
     private DocPrevAdapter mAdapter;
     private List<DocPrev> docPrevList;
+    private static final int DATA_TYPE = 2;
 
     @Override
     public void onCreate(Bundle savedInstanceState){
@@ -44,11 +45,11 @@ public class SecondFragment extends Fragment {
                 Log.e("SECOND_FRAGMENT_ERROR", "Can't load data from server");
             }else {
                 statement = connect.createStatement();
-                ResultSet result = statement.executeQuery("SELECT TOP 10 Sifra, Datum, Napomena FROM UpravljanjeLjudskimResursima.Dokument WHERE KorisnikId=" + session.getUserId() + "AND Status=1");
+                ResultSet result = statement.executeQuery("SELECT TOP 10 UpravljanjeLjudskimResursima.Dokument.Sifra, UpravljanjeLjudskimResursima.Dokument.Datum, UpravljanjeLjudskimResursima.Dokument.DatumOd, UpravljanjeLjudskimResursima.Dokument.DatumDo, UpravljanjeLjudskimResursima.Dokument.Napomena, UpravljanjeLjudskimResursima.Dokument.Memo, Sifrarnici.Partner.Naziv, UpravljanjeLjudskimResursima.Dokument.OvlastenikId, UpravljanjeLjudskimResursima.Dokument.TrajanjeDana, UpravljanjeLjudskimResursima.Dokument.TrajanjeRadnihDana, UpravljanjeLjudskimResursima.Dokument.GodinaGodisnjegOdmora FROM UpravljanjeLjudskimResursima.Dokument INNER JOIN Sifrarnici.Partner ON UpravljanjeLjudskimResursima.Dokument.OvlastenikId=Sifrarnici.Partner.Id  WHERE UpravljanjeLjudskimResursima.Dokument.KorisnikId=" + session.getUserId() + " AND UpravljanjeLjudskimResursima.Dokument.Status=1");
 
                 while (result.next()) {
                     SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy.", Locale.ENGLISH);
-                    DocPrevManager.getInstance().setDocPrevs(result.getString("Sifra"), String.valueOf(dateFormat.format(result.getDate("Datum"))), result.getString("Napomena"));
+                    DocPrevManager.getInstance().setDocPrevs(result.getString(1), String.valueOf(dateFormat.format(result.getDate(2))), String.valueOf(dateFormat.format(result.getDate(3))), String.valueOf(dateFormat.format(result.getDate(4))), result.getString(5), result.getString(6), result.getString(7),  result.getInt(8), result.getInt(9), result.getInt(10), result.getInt(11));
                 }
             }
         }catch(SQLException e){
@@ -63,7 +64,7 @@ public class SecondFragment extends Fragment {
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.addItemDecoration(new DividerItemDecoration(getActivity(), LinearLayoutManager.VERTICAL));
-        mAdapter = new NewContactAdapter(DocPrevManager.getInstance().getDocPrevs(),recyclerView);
+        mAdapter = new NewDocPrevAdapter(DocPrevManager.getInstance().getDocPrevs(),recyclerView);
         recyclerView.setAdapter(mAdapter);
 
         mAdapter.setOnLoadMoreListener(new OnLoadMoreListener() {
@@ -72,7 +73,7 @@ public class SecondFragment extends Fragment {
                 docPrevList = DocPrevManager.getInstance().getDocPrevs();
                 docPrevList.add(null);
                 mAdapter.notifyItemInserted(docPrevList.size() - 1);
-                new AsyncDbConnection(mAdapter, docPrevList).execute();
+                new AsyncDbConnection(mAdapter, docPrevList, DATA_TYPE, getActivity()).execute();
             }
         });
 
