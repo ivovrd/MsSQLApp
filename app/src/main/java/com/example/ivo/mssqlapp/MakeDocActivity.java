@@ -1,12 +1,13 @@
 package com.example.ivo.mssqlapp;
 
 import android.app.DatePickerDialog;
+import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -15,7 +16,6 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Switch;
-
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -27,6 +27,7 @@ import java.util.Locale;
 
 public class MakeDocActivity extends AppCompatActivity implements View.OnClickListener{
     private EditText year, dateFrom, dateTo, daysCount, workDaysCount, remark, memo;
+    private Button buttonSave;
     private DatePickerDialog dateFromPickerDialog, dateToPickerDialog;
     private SimpleDateFormat dateFormat;
     private Spinner spinner;
@@ -45,8 +46,6 @@ public class MakeDocActivity extends AppCompatActivity implements View.OnClickLi
     private static final int TYPE_LOCK = 1;
     private static final int TYPE_UNLOCK = 2;
     private SessionManager sessionManager;
-    private Connection connect;
-    private Statement statement;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,7 +70,7 @@ public class MakeDocActivity extends AppCompatActivity implements View.OnClickLi
         remark = (EditText)findViewById(R.id.editRemark);
         memo = (EditText)findViewById(R.id.editMemo);
         switchLock = (Switch)findViewById(R.id.switchLock);
-        Button buttonSave = (Button)findViewById(R.id.buttonSave);
+        buttonSave = (Button)findViewById(R.id.buttonSave);
         sessionManager = new SessionManager(this);
 
         switchLock.setEnabled(false);
@@ -82,17 +81,18 @@ public class MakeDocActivity extends AppCompatActivity implements View.OnClickLi
         Bundle args = getIntent().getExtras();
 
         if(args != null){
+            getSupportActionBar().setTitle("Uređivanje zahtjeva");
             year.setText(Integer.toString(args.getInt("DOC_GODINA")));
-            dateFrom.setText(args.getString("DOC_DATUMOD"));
+            dateFrom.setText(args.getString("DOC_DATUM_OD"));
             dateFromSet = true;
-            dateTo.setText(args.getString("DOC_DATUMDO"));
+            dateTo.setText(args.getString("DOC_DATUM_DO"));
             dateToSet = true;
             daysCount.setText(Integer.toString(args.getInt("DOC_DANI")));
             diff = args.getInt("DOC_DANI");
             workDaysCount.setText(Integer.toString(args.getInt("DOC_RADNI_DANI")));
             remark.setText(args.getString("DOC_NAPOMENA"));
             memo.setText(args.getString("DOC_MEMO"));
-            ovlastenikId = args.getInt("DOC_OVLASTENIK");
+            ovlastenikId = args.getInt("DOC_OVLASTENIK_ID");
 
             switchLock.setEnabled(true);
             buttonSave.setEnabled(false);
@@ -119,23 +119,8 @@ public class MakeDocActivity extends AppCompatActivity implements View.OnClickLi
             @Override
             public void onClick(View v) {
                 if (checkFields(findViewById(R.id.content), workDaysCount, dateFromSet, dateToSet)){
-                    try{
-                        connect = DatabaseConnection.Connect();
-                        statement = connect.createStatement();
-                        ResultSet resultSet = statement.executeQuery("SELECT Sifra FROM UpravljanjeLjudskimResursima.Dokument WHERE Id = (SELECT MAX(Id) FROM UpravljanjeLjudskimResursima.Dokument)");
-                        if (resultSet != null && resultSet.next()){
-                            String temp = resultSet.getString("Sifra").substring(5);
-                            docNum = Integer.parseInt(temp);
-                            docNum ++;
-                        }
-                    }catch(SQLException e){
-                        Log.e("SQL error", e.getMessage());
-                    }
-
-                    int userId = Integer.valueOf(sessionManager.getUserId());
-                    int partnerId = Integer.valueOf(sessionManager.getPartnerId());
-                    document = new DocumentData(TIP_DOKUMENTA + docSifraYearPart + String.valueOf(docNum), TIP_DOKUMENTA, partnerId, ovlastenici.get(ovlastenikPickedIndex).Id, userId, isLocked, Integer.valueOf(daysCount.getText().toString()), Integer.valueOf(workDaysCount.getText().toString()), Integer.valueOf(year.getText().toString()), clearDateString(dateFrom.getText().toString()), clearDateString(dateTo.getText().toString()), addApostrophe(remark.getText().toString()), addApostrophe(memo.getText().toString()));
-                    new AsyncSavingDocument(document, findViewById(R.id.content), TYPE_SAVE).execute();
+                    buttonSave.setEnabled(false);
+                    new AsyncDocCodeRetrieving().execute();
                 }
             }
         });
@@ -149,8 +134,8 @@ public class MakeDocActivity extends AppCompatActivity implements View.OnClickLi
 
                 if(isChecked && checkValue){
                     isLocked = 1;
-
                     String docSifra;
+
                     if(argsExists)
                         docSifra = thisDocSifra;
                     else
@@ -159,28 +144,37 @@ public class MakeDocActivity extends AppCompatActivity implements View.OnClickLi
                     int userId = Integer.valueOf(sessionManager.getUserId());
                     int partnerId = Integer.valueOf(sessionManager.getPartnerId());
                     document = new DocumentData(docSifra, TIP_DOKUMENTA, partnerId, ovlastenici.get(ovlastenikPickedIndex).Id, userId, isLocked, Integer.valueOf(daysCount.getText().toString()), Integer.valueOf(workDaysCount.getText().toString()), Integer.valueOf(year.getText().toString()), clearDateString(dateFrom.getText().toString()), clearDateString(dateTo.getText().toString()), addApostrophe(remark.getText().toString()), addApostrophe(memo.getText().toString()));
-                    new AsyncSavingDocument(document, findViewById(R.id.content), TYPE_LOCK).execute();
 
+                    new AsyncSavingDocument(document, findViewById(R.id.content), TYPE_LOCK).execute();
                     enableDisableViews(spinner, editTexts, false);
                 } else if (isChecked){
                     switchLock.setChecked(false);
                 }
                 else {
                     isLocked = 0;
-
                     String docSifra;
                     if(argsExists)
+
                         docSifra = thisDocSifra;
                     else
                         docSifra = TIP_DOKUMENTA + docSifraYearPart + String.valueOf(docNum);
 
                     document = new DocumentData(docSifra, isLocked);
                     new AsyncSavingDocument(document, findViewById(R.id.content), TYPE_UNLOCK).execute();
-
                     enableDisableViews(spinner, editTexts, true);
                 }
             }
         });
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if(item.getItemId() == android.R.id.home){
+            onBackPressed();
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -251,8 +245,8 @@ public class MakeDocActivity extends AppCompatActivity implements View.OnClickLi
 
     private void enableDisableViews(Spinner spinner, EditText[] editTexts, boolean enabled){
         spinner.setEnabled(enabled);
-        for(int i = 0; i < editTexts.length; i++){
-            editTexts[i].setEnabled(enabled);
+        for (EditText editText: editTexts) {
+            editText.setEnabled(enabled);
         }
     }
 
@@ -286,5 +280,49 @@ public class MakeDocActivity extends AppCompatActivity implements View.OnClickLi
         }
 
         return result;
+    }
+
+    public class AsyncDocCodeRetrieving extends AsyncTask<Void, Void, ResultSet>{
+
+        @Override
+        protected ResultSet doInBackground(Void... voids) {
+            ResultSet resultSet = null;
+            Connection connect;
+            Statement statement;
+
+            try{
+                connect = DatabaseConnection.Connect();
+                statement = connect.createStatement();
+                resultSet = statement.executeQuery("SELECT Sifra FROM UpravljanjeLjudskimResursima.Dokument WHERE Id = (SELECT MAX(Id) FROM UpravljanjeLjudskimResursima.Dokument)");
+            }catch(SQLException e){
+                Log.e("SQL error", e.getMessage());
+            }
+
+            if(resultSet != null) {
+                return resultSet;
+            }else{
+                return null;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(ResultSet resultSet) {
+            try {
+                if (resultSet != null && resultSet.next()) {
+                    String temp = resultSet.getString("Sifra").substring(5);
+                    docNum = Integer.parseInt(temp);
+                    docNum++;
+                }
+            } catch (SQLException e){
+                Log.e("SQL error", e.getMessage());
+            }
+
+            int userId = Integer.valueOf(sessionManager.getUserId());
+            int partnerId = Integer.valueOf(sessionManager.getPartnerId());
+            document = new DocumentData(TIP_DOKUMENTA + docSifraYearPart + String.valueOf(docNum), TIP_DOKUMENTA, partnerId, ovlastenici.get(ovlastenikPickedIndex).Id, userId, isLocked, Integer.valueOf(daysCount.getText().toString()), Integer.valueOf(workDaysCount.getText().toString()), Integer.valueOf(year.getText().toString()), clearDateString(dateFrom.getText().toString()), clearDateString(dateTo.getText().toString()), addApostrophe(remark.getText().toString()), addApostrophe(memo.getText().toString()));
+            new AsyncSavingDocument(document, findViewById(R.id.content), TYPE_SAVE).execute();
+
+            super.onPostExecute(resultSet);
+        }
     }
 }

@@ -10,7 +10,6 @@ import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
@@ -23,9 +22,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
-
-import org.w3c.dom.Text;
-
 import java.util.HashMap;
 
 
@@ -35,7 +31,8 @@ public class MainActivity extends AppCompatActivity {
     private ActionBarDrawerToggle drawerToggle;
     private SessionManager session;
     private ActionBar actionBar;
-    boolean isConnected;
+    private boolean isConnected;
+    private NavigationView navigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,13 +74,11 @@ public class MainActivity extends AppCompatActivity {
             drawerToggle = setupDrawerToggle();
             //mDrawer.setDrawerListener(drawerToggle);
 
-            final NavigationView navigationView = (NavigationView) findViewById(R.id.nvView);
+            navigationView = (NavigationView) findViewById(R.id.nvView);
             actionBar = getSupportActionBar();
             actionBar.setDisplayHomeAsUpEnabled(true);
-            //actionBar.setHomeButtonEnabled(true);
 
             fragmentManager = getSupportFragmentManager();
-
             fragmentManager.addOnBackStackChangedListener(new FragmentManager.OnBackStackChangedListener() {
                 @Override
                 public void onBackStackChanged() {
@@ -92,12 +87,13 @@ public class MainActivity extends AppCompatActivity {
                             actionBar.setTitle(navigationView.getMenu().getItem(0).getTitle());
                         else if (navigationView.getMenu().getItem(1).isChecked())
                             actionBar.setTitle(navigationView.getMenu().getItem(1).getTitle());
+                            actionBar.setHomeAsUpIndicator(R.drawable.ic_menu_white_24dp);
                     }
                 }
             });
 
-            fragmentManager.beginTransaction().add(R.id.flContent, new FirstFragment()).commit();
-            actionBar.setTitle(navigationView.getMenu().getItem(0).getTitle());
+            //fragmentManager.beginTransaction().add(R.id.flContent, new FirstFragment()).commit();
+            //actionBar.setTitle(navigationView.getMenu().getItem(0).getTitle());
 
             FloatingActionButton floatingActionButton = (FloatingActionButton)findViewById(R.id.fab);
             floatingActionButton.setOnClickListener(new View.OnClickListener() {
@@ -124,19 +120,18 @@ public class MainActivity extends AppCompatActivity {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_logout) {
-            session.logoutUser(this);
-            return true;
-        }
-
-        /*switch(item.getItemId()){
+        switch(item.getItemId()){
             case android.R.id.home:
-                mDrawer.openDrawer(GravityCompat.START);
+                if (getSupportFragmentManager().getBackStackEntryCount() > 0)
+                    onBackPressed();
+                else
+                    mDrawer.openDrawer(GravityCompat.START);
                 return true;
-        }*/
+            case R.id.action_logout:
+                session.logoutUser(this);
+                return true;
+        }
 
         if(drawerToggle.onOptionsItemSelected(item)){
             return true;
@@ -208,5 +203,19 @@ public class MainActivity extends AppCompatActivity {
 
     private ActionBarDrawerToggle setupDrawerToggle(){
         return new ActionBarDrawerToggle(this, mDrawer, R.string.drawer_open, R.string.drawer_close);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (getSupportFragmentManager().getBackStackEntryCount() == 0) {
+            if (navigationView.getMenu().getItem(0).isChecked()) {
+                fragmentManager.beginTransaction().replace(R.id.flContent, new FirstFragment()).commit();
+                actionBar.setTitle(navigationView.getMenu().getItem(0).getTitle());
+            } else {
+                fragmentManager.beginTransaction().replace(R.id.flContent, new SecondFragment()).commit();
+                actionBar.setTitle(navigationView.getMenu().getItem(1).getTitle());
+            }
+        }
     }
 }

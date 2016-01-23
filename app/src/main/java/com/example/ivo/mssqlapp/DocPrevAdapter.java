@@ -2,7 +2,6 @@ package com.example.ivo.mssqlapp;
 
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,11 +18,11 @@ public class DocPrevAdapter extends RecyclerView.Adapter {
     protected List<DocPrev> docPrevList;
     private final int VIEW_ITEM = 1;
     private final int VIEW_PROG = 0;
-
     private int lastVisibleItem, totalItemCount;
     private boolean loading;
     private OnLoadMoreListener onLoadMoreListener;
     private static RecyclerViewClickListener recyclerViewClickListener;
+    private static final String EMPTY_STRING = "";
 
     public DocPrevAdapter(List<DocPrev> docPrevList, RecyclerView recyclerView){
         this.docPrevList = docPrevList;
@@ -78,13 +77,15 @@ public class DocPrevAdapter extends RecyclerView.Adapter {
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int i) {
+        String napomena;
         if(viewHolder instanceof DocPrevViewHolder) {
             DocPrev docPrev = docPrevList.get(i);
             ((DocPrevViewHolder) viewHolder).sifra.setText("Šifra: " + docPrev.sifra);
             ((DocPrevViewHolder) viewHolder).datum.setText("Datum kreiranja: " + docPrev.datum);
             ((DocPrevViewHolder) viewHolder).ovlastenik.setText("Ovlaštenik: " + docPrev.ovlastenik);
             ((DocPrevViewHolder) viewHolder).raspon.setText("Trajanje: " + docPrev.datumOd + " - " + docPrev.datumDo);
-            ((DocPrevViewHolder) viewHolder).napomena.setText("Napomena: " + docPrev.napomena);
+            napomena = (docPrev.napomena.equals(EMPTY_STRING)) ? "Nema napomene" : docPrev.napomena;
+            ((DocPrevViewHolder) viewHolder).napomena.setText("Napomena: " + napomena);
 
         }else{
             ((ProgressViewHolder)viewHolder).progressBar.setIndeterminate(true);

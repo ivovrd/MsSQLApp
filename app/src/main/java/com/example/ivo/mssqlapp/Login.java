@@ -7,12 +7,10 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
@@ -30,16 +28,12 @@ public class Login extends AppCompatActivity {
     Button loginBtn;
     TextView errorLbl;
     EditText editName, editPass;
-    //Toolbar toolbar;
     SessionManager session;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login_layout);
-
-        //toolbar = (Toolbar)findViewById(R.id.toolbar);
-        //setSupportActionBar(toolbar);
 
         loginBtn = (Button)findViewById(R.id.btnlogin);
         errorLbl = (TextView)findViewById(R.id.lblerror);
@@ -151,7 +145,6 @@ public class Login extends AppCompatActivity {
                     Log.e("SQL error", e.getMessage());
                 }
             }
-
             super.onPostExecute(resultSet);
         }
     }

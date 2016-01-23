@@ -14,7 +14,6 @@ public class DocPrevManager {
         if(mInstance == null){
             mInstance = new DocPrevManager();
         }
-
         return mInstance;
     }
 
@@ -26,8 +25,8 @@ public class DocPrevManager {
         if(docPrevList == null) {
             docPrevList = new ArrayList<>();
         }
-
         DocPrev docPrev = new DocPrev();
+
         docPrev.sifra = sifra;
         docPrev.datum = datum;
         docPrev.datumOd = datumOd;

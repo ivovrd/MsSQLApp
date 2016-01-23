@@ -5,7 +5,6 @@ import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
-
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;

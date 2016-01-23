@@ -3,7 +3,6 @@ package com.example.ivo.mssqlapp;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
-
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -21,13 +20,13 @@ public class AsyncDbConnection extends AsyncTask<Void, Void, ResultSet> {
     DocPrevAdapter mAdapter;
     private List<DocPrev> docPrevList;
     int start;
-    int dataType;
+    int status;
     Context context;
 
-    public AsyncDbConnection(DocPrevAdapter adapter, List<DocPrev> docPrevList, int dataType, Context context){
+    public AsyncDbConnection(DocPrevAdapter adapter, List<DocPrev> docPrevList, int status, Context context){
         this.mAdapter = adapter;
         this.docPrevList = docPrevList;
-        this.dataType = dataType;
+        this.status = status;
         this.context = context;
     }
 
@@ -40,17 +39,12 @@ public class AsyncDbConnection extends AsyncTask<Void, Void, ResultSet> {
     @Override
     protected ResultSet doInBackground(Void... params) {
         ResultSet result = null;
-        String queryPart;
         SessionManager session = new SessionManager(context);
 
         try{
             connect = DatabaseConnection.Connect();
             statement = connect.createStatement();
-            if(dataType == 1)
-                queryPart = " AND UpravljanjeLjudskimResursima.Dokument.Status=0";
-            else
-                queryPart = " AND UpravljanjeLjudskimResursima.Dokument.Status=1";
-            result = statement.executeQuery("SELECT UpravljanjeLjudskimResursima.Dokument.Sifra, UpravljanjeLjudskimResursima.Dokument.Datum, UpravljanjeLjudskimResursima.Dokument.DatumOd, UpravljanjeLjudskimResursima.Dokument.DatumDo, UpravljanjeLjudskimResursima.Dokument.Napomena, UpravljanjeLjudskimResursima.Dokument.Memo, Sifrarnici.Partner.Naziv, UpravljanjeLjudskimResursima.Dokument.OvlastenikId, UpravljanjeLjudskimResursima.Dokument.TrajanjeDana, UpravljanjeLjudskimResursima.Dokument.TrajanjeRadnihDana, UpravljanjeLjudskimResursima.Dokument.GodinaGodisnjegOdmora FROM UpravljanjeLjudskimResursima.Dokument INNER JOIN Sifrarnici.Partner ON UpravljanjeLjudskimResursima.Dokument.OvlastenikId=Sifrarnici.Partner.Id  WHERE UpravljanjeLjudskimResursima.Dokument.KorisnikId=" + session.getUserId() + queryPart + " ORDER BY UpravljanjeLjudskimResursima.Dokument.Id OFFSET " + String.valueOf(start) + " ROWS FETCH NEXT 10 ROWS ONLY");
+            result = statement.executeQuery("SELECT UpravljanjeLjudskimResursima.Dokument.Sifra, UpravljanjeLjudskimResursima.Dokument.Datum, UpravljanjeLjudskimResursima.Dokument.DatumOd, UpravljanjeLjudskimResursima.Dokument.DatumDo, UpravljanjeLjudskimResursima.Dokument.Napomena, UpravljanjeLjudskimResursima.Dokument.Memo, Sifrarnici.Partner.Naziv, UpravljanjeLjudskimResursima.Dokument.OvlastenikId, UpravljanjeLjudskimResursima.Dokument.TrajanjeDana, UpravljanjeLjudskimResursima.Dokument.TrajanjeRadnihDana, UpravljanjeLjudskimResursima.Dokument.GodinaGodisnjegOdmora FROM UpravljanjeLjudskimResursima.Dokument INNER JOIN Sifrarnici.Partner ON UpravljanjeLjudskimResursima.Dokument.OvlastenikId=Sifrarnici.Partner.Id  WHERE UpravljanjeLjudskimResursima.Dokument.KorisnikId=" + session.getUserId() + " AND UpravljanjeLjudskimResursima.Dokument.Status=" + Integer.toString(status) + " ORDER BY UpravljanjeLjudskimResursima.Dokument.Id DESC OFFSET " + String.valueOf(start - 1) + " ROWS FETCH NEXT 10 ROWS ONLY");
         }catch(SQLException e){
             Log.e("SQL error", e.getMessage());
         }

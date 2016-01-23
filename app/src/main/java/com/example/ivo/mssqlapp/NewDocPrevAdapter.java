@@ -12,6 +12,7 @@ import java.util.List;
 public class NewDocPrevAdapter extends DocPrevAdapter {
     private final int VIEW_ITEM = 1;
     private final int VIEW_PROG = 0;
+    private static final String EMPTY_STRING = "";
 
     public NewDocPrevAdapter(List<DocPrev> docPrevList, RecyclerView recyclerView) {
         super(docPrevList, recyclerView);
@@ -36,10 +37,13 @@ public class NewDocPrevAdapter extends DocPrevAdapter {
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int i) {
+        String napomena;
         if(viewHolder instanceof DocPrevViewHolder) {
             DocPrev docPrev = docPrevList.get(i);
-            ((DocPrevViewHolder) viewHolder).sifra.setText("Šifra dokumenta: " + docPrev.sifra);
-            ((DocPrevViewHolder) viewHolder).datum.setText("Datum kreiranja: " + docPrev.datum);
+            ((DocPrevViewHolder) viewHolder).sifra.setText("Zahtjev broj " + docPrev.sifra);
+            ((DocPrevViewHolder) viewHolder).datum.setText("Datum slanja zahtjeva: " + docPrev.datum);
+            napomena = (docPrev.napomena.equals(EMPTY_STRING)) ? "Nema napomene" : docPrev.napomena;
+            ((DocPrevViewHolder) viewHolder).napomena.setText("Napomena: " + napomena);
         }else{
             ((ProgressViewHolder)viewHolder).progressBar.setIndeterminate(true);
         }
@@ -59,6 +63,4 @@ public class NewDocPrevAdapter extends DocPrevAdapter {
     public void setOnLoadMoreListener(OnLoadMoreListener onLoadMoreListener) {
         super.setOnLoadMoreListener(onLoadMoreListener);
     }
-
-
 }

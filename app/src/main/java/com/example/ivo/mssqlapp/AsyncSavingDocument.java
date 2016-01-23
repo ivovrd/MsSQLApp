@@ -4,11 +4,8 @@ import android.os.AsyncTask;
 import android.support.design.widget.Snackbar;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.Switch;
-
 import java.sql.Connection;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
@@ -45,11 +42,9 @@ public class AsyncSavingDocument extends AsyncTask<Void, Void, Void> {
                 String queryLock = "UPDATE UpravljanjeLjudskimResursima.Dokument SET Status=" + newDocument.Status + " WHERE Sifra=" + newDocument.Sifra;
                 statement.executeUpdate(queryLock);
             }
-
         }catch(SQLException e){
             Log.e("SQL error", e.getMessage());
         }
-
         return null;
     }
 
@@ -61,13 +56,11 @@ public class AsyncSavingDocument extends AsyncTask<Void, Void, Void> {
     @Override
     protected void onPostExecute(Void aVoid) {
         super.onPostExecute(aVoid);
-        Button saveButton = (Button)view.findViewById(R.id.buttonSave);
         Switch lock = (Switch)view.findViewById(R.id.switchLock);
         String snackBarText = "";
 
         if(task == 0){
             snackBarText = "Dokument spremljen!";
-            saveButton.setEnabled(false);
             lock.setEnabled(true);
         } else if (task == 1){
             snackBarText = "Dokument zaključen!";

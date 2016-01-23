@@ -65,9 +65,7 @@ public class SessionManager {
     public void checkLogin(Activity mActivity){
         if(!this.isLoggedIn()){
             Intent i = new Intent(mContext, Login.class);
-            //closing all activities
             i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            //add new flag to start activity
             i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             mContext.startActivity(i);
             mActivity.finish();
@@ -81,9 +79,7 @@ public class SessionManager {
         editor.commit();
 
         Intent i = new Intent(mContext, Login.class);
-        //closing all activities
         i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        //add new flag to start activity
         i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         mContext.startActivity(i);
         mActivity.finish();
