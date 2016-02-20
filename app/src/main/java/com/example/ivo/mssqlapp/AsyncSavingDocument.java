@@ -1,5 +1,7 @@
 package com.example.ivo.mssqlapp;
 
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.os.AsyncTask;
 import android.support.design.widget.Snackbar;
 import android.util.Log;
@@ -13,33 +15,36 @@ import java.sql.Statement;
  * Created by Ivo on 28.8.2015..
  */
 public class AsyncSavingDocument extends AsyncTask<Void, Void, Void> {
-    Connection connect;
-    Statement statement;
-    DocumentData newDocument;
-    View view;
-    int task;
+    private DocumentData newDocument;
+    private ProgressDialog progressDialog;
+    private Context context;
+    private View view;
+    private int task;
 
-    public AsyncSavingDocument(DocumentData document, View view, int task){
+    public AsyncSavingDocument(DocumentData document, View view, int task, Context context){
         this.newDocument = document;
         this.view = view;
         this.task = task;
+        this.context = context;
     }
 
     @Override
     protected Void doInBackground(Void... params) {
+        Connection connect;
+        Statement statement;
         try{
             connect = DatabaseConnection.Connect();
             statement = connect.createStatement();
             if(task == 0){
                 String queryPartOne, queryPartTwo;
                 queryPartOne = "INSERT INTO UpravljanjeLjudskimResursima.Dokument (Sifra, TipDokumentaSifra, ZaposlenikId, OvlastenikId, Datum, Napomena, Memo, DatumOd, DatumDo, KorisnikId, KorisnikLastId, Status, TrajanjeDana, TrajanjeRadnihDana, GodinaGodisnjegOdmora) VALUES ";
-                queryPartTwo = "(" + newDocument.Sifra + ", " + newDocument.TipDokumenta + ", " + newDocument.ZaposlenikId +  ", " + newDocument.OvlastenikId + ", CURRENT_TIMESTAMP, " + newDocument.Napomena + ", " + newDocument.Memo + ", " + newDocument.DatumOd + ", " + newDocument.DatumDo + ", " + newDocument.KorisnikId + ", " + newDocument.KorisnikId + ", " + newDocument.Status + ", " + newDocument.Dani + ", " + newDocument.RadniDani + ", " + newDocument.Godina + ")";
+                queryPartTwo = "(" + newDocument.getSifra() + ", " + newDocument.getTipDokumenta() + ", " + newDocument.getZaposlenikId() +  ", " + newDocument.getOvlastenikId() + ", CURRENT_TIMESTAMP, " + newDocument.getNapomena() + ", " + newDocument.getMemo() + ", " + newDocument.getDatumOd() + ", " + newDocument.getDatumDo() + ", " + newDocument.getKorisnikId() + ", " + newDocument.getKorisnikId() + ", " + newDocument.getStatus() + ", " + newDocument.getDani() + ", " + newDocument.getRadniDani() + ", " + newDocument.getGodina() + ")";
                 statement.executeUpdate(queryPartOne + queryPartTwo);
             } else if (task == 1){
-                String queryUpdate = "UPDATE UpravljanjeLjudskimResursima.Dokument SET OvlastenikId=" + newDocument.OvlastenikId + ", Napomena=" + newDocument.Napomena + ", Memo=" + newDocument.Memo + ", DatumOd=" + newDocument.DatumOd + ", DatumDo=" + newDocument.DatumDo +  ", Status=" + newDocument.Status + ", TrajanjeDana=" + newDocument.Dani + ", TrajanjeRadnihDana=" + newDocument.RadniDani + ", GodinaGodisnjegOdmora=" + newDocument.Godina + " WHERE Sifra=" + newDocument.Sifra;
+                String queryUpdate = "UPDATE UpravljanjeLjudskimResursima.Dokument SET OvlastenikId=" + newDocument.getOvlastenikId() + ", Napomena=" + newDocument.getNapomena() + ", Memo=" + newDocument.getMemo() + ", DatumOd=" + newDocument.getDatumOd() + ", DatumDo=" + newDocument.getDatumDo() +  ", Status=" + newDocument.getStatus() + ", TrajanjeDana=" + newDocument.getDani() + ", TrajanjeRadnihDana=" + newDocument.getRadniDani() + ", GodinaGodisnjegOdmora=" + newDocument.getGodina() + " WHERE Sifra=" + newDocument.getSifra();
                 statement.executeUpdate(queryUpdate);
             } else if (task == 2){
-                String queryLock = "UPDATE UpravljanjeLjudskimResursima.Dokument SET Status=" + newDocument.Status + " WHERE Sifra=" + newDocument.Sifra;
+                String queryLock = "UPDATE UpravljanjeLjudskimResursima.Dokument SET Status=" + newDocument.getStatus() + " WHERE Sifra=" + newDocument.getSifra();
                 statement.executeUpdate(queryLock);
             }
         }catch(SQLException e){
@@ -51,11 +56,13 @@ public class AsyncSavingDocument extends AsyncTask<Void, Void, Void> {
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
+        progressDialog = ProgressDialog.show(context, "", "Processing...");
     }
 
     @Override
     protected void onPostExecute(Void aVoid) {
         super.onPostExecute(aVoid);
+        progressDialog.dismiss();
         Switch lock = (Switch)view.findViewById(R.id.switchLock);
         String snackBarText = "";
 
@@ -64,8 +71,7 @@ public class AsyncSavingDocument extends AsyncTask<Void, Void, Void> {
             lock.setEnabled(true);
         } else if (task == 1){
             snackBarText = "Dokument zaključen!";
-        }
-        else if (task == 2){
+        } else if (task == 2){
             snackBarText = "Dokument otključen!";
         }
 

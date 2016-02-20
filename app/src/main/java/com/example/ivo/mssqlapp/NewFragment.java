@@ -23,9 +23,10 @@ public class NewFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         ActionBar toolbar = ((AppCompatActivity)getActivity()).getSupportActionBar();
-        toolbar.setHomeButtonEnabled(false);
-        toolbar.setHomeAsUpIndicator(R.drawable.abc_ic_ab_back_mtrl_am_alpha);
-
+        if(toolbar != null) {
+            toolbar.setHomeButtonEnabled(false);
+            toolbar.setHomeAsUpIndicator(R.drawable.abc_ic_ab_back_mtrl_am_alpha);
+        }
 
         dokumentSifra = getArguments().getString("DOC_SIFRA");
         ovlastenik = getArguments().getString("DOC_OVLASTENIK");

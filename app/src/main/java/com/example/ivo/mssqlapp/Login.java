@@ -1,12 +1,15 @@
 package com.example.ivo.mssqlapp;
 
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -25,32 +28,34 @@ import java.sql.Statement;
  * Created by Ivo on 21.6.2015..
  */
 public class Login extends AppCompatActivity {
-    Button loginBtn;
-    TextView errorLbl;
-    EditText editName, editPass;
-    SessionManager session;
+    private EditText editName, editPass;
+    private SessionManager session;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login_layout);
-
-        loginBtn = (Button)findViewById(R.id.btnlogin);
-        errorLbl = (TextView)findViewById(R.id.lblerror);
+        Button loginBtn = (Button)findViewById(R.id.btnlogin);
         editName = (EditText)findViewById(R.id.txtname);
         editPass = (EditText)findViewById(R.id.txtpassword);
-
         session = new SessionManager(getApplicationContext());
-
         loginBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                imm.hideSoftInputFromWindow(editPass.getWindowToken(), 0);
+                hideKeyboard();
+                editName.setError(null);
+                editPass.setError(null);
 
-                String name = editName.getText().toString();
-                String pass = editPass.getText().toString();
-                new AsyncLogin(name, pass).execute();
+                if(TextUtils.isEmpty(editName.getText().toString())){
+                    editName.setError("Nije upisano korisničko ime!");
+                }
+                else if(TextUtils.isEmpty(editPass.getText().toString())){
+                    editPass.setError("Nije upisana lozinka!");
+                }else {
+                    String name = editName.getText().toString();
+                    String pass = editPass.getText().toString();
+                    new AsyncLogin(name, pass).execute();
+                }
             }
         });
     }
@@ -78,10 +83,9 @@ public class Login extends AppCompatActivity {
     }
 
     public class AsyncLogin extends AsyncTask<Void, Void, ResultSet>{
-        Connection connect;
-        Statement statement;
-        String name, pass;
-        LinearLayout linProgBar = (LinearLayout)findViewById(R.id.linProgBar);
+        private String name, pass;
+        private Connection connect;
+        private ProgressDialog progressDialog;
 
         public AsyncLogin(String name, String pass){
             this.name = name;
@@ -91,13 +95,12 @@ public class Login extends AppCompatActivity {
         @Override
         protected ResultSet doInBackground(Void... params) {
             ResultSet result = null;
-
             try{
                 connect = DatabaseConnection.Connect();
                 if(connect == null){
                     Log.e("SERVER_ERROR_MESSAGE", "Server not running");
                 }else {
-                    statement = connect.createStatement();
+                    Statement statement = connect.createStatement();
                     result = statement.executeQuery("SELECT Sifrarnici.Partner.Id, Korisnik.Id, Korisnik.KorisnickoIme, Korisnik.Lozinka, Korisnik.Ime, Korisnik.Prezime, Korisnik.Email FROM Korisnik INNER JOIN Sifrarnici.Partner ON Korisnik.OIB=Sifrarnici.Partner.OIB WHERE Korisnik.KorisnickoIme='" + name + "' and Korisnik.Lozinka='" + pass + "'");
                 }
             }catch(SQLException e){
@@ -113,24 +116,15 @@ public class Login extends AppCompatActivity {
 
         @Override
         protected void onPreExecute() {
-            linProgBar.setVisibility(View.VISIBLE);
+            progressDialog = ProgressDialog.show(Login.this, "", "Processing...");
             super.onPreExecute();
         }
 
         @Override
         protected void onPostExecute(ResultSet resultSet) {
-            linProgBar.setVisibility(View.GONE);
+            progressDialog.dismiss();
             if(connect == null) {
-                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(Login.this);
-                alertDialogBuilder.setTitle("Server ne radi");
-                alertDialogBuilder.setMessage("Pritisnite OK za izlazak iz aplikacije").setCancelable(false).setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        finish();
-                    }
-                });
-                AlertDialog alertDialog = alertDialogBuilder.create();
-                alertDialog.show();
+                showServerInactiveDialog();
             }else {
                 try {
                     if (resultSet != null && resultSet.next()) {
@@ -139,7 +133,7 @@ public class Login extends AppCompatActivity {
                         startActivity(intent);
                         finish();
                     } else {
-                        errorLbl.setText("Pogrešno korisničko ime ili lozinka, pokušajte ponovo!");
+                        showWrongPasswordDialog();
                     }
                 } catch (SQLException e) {
                     Log.e("SQL error", e.getMessage());
@@ -147,5 +141,36 @@ public class Login extends AppCompatActivity {
             }
             super.onPostExecute(resultSet);
         }
+    }
+
+    private void hideKeyboard(){
+        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(editPass.getWindowToken(), 0);
+    }
+
+    private void showServerInactiveDialog(){
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(Login.this);
+        alertDialogBuilder.setTitle("Greška u povezivanju");
+        alertDialogBuilder.setMessage("Server nije aktivan, pritisnite OK za izlazak iz aplikacije").setCancelable(false).setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                finish();
+            }
+        });
+        AlertDialog alertDialog = alertDialogBuilder.create();
+        alertDialog.show();
+    }
+
+    private void showWrongPasswordDialog(){
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(Login.this);
+        alertDialogBuilder.setTitle("Greška pri unosu podataka");
+        alertDialogBuilder.setMessage("Pogrešno korisničko ime ili lozinka, pokušajte ponovo").setCancelable(false).setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+
+            }
+        });
+        AlertDialog alertDialog = alertDialogBuilder.create();
+        alertDialog.show();
     }
 }

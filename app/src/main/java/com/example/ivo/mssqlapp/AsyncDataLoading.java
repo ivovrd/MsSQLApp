@@ -39,7 +39,6 @@ public class AsyncDataLoading extends AsyncTask<Void, Void, ResultSet> {
         }catch (SQLException e){
             Log.e("SQL error", e.getMessage());
         }
-
         return resultSet;
     }
 

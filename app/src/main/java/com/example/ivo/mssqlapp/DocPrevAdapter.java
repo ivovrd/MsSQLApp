@@ -36,7 +36,6 @@ public class DocPrevAdapter extends RecyclerView.Adapter {
                 @Override
                 public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                     super.onScrolled(recyclerView, dx, dy);
-
                     totalItemCount = linearLayoutManager.getItemCount();
                     lastVisibleItem = linearLayoutManager.findLastVisibleItemPosition();
                     if (userScrolled && !loading && totalItemCount <= (lastVisibleItem + 1)) {
@@ -50,7 +49,6 @@ public class DocPrevAdapter extends RecyclerView.Adapter {
                 @Override
                 public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                     super.onScrollStateChanged(recyclerView, newState);
-
                     if(newState == NumberPicker.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL){
                         userScrolled = true;
                     }
@@ -80,11 +78,11 @@ public class DocPrevAdapter extends RecyclerView.Adapter {
         String napomena;
         if(viewHolder instanceof DocPrevViewHolder) {
             DocPrev docPrev = docPrevList.get(i);
-            ((DocPrevViewHolder) viewHolder).sifra.setText("Šifra: " + docPrev.sifra);
-            ((DocPrevViewHolder) viewHolder).datum.setText("Datum kreiranja: " + docPrev.datum);
-            ((DocPrevViewHolder) viewHolder).ovlastenik.setText("Ovlaštenik: " + docPrev.ovlastenik);
-            ((DocPrevViewHolder) viewHolder).raspon.setText("Trajanje: " + docPrev.datumOd + " - " + docPrev.datumDo);
-            napomena = (docPrev.napomena.equals(EMPTY_STRING)) ? "Nema napomene" : docPrev.napomena;
+            ((DocPrevViewHolder) viewHolder).sifra.setText("Šifra: " + docPrev.getSifra());
+            ((DocPrevViewHolder) viewHolder).datum.setText("Datum kreiranja: " + docPrev.getDatum());
+            ((DocPrevViewHolder) viewHolder).ovlastenik.setText("Ovlaštenik: " + docPrev.getOvlastenik());
+            ((DocPrevViewHolder) viewHolder).raspon.setText("Trajanje: " + docPrev.getDatumOd() + " - " + docPrev.getDatumDo());
+            napomena = (docPrev.getNapomena().equals(EMPTY_STRING)) ? "Nema napomene" : docPrev.getNapomena();
             ((DocPrevViewHolder) viewHolder).napomena.setText("Napomena: " + napomena);
 
         }else{
@@ -106,7 +104,7 @@ public class DocPrevAdapter extends RecyclerView.Adapter {
     }
 
     public void setOnRecyclerViewClickListener(RecyclerViewClickListener recyclerViewClickListener){
-        this.recyclerViewClickListener = recyclerViewClickListener;
+        DocPrevAdapter.recyclerViewClickListener = recyclerViewClickListener;
     }
 
     public static class DocPrevViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{

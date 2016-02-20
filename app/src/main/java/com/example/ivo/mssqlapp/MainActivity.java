@@ -43,18 +43,8 @@ public class MainActivity extends AppCompatActivity {
         isConnected = activeNetwork != null && activeNetwork.isConnectedOrConnecting();
 
         if(!isConnected){
-            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(MainActivity.this);
-            alertDialogBuilder.setTitle("Greška u povezivanju");
-            alertDialogBuilder.setMessage("Provjerite podatkovnu vezu i pokušajte ponovo").setCancelable(false).setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialogInterface, int i) {
-                    finish();
-                }
-            });
-            AlertDialog alertDialog = alertDialogBuilder.create();
-            alertDialog.show();
+            showWarningDialog();
         }else {
-
             setContentView(R.layout.activity_main);
 
             session = new SessionManager(getApplicationContext());
@@ -72,11 +62,12 @@ public class MainActivity extends AppCompatActivity {
             userDetails.setText(userFirstName + " " + userLastName);
             userDetailsEmail.setText(userEmail);
             drawerToggle = setupDrawerToggle();
-            //mDrawer.setDrawerListener(drawerToggle);
+            mDrawer.setDrawerListener(drawerToggle);
 
             navigationView = (NavigationView) findViewById(R.id.nvView);
             actionBar = getSupportActionBar();
-            actionBar.setDisplayHomeAsUpEnabled(true);
+            if(actionBar != null)
+                actionBar.setDisplayHomeAsUpEnabled(true);
 
             fragmentManager = getSupportFragmentManager();
             fragmentManager.addOnBackStackChangedListener(new FragmentManager.OnBackStackChangedListener() {
@@ -92,9 +83,6 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
 
-            //fragmentManager.beginTransaction().add(R.id.flContent, new FirstFragment()).commit();
-            //actionBar.setTitle(navigationView.getMenu().getItem(0).getTitle());
-
             FloatingActionButton floatingActionButton = (FloatingActionButton)findViewById(R.id.fab);
             floatingActionButton.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -102,7 +90,6 @@ public class MainActivity extends AppCompatActivity {
                     startActivity(new Intent(getApplicationContext(), MakeDocActivity.class));
                 }
             });
-
             setupDrawerContent(navigationView);
         }
     }
@@ -111,7 +98,6 @@ public class MainActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
-
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -208,14 +194,29 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        if (getSupportFragmentManager().getBackStackEntryCount() == 0) {
-            if (navigationView.getMenu().getItem(0).isChecked()) {
-                fragmentManager.beginTransaction().replace(R.id.flContent, new FirstFragment()).commit();
-                actionBar.setTitle(navigationView.getMenu().getItem(0).getTitle());
-            } else {
-                fragmentManager.beginTransaction().replace(R.id.flContent, new SecondFragment()).commit();
-                actionBar.setTitle(navigationView.getMenu().getItem(1).getTitle());
+        if(isConnected) {
+            if (getSupportFragmentManager().getBackStackEntryCount() == 0) {
+                if (navigationView.getMenu().getItem(0).isChecked()) {
+                    fragmentManager.beginTransaction().replace(R.id.flContent, new FirstFragment()).commit();
+                    actionBar.setTitle(navigationView.getMenu().getItem(0).getTitle());
+                } else {
+                    fragmentManager.beginTransaction().replace(R.id.flContent, new SecondFragment()).commit();
+                    actionBar.setTitle(navigationView.getMenu().getItem(1).getTitle());
+                }
             }
         }
+    }
+
+    private void showWarningDialog(){
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(MainActivity.this);
+        alertDialogBuilder.setTitle("Greška u povezivanju");
+        alertDialogBuilder.setMessage("Provjerite podatkovnu vezu i pokušajte ponovo").setCancelable(false).setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                finish();
+            }
+        });
+        AlertDialog alertDialog = alertDialogBuilder.create();
+        alertDialog.show();
     }
 }

@@ -25,20 +25,8 @@ public class DocPrevManager {
         if(docPrevList == null) {
             docPrevList = new ArrayList<>();
         }
-        DocPrev docPrev = new DocPrev();
 
-        docPrev.sifra = sifra;
-        docPrev.datum = datum;
-        docPrev.datumOd = datumOd;
-        docPrev.datumDo = datumDo;
-        docPrev.ovlastenikId = ovlastenikId;
-        docPrev.napomena = napomena;
-        docPrev.memo = memo;
-        docPrev.ovlastenik = ovlastenik;
-        docPrev.dani = dani;
-        docPrev.radniDani = radniDani;
-        docPrev.godina = godina;
-
+        DocPrev docPrev = new DocPrev(sifra, datum, datumOd, datumDo, ovlastenikId, napomena, memo, ovlastenik, dani, radniDani, godina);
         docPrevList.add(docPrev);
     }
 }

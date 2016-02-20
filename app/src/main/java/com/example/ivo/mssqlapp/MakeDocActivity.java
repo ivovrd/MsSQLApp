@@ -1,6 +1,7 @@
 package com.example.ivo.mssqlapp;
 
 import android.app.DatePickerDialog;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
@@ -33,18 +34,12 @@ public class MakeDocActivity extends AppCompatActivity implements View.OnClickLi
     private Spinner spinner;
     private Switch switchLock;
     private ArrayList<Ovlastenik> ovlastenici;
-    private int ovlastenikPickedIndex, isLocked;
-    private long from, to, diff = 0;
+    private int ovlastenikPickedIndex, isLocked, ovlastenikId, docNum;
+    private long startingDate, endingDate, dateDiff = 0;
     private boolean dateFromSet = false, dateToSet = false, argsExists = false;
     private DocumentData document;
-    private static final String TIP_DOKUMENTA = "103";
-    private String docSifraYearPart = "";
-    private String thisDocSifra;
-    private int ovlastenikId = 0;
-    private int docNum;
-    private static final int TYPE_SAVE = 0;
-    private static final int TYPE_LOCK = 1;
-    private static final int TYPE_UNLOCK = 2;
+    private String documentType, docSifraYearPart, thisDocSifra;
+    private static final int TYPE_SAVE = 0, TYPE_LOCK = 1, TYPE_UNLOCK = 2;
     private SessionManager sessionManager;
 
     @Override
@@ -82,26 +77,12 @@ public class MakeDocActivity extends AppCompatActivity implements View.OnClickLi
 
         if(args != null){
             getSupportActionBar().setTitle("Uređivanje zahtjeva");
-            year.setText(Integer.toString(args.getInt("DOC_GODINA")));
-            dateFrom.setText(args.getString("DOC_DATUM_OD"));
-            dateFromSet = true;
-            dateTo.setText(args.getString("DOC_DATUM_DO"));
-            dateToSet = true;
-            daysCount.setText(Integer.toString(args.getInt("DOC_DANI")));
-            diff = args.getInt("DOC_DANI");
-            workDaysCount.setText(Integer.toString(args.getInt("DOC_RADNI_DANI")));
-            remark.setText(args.getString("DOC_NAPOMENA"));
-            memo.setText(args.getString("DOC_MEMO"));
-            ovlastenikId = args.getInt("DOC_OVLASTENIK_ID");
-
-            switchLock.setEnabled(true);
-            buttonSave.setEnabled(false);
-            thisDocSifra = args.getString("DOC_SIFRA");
-            argsExists = true;
+            getBundleArgs(args);
         }
 
         ovlastenici = new ArrayList<>();
         new AsyncDataLoading(ovlastenici, this, spinner, ovlastenikId).execute();
+        new AsyncDocTypeRetrieving().execute();
 
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -135,17 +116,15 @@ public class MakeDocActivity extends AppCompatActivity implements View.OnClickLi
                 if(isChecked && checkValue){
                     isLocked = 1;
                     String docSifra;
-
                     if(argsExists)
                         docSifra = thisDocSifra;
                     else
-                        docSifra = TIP_DOKUMENTA + docSifraYearPart + String.valueOf(docNum);
+                        docSifra = documentType + docSifraYearPart + String.valueOf(docNum);
 
                     int userId = Integer.valueOf(sessionManager.getUserId());
                     int partnerId = Integer.valueOf(sessionManager.getPartnerId());
-                    document = new DocumentData(docSifra, TIP_DOKUMENTA, partnerId, ovlastenici.get(ovlastenikPickedIndex).Id, userId, isLocked, Integer.valueOf(daysCount.getText().toString()), Integer.valueOf(workDaysCount.getText().toString()), Integer.valueOf(year.getText().toString()), clearDateString(dateFrom.getText().toString()), clearDateString(dateTo.getText().toString()), addApostrophe(remark.getText().toString()), addApostrophe(memo.getText().toString()));
-
-                    new AsyncSavingDocument(document, findViewById(R.id.content), TYPE_LOCK).execute();
+                    document = new DocumentData(docSifra, documentType, partnerId, ovlastenici.get(ovlastenikPickedIndex).Id, userId, isLocked, Integer.valueOf(daysCount.getText().toString()), Integer.valueOf(workDaysCount.getText().toString()), Integer.valueOf(year.getText().toString()), clearDateString(dateFrom.getText().toString()), clearDateString(dateTo.getText().toString()), addApostrophe(remark.getText().toString()), addApostrophe(memo.getText().toString()));
+                    new AsyncSavingDocument(document, findViewById(R.id.content), TYPE_LOCK, MakeDocActivity.this).execute();
                     enableDisableViews(spinner, editTexts, false);
                 } else if (isChecked){
                     switchLock.setChecked(false);
@@ -154,13 +133,12 @@ public class MakeDocActivity extends AppCompatActivity implements View.OnClickLi
                     isLocked = 0;
                     String docSifra;
                     if(argsExists)
-
                         docSifra = thisDocSifra;
                     else
-                        docSifra = TIP_DOKUMENTA + docSifraYearPart + String.valueOf(docNum);
+                        docSifra = documentType + docSifraYearPart + String.valueOf(docNum);
 
                     document = new DocumentData(docSifra, isLocked);
-                    new AsyncSavingDocument(document, findViewById(R.id.content), TYPE_UNLOCK).execute();
+                    new AsyncSavingDocument(document, findViewById(R.id.content), TYPE_UNLOCK, MakeDocActivity.this).execute();
                     enableDisableViews(spinner, editTexts, true);
                 }
             }
@@ -173,7 +151,6 @@ public class MakeDocActivity extends AppCompatActivity implements View.OnClickLi
             onBackPressed();
             return true;
         }
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -200,10 +177,13 @@ public class MakeDocActivity extends AppCompatActivity implements View.OnClickLi
                 newDate.set(year, monthOfYear, dayOfMonth);
                 dateFrom.setText(dateFormat.format(newDate.getTime()));
                 dateFromSet = true;
-                from = newDate.getTimeInMillis();
-                diff = (to - from)/(24*60*60*1000) + 1;
-                if(diff >= 1)
-                    daysCount.setText(String.valueOf(diff));
+                startingDate = newDate.getTimeInMillis();
+                dateDiff = (endingDate - startingDate)/(24*60*60*1000) + 1;
+                if(dateDiff >= 1) {
+                    daysCount.setText(String.valueOf(dateDiff));
+                } else{
+                    daysCount.setText("");
+                }
             }
         }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
 
@@ -214,10 +194,13 @@ public class MakeDocActivity extends AppCompatActivity implements View.OnClickLi
                 newDate.set(year, monthOfYear, dayOfMonth);
                 dateTo.setText(dateFormat.format(newDate.getTime()));
                 dateToSet = true;
-                to = newDate.getTimeInMillis();
-                diff = (to - from)/(24*60*60*1000) + 1;
-                if(diff >= 1)
-                    daysCount.setText(String.valueOf(diff));
+                endingDate = newDate.getTimeInMillis();
+                dateDiff = (endingDate - startingDate)/(24*60*60*1000) + 1;
+                if(dateDiff >= 1) {
+                    daysCount.setText(String.valueOf(dateDiff));
+                } else{
+                    daysCount.setText("");
+                }
             }
         }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
     }
@@ -257,7 +240,7 @@ public class MakeDocActivity extends AppCompatActivity implements View.OnClickLi
 
         if (workDaysCount.getText().length() != 0) {
             daysWork = Integer.valueOf(workDaysCount.getText().toString());
-            days = (int) diff;
+            days = (int) dateDiff;
         } else {
             days = 0;
             daysWork = 1;
@@ -273,13 +256,33 @@ public class MakeDocActivity extends AppCompatActivity implements View.OnClickLi
             makeWarningSnackbar(view, "Nije unesen datum početka godišnjeg!");
         } else if (!dateToSet) {
             makeWarningSnackbar(view, "Nije unesen datum završetka godišnjeg!");
+        } else if (endingDate - startingDate < 0){
+            makeWarningSnackbar(view, "Datum završetka prije početka godišnjeg!");
         } else if (days - daysWork < 0) {
             makeWarningSnackbar(view, "Nije unesen točan broj radnih dana!");
         } else{
             result = true;
         }
-
         return result;
+    }
+
+    private void getBundleArgs(Bundle args){
+        year.setText(Integer.toString(args.getInt("DOC_GODINA")));
+        dateFrom.setText(args.getString("DOC_DATUM_OD"));
+        dateFromSet = true;
+        dateTo.setText(args.getString("DOC_DATUM_DO"));
+        dateToSet = true;
+        daysCount.setText(Integer.toString(args.getInt("DOC_DANI")));
+        dateDiff = args.getInt("DOC_DANI");
+        workDaysCount.setText(Integer.toString(args.getInt("DOC_RADNI_DANI")));
+        remark.setText(args.getString("DOC_NAPOMENA"));
+        memo.setText(args.getString("DOC_MEMO"));
+        ovlastenikId = args.getInt("DOC_OVLASTENIK_ID");
+
+        switchLock.setEnabled(true);
+        buttonSave.setEnabled(false);
+        thisDocSifra = args.getString("DOC_SIFRA");
+        argsExists = true;
     }
 
     public class AsyncDocCodeRetrieving extends AsyncTask<Void, Void, ResultSet>{
@@ -287,22 +290,14 @@ public class MakeDocActivity extends AppCompatActivity implements View.OnClickLi
         @Override
         protected ResultSet doInBackground(Void... voids) {
             ResultSet resultSet = null;
-            Connection connect;
-            Statement statement;
-
             try{
-                connect = DatabaseConnection.Connect();
-                statement = connect.createStatement();
+                Connection connect = DatabaseConnection.Connect();
+                Statement statement = connect.createStatement();
                 resultSet = statement.executeQuery("SELECT Sifra FROM UpravljanjeLjudskimResursima.Dokument WHERE Id = (SELECT MAX(Id) FROM UpravljanjeLjudskimResursima.Dokument)");
             }catch(SQLException e){
                 Log.e("SQL error", e.getMessage());
             }
-
-            if(resultSet != null) {
-                return resultSet;
-            }else{
-                return null;
-            }
+            return resultSet;
         }
 
         @Override
@@ -316,12 +311,38 @@ public class MakeDocActivity extends AppCompatActivity implements View.OnClickLi
             } catch (SQLException e){
                 Log.e("SQL error", e.getMessage());
             }
-
             int userId = Integer.valueOf(sessionManager.getUserId());
             int partnerId = Integer.valueOf(sessionManager.getPartnerId());
-            document = new DocumentData(TIP_DOKUMENTA + docSifraYearPart + String.valueOf(docNum), TIP_DOKUMENTA, partnerId, ovlastenici.get(ovlastenikPickedIndex).Id, userId, isLocked, Integer.valueOf(daysCount.getText().toString()), Integer.valueOf(workDaysCount.getText().toString()), Integer.valueOf(year.getText().toString()), clearDateString(dateFrom.getText().toString()), clearDateString(dateTo.getText().toString()), addApostrophe(remark.getText().toString()), addApostrophe(memo.getText().toString()));
-            new AsyncSavingDocument(document, findViewById(R.id.content), TYPE_SAVE).execute();
+            document = new DocumentData(documentType + docSifraYearPart + String.valueOf(docNum), documentType, partnerId, ovlastenici.get(ovlastenikPickedIndex).Id, userId, isLocked, Integer.valueOf(daysCount.getText().toString()), Integer.valueOf(workDaysCount.getText().toString()), Integer.valueOf(year.getText().toString()), clearDateString(dateFrom.getText().toString()), clearDateString(dateTo.getText().toString()), addApostrophe(remark.getText().toString()), addApostrophe(memo.getText().toString()));
+            new AsyncSavingDocument(document, findViewById(R.id.content), TYPE_SAVE, MakeDocActivity.this).execute();
 
+            super.onPostExecute(resultSet);
+        }
+    }
+
+    public class AsyncDocTypeRetrieving extends AsyncTask<Void,Void,ResultSet>{
+        @Override
+        protected ResultSet doInBackground(Void... voids) {
+            ResultSet resultSet = null;
+            try{
+                Connection connect = DatabaseConnection.Connect();
+                Statement statement = connect.createStatement();
+                resultSet = statement.executeQuery("SELECT Sifra FROM UpravljanjeLjudskimResursima.TipDokumenta WHERE Naziv = 'Zahtjev za korištenje godišnjeg odmora'");
+            }catch(SQLException e){
+                Log.e("SQL error", e.getMessage());
+            }
+            return resultSet;
+        }
+
+        @Override
+        protected void onPostExecute(ResultSet resultSet) {
+            try {
+                if (resultSet != null && resultSet.next()) {
+                    documentType = resultSet.getString("Sifra");
+                }
+            } catch (SQLException e){
+                Log.e("SQL error", e.getMessage());
+            }
             super.onPostExecute(resultSet);
         }
     }

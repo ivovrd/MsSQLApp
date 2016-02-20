@@ -15,9 +15,6 @@ import android.widget.LinearLayout;
  */
 public class FirstFragment extends Fragment{
     private static final int DATA_TYPE = 0;
-    LinearLayoutManager mLayoutManager;
-    RecyclerView mRecyclerView;
-    LinearLayout loadingCircle;
 
     @Override
     public void onCreate(Bundle savedInstanceState){
@@ -26,8 +23,11 @@ public class FirstFragment extends Fragment{
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.first_fragment, container, false);
+        LinearLayoutManager mLayoutManager;
+        RecyclerView mRecyclerView;
+        LinearLayout loadingCircle;
 
+        View view = inflater.inflate(R.layout.first_fragment, container, false);
         mRecyclerView = (RecyclerView)view.findViewById(R.id.recyclerList);
         mRecyclerView.setHasFixedSize(true);
         mLayoutManager = new LinearLayoutManager(getActivity().getApplicationContext());

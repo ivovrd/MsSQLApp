@@ -14,14 +14,16 @@ import java.sql.SQLException;
  * Created by Ivo on 6.7.2015..
  */
 public class DatabaseConnection {
-    private static String ipaddress = "192.168.2.16";
-    //private static String ipaddress = "109.60.24.23";
-    private static String database = "PivisDB_Prazna";
-    private static String username = "admin";
-    private static String password = "admin123";
 
     @SuppressLint("NewAPI")
     public static Connection Connect(){
+        String ipAddress = "192.168.2.16";
+        //String ipaddress = "109.60.24.116";
+        //String ipaddress = "192.168.43.162";
+        String dataBase = "PivisDB_Prazna";
+        String username = "admin";
+        String password = "admin123";
+
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
         Connection connection = null;
@@ -29,7 +31,7 @@ public class DatabaseConnection {
 
         try{
             Class.forName("net.sourceforge.jtds.jdbc.Driver");
-            connectionURL = "jdbc:jtds:sqlserver://" + ipaddress + "/" + database + ";user=" + username + ";password=" + password + ";";
+            connectionURL = "jdbc:jtds:sqlserver://" + ipAddress + "/" + dataBase + ";user=" + username + ";password=" + password + ";";
             connection = DriverManager.getConnection(connectionURL);
         }catch(SQLException se){
             Log.e("ERROR1", se.getMessage());

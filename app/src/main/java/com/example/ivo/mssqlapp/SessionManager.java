@@ -140,44 +140,53 @@ public class SessionManager {
         @Override
         protected void onPostExecute(ResultSet resultSet) {
             if(connect == null) {
-                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(mActivity);
-                alertDialogBuilder.setTitle("Server ne radi");
-                alertDialogBuilder.setMessage("Klikni OK za izlazak iz aplikacije").setCancelable(false).setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        mActivity.finish();
-                    }
-                });
-                AlertDialog alertDialog = alertDialogBuilder.create();
-                alertDialog.show();
+                showServerInactiveDialog();
             }else {
                 try {
                     if (resultSet != null && resultSet.next()) {
                         String temp = resultSet.getString("Lozinka");
                         if (!temp.equals(this.pass)) {
-                            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(mActivity);
-                            alertDialogBuilder.setTitle("Pogrešna lozinka");
-                            alertDialogBuilder.setMessage("Klikni OK za ponovno logiranje").setCancelable(false).setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialogInterface, int i) {
-                                    logoutUser(mActivity);
-                                }
-                            }).setNegativeButton("Izlaz", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialogInterface, int i) {
-                                    mActivity.finish();
-                                }
-                            });
-                            AlertDialog alertDialog = alertDialogBuilder.create();
-                            alertDialog.show();
+                            showWrongPasswordDialog();
                         }
                     }
                 } catch (SQLException e) {
                     Log.e("SQL error", e.getMessage());
                 }
             }
-
             super.onPostExecute(resultSet);
+        }
+
+        private void showServerInactiveDialog(){
+            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(mActivity);
+            alertDialogBuilder.setTitle("Greška u povezivanju");
+            alertDialogBuilder.setMessage("Server nije aktivan, pritisnite OK za izlazak iz aplikacije").setCancelable(false).setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    mActivity.finish();
+                }
+            });
+            AlertDialog alertDialog = alertDialogBuilder.create();
+            alertDialog.show();
+        }
+
+        private void showWrongPasswordDialog(){
+            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(mActivity);
+            alertDialogBuilder.setTitle("Pogrešna lozinka");
+            alertDialogBuilder.setMessage("Klikni OK za ponovni unos").
+                    setCancelable(false).setPositiveButton("OK",
+                    new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            logoutUser(mActivity);
+                        }
+                    }).setNegativeButton("Izlaz", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    mActivity.finish();
+                }
+            });
+            AlertDialog alertDialog = alertDialogBuilder.create();
+            alertDialog.show();
         }
     }
 }

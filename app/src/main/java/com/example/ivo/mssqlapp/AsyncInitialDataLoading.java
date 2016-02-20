@@ -22,14 +22,12 @@ import java.util.Locale;
  * Created by Ivo on 19.1.2016..
  */
 public class AsyncInitialDataLoading extends AsyncTask<Void, Void, ResultSet>{
-    Connection connect;
-    Statement statement;
-    DocPrevAdapter adapter;
-    RecyclerView recyclerView;
-    Context context;
-    List<DocPrev> docPrevList;
-    LinearLayout loadingCircle;
-    int status;
+    private DocPrevAdapter adapter;
+    private RecyclerView recyclerView;
+    private Context context;
+    private List<DocPrev> docPrevList;
+    private LinearLayout loadingCircle;
+    private int status;
 
     public AsyncInitialDataLoading (RecyclerView recyclerView, int status, Context context, LinearLayout loadingCircle){
         this.recyclerView = recyclerView;
@@ -50,22 +48,17 @@ public class AsyncInitialDataLoading extends AsyncTask<Void, Void, ResultSet>{
         SessionManager session = new SessionManager(context);
 
         try{
-            connect = DatabaseConnection.Connect();
+            Connection connect = DatabaseConnection.Connect();
             if(connect == null){
                 Log.e("FIRST_FRAGMENT_ERROR", "Can't load data from server");
             }else {
-                statement = connect.createStatement();
+                Statement statement = connect.createStatement();
                 result = statement.executeQuery("SELECT TOP 10 UpravljanjeLjudskimResursima.Dokument.Sifra, UpravljanjeLjudskimResursima.Dokument.Datum, UpravljanjeLjudskimResursima.Dokument.DatumOd, UpravljanjeLjudskimResursima.Dokument.DatumDo, UpravljanjeLjudskimResursima.Dokument.Napomena, UpravljanjeLjudskimResursima.Dokument.Memo, Sifrarnici.Partner.Naziv, UpravljanjeLjudskimResursima.Dokument.OvlastenikId, UpravljanjeLjudskimResursima.Dokument.TrajanjeDana, UpravljanjeLjudskimResursima.Dokument.TrajanjeRadnihDana, UpravljanjeLjudskimResursima.Dokument.GodinaGodisnjegOdmora FROM UpravljanjeLjudskimResursima.Dokument INNER JOIN Sifrarnici.Partner ON UpravljanjeLjudskimResursima.Dokument.OvlastenikId=Sifrarnici.Partner.Id  WHERE UpravljanjeLjudskimResursima.Dokument.KorisnikId=" + session.getUserId() + " AND UpravljanjeLjudskimResursima.Dokument.Status=" + Integer.toString(status) + "ORDER BY UpravljanjeLjudskimResursima.Dokument.Id DESC");
             }
         }catch(SQLException e){
             Log.e("SQL error", e.getMessage());
         }
-
-        if(result != null) {
-            return result;
-        }else{
-            return null;
-        }
+        return result;
     }
 
     @Override
@@ -76,7 +69,6 @@ public class AsyncInitialDataLoading extends AsyncTask<Void, Void, ResultSet>{
                 SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy.", Locale.ENGLISH);
                 DocPrevManager.getInstance().setDocPrevs(result.getString(1), String.valueOf(dateFormat.format(result.getDate(2))), String.valueOf(dateFormat.format(result.getDate(3))), String.valueOf(dateFormat.format(result.getDate(4))), result.getString(5), result.getString(6), result.getString(7),  result.getInt(8), result.getInt(9), result.getInt(10), result.getInt(11));
             }
-
         } catch (SQLException e) {
             Log.e("SQL error", e.getMessage());
         }
@@ -95,11 +87,7 @@ public class AsyncInitialDataLoading extends AsyncTask<Void, Void, ResultSet>{
                 docPrevList = DocPrevManager.getInstance().getDocPrevs();
                 docPrevList.add(null);
                 adapter.notifyItemInserted(docPrevList.size() - 1);
-                if (status == 0) {
-                    new AsyncDbConnection(adapter, docPrevList, status, context).execute();
-                } else {
-                    new AsyncDbConnection(adapter, docPrevList, status, context).execute();
-                }
+                new AsyncDbConnection(adapter, docPrevList, status, context).execute();
             }
         });
 
@@ -132,17 +120,17 @@ public class AsyncInitialDataLoading extends AsyncTask<Void, Void, ResultSet>{
     }
 
     private Bundle setBundleArguments(Bundle args, int position){
-        args.putString("DOC_SIFRA", docPrevList.get(position).sifra);
-        args.putInt("DOC_OVLASTENIK_ID", docPrevList.get(position).ovlastenikId);
-        args.putString("DOC_OVLASTENIK", docPrevList.get(position).ovlastenik);
-        args.putInt("DOC_GODINA", docPrevList.get(position).godina);
-        args.putString("DOC_DATUM", docPrevList.get(position).datum);
-        args.putString("DOC_DATUM_OD", docPrevList.get(position).datumOd);
-        args.putString("DOC_DATUM_DO", docPrevList.get(position).datumDo);
-        args.putInt("DOC_DANI", docPrevList.get(position).dani);
-        args.putInt("DOC_RADNI_DANI", docPrevList.get(position).radniDani);
-        args.putString("DOC_NAPOMENA", docPrevList.get(position).napomena);
-        args.putString("DOC_MEMO", docPrevList.get(position).memo);
+        args.putString("DOC_SIFRA", docPrevList.get(position).getSifra());
+        args.putInt("DOC_OVLASTENIK_ID", docPrevList.get(position).getOvlastenikId());
+        args.putString("DOC_OVLASTENIK", docPrevList.get(position).getOvlastenik());
+        args.putInt("DOC_GODINA", docPrevList.get(position).getGodina());
+        args.putString("DOC_DATUM", docPrevList.get(position).getDatum());
+        args.putString("DOC_DATUM_OD", docPrevList.get(position).getDatumOd());
+        args.putString("DOC_DATUM_DO", docPrevList.get(position).getDatumDo());
+        args.putInt("DOC_DANI", docPrevList.get(position).getDani());
+        args.putInt("DOC_RADNI_DANI", docPrevList.get(position).getRadniDani());
+        args.putString("DOC_NAPOMENA", docPrevList.get(position).getNapomena());
+        args.putString("DOC_MEMO", docPrevList.get(position).getMemo());
         return args;
     }
 }

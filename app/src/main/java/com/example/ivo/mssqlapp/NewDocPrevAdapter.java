@@ -40,9 +40,9 @@ public class NewDocPrevAdapter extends DocPrevAdapter {
         String napomena;
         if(viewHolder instanceof DocPrevViewHolder) {
             DocPrev docPrev = docPrevList.get(i);
-            ((DocPrevViewHolder) viewHolder).sifra.setText("Zahtjev broj " + docPrev.sifra);
-            ((DocPrevViewHolder) viewHolder).datum.setText("Datum slanja zahtjeva: " + docPrev.datum);
-            napomena = (docPrev.napomena.equals(EMPTY_STRING)) ? "Nema napomene" : docPrev.napomena;
+            ((DocPrevViewHolder) viewHolder).sifra.setText("Zahtjev broj " + docPrev.getSifra());
+            ((DocPrevViewHolder) viewHolder).datum.setText("Datum slanja zahtjeva: " + docPrev.getDatum());
+            napomena = (docPrev.getNapomena().equals(EMPTY_STRING)) ? "Nema napomene" : docPrev.getNapomena();
             ((DocPrevViewHolder) viewHolder).napomena.setText("Napomena: " + napomena);
         }else{
             ((ProgressViewHolder)viewHolder).progressBar.setIndeterminate(true);

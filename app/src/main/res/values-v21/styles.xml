@@ -4,14 +4,13 @@
         <item name="colorPrimary">#00BCD4</item>
         <item name="colorPrimaryDark">#0097A7</item>
         <item name="colorAccent">#00BCD4</item>
-        <item name="android:statusBarColor">#0097A7</item>
-        <item name="android:windowTranslucentStatus">true</item>
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
     </style>
 
-    <style name="LoginTheme" parent="Theme.AppCompat.Light.NoActionBar">
-        <item name="colorPrimary">#0097A7</item>
+    <style name="ActivityTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimary">#00BCD4</item>
         <item name="colorAccent">#00BCD4</item>
         <item name="colorPrimaryDark">#0097A7</item>
-        <item name="android:windowTranslucentStatus">true</item>
     </style>
 </resources>
