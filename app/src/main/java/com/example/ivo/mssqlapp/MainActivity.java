@@ -50,9 +50,9 @@ public class MainActivity extends AppCompatActivity {
             session = new SessionManager(getApplicationContext());
             session.checkLogin(this);
             HashMap<String, String> user = session.getUserDetails();
-            String userFirstName = user.get(SessionManager.KEY_FIRST_NAME);
-            String userLastName = user.get(SessionManager.KEY_LAST_NAME);
-            String userEmail = user.get(SessionManager.KEY_EMAIL);
+            String userFirstName = user.get(SessionManager.getKeyFirstName());
+            String userLastName = user.get(SessionManager.getKeyLastName());
+            String userEmail = user.get(SessionManager.getKeyEmail());
 
             Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
             setSupportActionBar(toolbar);

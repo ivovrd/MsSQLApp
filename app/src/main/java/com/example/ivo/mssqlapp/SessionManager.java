@@ -24,17 +24,29 @@ public class SessionManager {
     private int PRIVATE_MODE = 0;
     private static final String PREF_NAME = "UserLoginData";
     private static final String IS_LOGIN = "IsLoggedIn";
-    public static final String KEY_USER_NAME = "userName";
-    public static final String KEY_PASSWORD = "password";
-    public static final String KEY_FIRST_NAME = "name";
-    public static final String KEY_LAST_NAME = "lastName";
-    public static final String KEY_EMAIL = "eMail";
-    public static final String KEY_PARTNER_ID = "partnerId";
-    public static final String KEY_USER_ID = "userId";
+    private static final String KEY_USER_NAME = "userName";
+    private static final String KEY_PASSWORD = "password";
+    private static final String KEY_FIRST_NAME = "name";
+    private static final String KEY_LAST_NAME = "lastName";
+    private static final String KEY_EMAIL = "eMail";
+    private static final String KEY_PARTNER_ID = "partnerId";
+    private static final String KEY_USER_ID = "userId";
 
     public SessionManager(Context context){
         this.mContext = context;
         sharedPreferences = context.getSharedPreferences(PREF_NAME, PRIVATE_MODE);
+    }
+
+    public static String getKeyFirstName() {
+        return KEY_FIRST_NAME;
+    }
+
+    public static String getKeyLastName() {
+        return KEY_LAST_NAME;
+    }
+
+    public static String getKeyEmail() {
+        return KEY_EMAIL;
     }
 
     public void loginUser(String userName, String password, String name, String lastName, String eMail, String partnerId, String userId){
@@ -86,7 +98,7 @@ public class SessionManager {
         mActivity.finish();
     }
 
-    public boolean isLoggedIn(){
+    private boolean isLoggedIn(){
         return sharedPreferences.getBoolean(IS_LOGIN, false);
     }
 
