@@ -13,9 +13,8 @@ import android.widget.TextView;
  * Created by Ivo on 15.9.2015..
  */
 public class NewFragment extends Fragment {
-    TextView docSifra, docOvlastenik, docDate, docDateFrom, docDateTo, docDani, docRadniDani, docNapomena, docMemo;
-    String dokumentSifra, ovlastenik, datum, datumOd, datumDo, napomena, memo;
-    int dani, radniDani;
+    private String dokumentSifra, ovlastenik, datum, datumOd, datumDo, napomena, memo;
+    private int dani, radniDani;
     private static final String EMPTY_STRING = "";
 
     @Override
@@ -43,6 +42,8 @@ public class NewFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        TextView docSifra, docOvlastenik, docDate, docDateFrom, docDateTo, docDani, docRadniDani, docNapomena, docMemo;
+
         View view = inflater.inflate(R.layout.new_fragment, container, false);
         docSifra = (TextView)view.findViewById(R.id.docSifra);
         docOvlastenik = (TextView)view.findViewById(R.id.docOvlastenik);

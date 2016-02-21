@@ -25,7 +25,6 @@ public class DocPrevManager {
         if(docPrevList == null) {
             docPrevList = new ArrayList<>();
         }
-
         DocPrev docPrev = new DocPrev(sifra, datum, datumOd, datumDo, ovlastenikId, napomena, memo, ovlastenik, dani, radniDani, godina);
         docPrevList.add(docPrev);
     }

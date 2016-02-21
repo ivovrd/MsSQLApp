@@ -10,8 +10,6 @@ import java.util.List;
  * Created by Ivo on 6.7.2015..
  */
 public class NewDocPrevAdapter extends DocPrevAdapter {
-    private final int VIEW_ITEM = 1;
-    private final int VIEW_PROG = 0;
     private static final String EMPTY_STRING = "";
 
     public NewDocPrevAdapter(List<DocPrev> docPrevList, RecyclerView recyclerView) {
@@ -20,13 +18,13 @@ public class NewDocPrevAdapter extends DocPrevAdapter {
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
+        final int VIEW_ITEM = 1;
         RecyclerView.ViewHolder viewHolder;
         if(viewType == VIEW_ITEM){
             viewHolder = new DocPrevViewHolder(LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.new_recycler_item, viewGroup, false));
         }else{
             viewHolder = new ProgressViewHolder(LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.progressbar_item, viewGroup, false));
         }
-
         return viewHolder;
     }
 

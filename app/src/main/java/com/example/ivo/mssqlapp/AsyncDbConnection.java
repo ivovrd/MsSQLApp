@@ -45,12 +45,7 @@ public class AsyncDbConnection extends AsyncTask<Void, Void, ResultSet> {
         }catch(SQLException e){
             Log.e("SQL error", e.getMessage());
         }
-
-        if(result != null) {
-            return result;
-        }else{
-            return null;
-        }
+        return result;
     }
 
     @Override

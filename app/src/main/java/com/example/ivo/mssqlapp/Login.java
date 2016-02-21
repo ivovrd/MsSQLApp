@@ -7,7 +7,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
@@ -17,8 +16,7 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.LinearLayout;
-import android.widget.TextView;
+
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -106,17 +104,12 @@ public class Login extends AppCompatActivity {
             }catch(SQLException e){
                 Log.e("SQL error", e.getMessage());
             }
-
-            if(result != null) {
-                return result;
-            }else{
-                return null;
-            }
+            return result;
         }
 
         @Override
         protected void onPreExecute() {
-            progressDialog = ProgressDialog.show(Login.this, "", "Processing...");
+            progressDialog = ProgressDialog.show(Login.this, "", "Prijavljivanje...");
             super.onPreExecute();
         }
 

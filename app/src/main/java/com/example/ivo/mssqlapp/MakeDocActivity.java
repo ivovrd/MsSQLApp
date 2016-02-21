@@ -1,7 +1,6 @@
 package com.example.ivo.mssqlapp;
 
 import android.app.DatePickerDialog;
-import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
@@ -123,7 +122,7 @@ public class MakeDocActivity extends AppCompatActivity implements View.OnClickLi
 
                     int userId = Integer.valueOf(sessionManager.getUserId());
                     int partnerId = Integer.valueOf(sessionManager.getPartnerId());
-                    document = new DocumentData(docSifra, documentType, partnerId, ovlastenici.get(ovlastenikPickedIndex).Id, userId, isLocked, Integer.valueOf(daysCount.getText().toString()), Integer.valueOf(workDaysCount.getText().toString()), Integer.valueOf(year.getText().toString()), clearDateString(dateFrom.getText().toString()), clearDateString(dateTo.getText().toString()), addApostrophe(remark.getText().toString()), addApostrophe(memo.getText().toString()));
+                    document = new DocumentData(docSifra, documentType, partnerId, ovlastenici.get(ovlastenikPickedIndex).getId(), userId, isLocked, Integer.valueOf(daysCount.getText().toString()), Integer.valueOf(workDaysCount.getText().toString()), Integer.valueOf(year.getText().toString()), clearDateString(dateFrom.getText().toString()), clearDateString(dateTo.getText().toString()), addApostrophe(remark.getText().toString()), addApostrophe(memo.getText().toString()));
                     new AsyncSavingDocument(document, findViewById(R.id.content), TYPE_LOCK, MakeDocActivity.this).execute();
                     enableDisableViews(spinner, editTexts, false);
                 } else if (isChecked){
@@ -285,7 +284,7 @@ public class MakeDocActivity extends AppCompatActivity implements View.OnClickLi
         argsExists = true;
     }
 
-    public class AsyncDocCodeRetrieving extends AsyncTask<Void, Void, ResultSet>{
+    private class AsyncDocCodeRetrieving extends AsyncTask<Void, Void, ResultSet>{
 
         @Override
         protected ResultSet doInBackground(Void... voids) {
@@ -313,14 +312,14 @@ public class MakeDocActivity extends AppCompatActivity implements View.OnClickLi
             }
             int userId = Integer.valueOf(sessionManager.getUserId());
             int partnerId = Integer.valueOf(sessionManager.getPartnerId());
-            document = new DocumentData(documentType + docSifraYearPart + String.valueOf(docNum), documentType, partnerId, ovlastenici.get(ovlastenikPickedIndex).Id, userId, isLocked, Integer.valueOf(daysCount.getText().toString()), Integer.valueOf(workDaysCount.getText().toString()), Integer.valueOf(year.getText().toString()), clearDateString(dateFrom.getText().toString()), clearDateString(dateTo.getText().toString()), addApostrophe(remark.getText().toString()), addApostrophe(memo.getText().toString()));
+            document = new DocumentData(documentType + docSifraYearPart + String.valueOf(docNum), documentType, partnerId, ovlastenici.get(ovlastenikPickedIndex).getId(), userId, isLocked, Integer.valueOf(daysCount.getText().toString()), Integer.valueOf(workDaysCount.getText().toString()), Integer.valueOf(year.getText().toString()), clearDateString(dateFrom.getText().toString()), clearDateString(dateTo.getText().toString()), addApostrophe(remark.getText().toString()), addApostrophe(memo.getText().toString()));
             new AsyncSavingDocument(document, findViewById(R.id.content), TYPE_SAVE, MakeDocActivity.this).execute();
 
             super.onPostExecute(resultSet);
         }
     }
 
-    public class AsyncDocTypeRetrieving extends AsyncTask<Void,Void,ResultSet>{
+    private class AsyncDocTypeRetrieving extends AsyncTask<Void,Void,ResultSet>{
         @Override
         protected ResultSet doInBackground(Void... voids) {
             ResultSet resultSet = null;

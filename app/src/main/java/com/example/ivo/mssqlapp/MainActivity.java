@@ -118,12 +118,7 @@ public class MainActivity extends AppCompatActivity {
                 session.logoutUser(this);
                 return true;
         }
-
-        if(drawerToggle.onOptionsItemSelected(item)){
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
+        return drawerToggle.onOptionsItemSelected(item) || super.onOptionsItemSelected(item);
     }
 
     @Override

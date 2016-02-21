@@ -18,10 +18,10 @@ import java.util.HashMap;
  * Created by Ivo on 30.7.2015..
  */
 public class SessionManager {
-    SharedPreferences sharedPreferences;
-    SharedPreferences.Editor editor;
-    Context mContext;
-    int PRIVATE_MODE = 0;
+    private SharedPreferences sharedPreferences;
+    private SharedPreferences.Editor editor;
+    private Context mContext;
+    private int PRIVATE_MODE = 0;
     private static final String PREF_NAME = "UserLoginData";
     private static final String IS_LOGIN = "IsLoggedIn";
     public static final String KEY_USER_NAME = "userName";
@@ -35,10 +35,10 @@ public class SessionManager {
     public SessionManager(Context context){
         this.mContext = context;
         sharedPreferences = context.getSharedPreferences(PREF_NAME, PRIVATE_MODE);
-        editor = sharedPreferences.edit();
     }
 
     public void loginUser(String userName, String password, String name, String lastName, String eMail, String partnerId, String userId){
+        editor = sharedPreferences.edit();
         editor.putBoolean(IS_LOGIN, true);
         editor.putString(KEY_USER_NAME, userName);
         editor.putString(KEY_PASSWORD, password);
@@ -47,7 +47,7 @@ public class SessionManager {
         editor.putString(KEY_EMAIL, eMail);
         editor.putString(KEY_PARTNER_ID, partnerId);
         editor.putString(KEY_USER_ID, userId);
-        editor.commit();
+        editor.apply();
     }
 
     public HashMap<String, String> getUserDetails(){
@@ -75,8 +75,9 @@ public class SessionManager {
     }
 
     public void logoutUser(Activity mActivity){
+        editor = sharedPreferences.edit();
         editor.clear();
-        editor.commit();
+        editor.apply();
 
         Intent i = new Intent(mContext, Login.class);
         i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -98,10 +99,10 @@ public class SessionManager {
     }
 
     public class CheckUserLogin extends AsyncTask<Void, Void, ResultSet> {
-        Connection connect;
-        Statement statement;
-        String name, pass;
-        Activity mActivity;
+        private Connection connect;
+        private Statement statement;
+        private String name, pass;
+        private Activity mActivity;
 
         public CheckUserLogin(String name, String pass, Activity mActivity){
             this.name = name;

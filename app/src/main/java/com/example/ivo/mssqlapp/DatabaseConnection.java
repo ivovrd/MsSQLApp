@@ -1,9 +1,6 @@
 package com.example.ivo.mssqlapp;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.StrictMode;
 import android.util.Log;
 import java.sql.Connection;

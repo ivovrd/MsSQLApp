@@ -15,12 +15,10 @@ import java.util.ArrayList;
  * Created by Ivo on 8.9.2015..
  */
 public class AsyncDataLoading extends AsyncTask<Void, Void, ResultSet> {
-    Connection connect;
-    Statement statement;
-    ArrayList<Ovlastenik> ovlastenici;
-    Context mContext;
-    Spinner spinner;
-    int selectedOvlastenikId;
+    private ArrayList<Ovlastenik> ovlastenici;
+    private Context mContext;
+    private Spinner spinner;
+    private int selectedOvlastenikId;
 
     public AsyncDataLoading(ArrayList<Ovlastenik> ovlastenici, Context context, Spinner spinner, int selectedOvlastenikId){
         this.ovlastenici = ovlastenici;
@@ -33,8 +31,8 @@ public class AsyncDataLoading extends AsyncTask<Void, Void, ResultSet> {
     protected ResultSet doInBackground(Void... params) {
         ResultSet resultSet = null;
         try{
-            connect = DatabaseConnection.Connect();
-            statement = connect.createStatement();
+            Connection connect = DatabaseConnection.Connect();
+            Statement statement = connect.createStatement();
             resultSet = statement.executeQuery("SELECT Id, Naziv FROM Sifrarnici.Partner WHERE Vrsta & 64 != 0");
         }catch (SQLException e){
             Log.e("SQL error", e.getMessage());
@@ -45,7 +43,6 @@ public class AsyncDataLoading extends AsyncTask<Void, Void, ResultSet> {
     @Override
     protected void onPostExecute(ResultSet resultSet) {
         super.onPostExecute(resultSet);
-
         try{
             while (resultSet.next()){
                 Ovlastenik ovlastenik = new Ovlastenik(resultSet.getInt("Id"), resultSet.getString("Naziv"));
@@ -55,12 +52,10 @@ public class AsyncDataLoading extends AsyncTask<Void, Void, ResultSet> {
         }catch (SQLException e){
             Log.e("SQL error", e.getMessage());
         }
-
         fillSpinner();
-
         if(selectedOvlastenikId != 0) {
             int i = 0, ovlastenikPosititon = 0;
-            while (ovlastenici.get(i).Id != selectedOvlastenikId) {
+            while (ovlastenici.get(i).getId() != selectedOvlastenikId) {
                 i++;
                 ovlastenikPosititon = i;
             }
@@ -72,10 +67,9 @@ public class AsyncDataLoading extends AsyncTask<Void, Void, ResultSet> {
         ArrayList<String> labels = new ArrayList<>();
 
         for(int i = 0; i < ovlastenici.size(); i++){
-            labels.add(ovlastenici.get(i).Naziv);
+            labels.add(ovlastenici.get(i).getNaziv());
         }
-
-        ArrayAdapter<String> adapter = new ArrayAdapter(mContext, android.R.layout.simple_spinner_dropdown_item, labels);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(mContext, android.R.layout.simple_spinner_dropdown_item, labels);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
     }

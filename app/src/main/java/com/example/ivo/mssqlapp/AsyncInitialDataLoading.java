@@ -21,7 +21,7 @@ import java.util.Locale;
 /**
  * Created by Ivo on 19.1.2016..
  */
-public class AsyncInitialDataLoading extends AsyncTask<Void, Void, ResultSet>{
+class AsyncInitialDataLoading extends AsyncTask<Void, Void, ResultSet>{
     private DocPrevAdapter adapter;
     private RecyclerView recyclerView;
     private Context context;
@@ -94,7 +94,7 @@ public class AsyncInitialDataLoading extends AsyncTask<Void, Void, ResultSet>{
         if(status == 0) {
             adapter.setOnRecyclerViewClickListener(new RecyclerViewClickListener() {
                 @Override
-                public void recyclerViewItemClicked(View view, int position) {
+                public void recyclerViewItemClicked(int position) {
                     docPrevList = DocPrevManager.getInstance().getDocPrevs();
                     Bundle args = new Bundle();
                     Intent i = new Intent(context, MakeDocActivity.class);
@@ -105,7 +105,7 @@ public class AsyncInitialDataLoading extends AsyncTask<Void, Void, ResultSet>{
         } else{
             adapter.setOnRecyclerViewClickListener(new RecyclerViewClickListener() {
                 @Override
-                public void recyclerViewItemClicked(View view, int position) {
+                public void recyclerViewItemClicked(int position) {
                     docPrevList = DocPrevManager.getInstance().getDocPrevs();
                     Bundle args = new Bundle();
                     Fragment fragment = new NewFragment();

@@ -122,7 +122,7 @@ public class DocPrevAdapter extends RecyclerView.Adapter {
 
         @Override
         public void onClick(View v) {
-            recyclerViewClickListener.recyclerViewItemClicked(v, this.getLayoutPosition());
+            recyclerViewClickListener.recyclerViewItemClicked(this.getLayoutPosition());
         }
     }
 
