@@ -8,8 +8,8 @@
         <item name="colorAccent">#00BCD4</item>
     </style>
 
-    <style name="LoginTheme" parent="Theme.AppCompat.Light.NoActionBar">
-        <item name="colorPrimary">#0097A7</item>
+    <style name="ActivityTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimary">#00BCD4</item>
         <item name="colorAccent">#00BCD4</item>
         <item name="colorPrimaryDark">#0097A7</item>
     </style>

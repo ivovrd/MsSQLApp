@@ -1,7 +1,5 @@
 package com.example.ivo.mssqlapp;
 
-import android.annotation.SuppressLint;
-import android.os.StrictMode;
 import android.util.Log;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -12,19 +10,13 @@ import java.sql.SQLException;
  */
 public class DatabaseConnection {
 
-    @SuppressLint("NewAPI")
     public static Connection Connect(){
         String ipAddress = "192.168.2.16";
-        //String ipaddress = "109.60.24.116";
-        //String ipaddress = "192.168.43.162";
         String dataBase = "PivisDB_Prazna";
         String username = "admin";
         String password = "admin123";
-
-        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-        StrictMode.setThreadPolicy(policy);
-        Connection connection = null;
         String connectionURL;
+        Connection connection = null;
 
         try{
             Class.forName("net.sourceforge.jtds.jdbc.Driver");

@@ -21,7 +21,7 @@ import java.util.Locale;
 /**
  * Created by Ivo on 19.1.2016..
  */
-class AsyncInitialDataLoading extends AsyncTask<Void, Void, ResultSet>{
+public class AsyncInitialDataLoading extends AsyncTask<Void, Void, ResultSet>{
     private DocPrevAdapter adapter;
     private RecyclerView recyclerView;
     private Context context;
