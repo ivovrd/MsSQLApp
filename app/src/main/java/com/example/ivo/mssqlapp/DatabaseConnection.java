@@ -11,7 +11,7 @@ import java.sql.SQLException;
 public class DatabaseConnection {
 
     public static Connection Connect(){
-        String ipAddress = "192.168.2.16";
+        String ipAddress = "192.168.43.162";
         String dataBase = "PivisDB_Prazna";
         String username = "admin";
         String password = "admin123";
